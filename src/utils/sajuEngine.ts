@@ -1,5 +1,6 @@
-import { getGapja, SIXTY_PILLARS } from '@fullstackfamily/manseryeok';
-import type { RawSaju, RelationResult, FortuneFlow } from '../types/saju';import { CHAR_INFO, FIVE_ELEMENTS, RELATION_MAP, HANJA_TO_HANGUL } from '../constants/saju';
+import { calculateSaju, SIXTY_PILLARS } from '@fullstackfamily/manseryeok';
+import type { RawSaju, RelationResult, FortuneFlow } from '../types/saju';
+import { CHAR_INFO, FIVE_ELEMENTS, RELATION_MAP, HANJA_TO_HANGUL } from '../constants/saju';
 
 export const isPair = (arr: string[][], c1: string, c2: string) => arr.some(pair => (pair[0] === c1 && pair[1] === c2) || (pair[0] === c2 && pair[1] === c1));
 export const isSamhap = (b1: string, b2: string) => isPair([['亥','卯'], ['卯','未'], ['亥','미'], ['寅','午'], ['午','戌'], ['寅','戌'], ['巳','酉'], ['酉','丑'], ['巳','丑'], ['申','子'], ['子','辰'], ['申','辰']], b1, b2);
@@ -117,8 +118,14 @@ export const getElements = (saju: RawSaju, isUnknown: boolean) => {
 };
 
 export const getFortuneFlow = (birthYear: number, birthDay: number, gender: 'F'|'M', yearHanja: string, monthHanja: string): FortuneFlow => {
-  const today = new Date(); const currentYear = today.getFullYear(); const currentMonth = today.getMonth() + 1;
-  const currentGapja = getGapja(currentYear, currentMonth, today.getDate());
+  const today = new Date(); 
+  const currentYear = today.getFullYear(); 
+  const currentMonth = today.getMonth() + 1;
+  const currentDay = today.getDate();
+  
+  // ✅ 만세력 라이브러리를 통해 "오늘" 날짜의 사주를 계산하여 세운/월운 간지를 정확하게 뽑아옵니다!
+  const todaySaju = calculateSaju(currentYear, currentMonth, currentDay);
+
   const isYangYear = ['甲', '丙', '戊', '庚', '壬'].includes(yearHanja.charAt(0));
   const isForward = (gender === 'M' && isYangYear) || (gender === 'F' && !isYangYear);
   const monthIdx = SIXTY_PILLARS.findIndex(p => p.combined.hanja === monthHanja);
@@ -126,13 +133,15 @@ export const getFortuneFlow = (birthYear: number, birthDay: number, gender: 'F'|
   const step = Math.floor((currentYear - birthYear + 1 < daeunNum ? 0 : (currentYear - birthYear + 1 - daeunNum) / 10) + 1);
   let currentDaeunIdx = (monthIdx + ((isForward ? 1 : -1) * step)) % 60;
   if (currentDaeunIdx < 0) currentDaeunIdx += 60;
+  
   const startAge = daeunNum + (step - 1) * 10;
+  
   return { 
     daeUnPillar: SIXTY_PILLARS[currentDaeunIdx]?.combined.hanja || '??', 
     daeUnAge: `${startAge}~${startAge + 9}세`, 
-    seUnPillar: currentGapja.yearPillarHanja || '??', 
+    seUnPillar: todaySaju.yearPillarHanja || '??', 
     seUnYear: `${currentYear}년`, 
-    wolUnPillar: currentGapja.monthPillarHanja || '??', 
+    wolUnPillar: todaySaju.monthPillarHanja || '??', // 🚀 이제 정확한 현재 월의 간지가 들어갑니다!
     wolUnMonth: `${currentMonth}월` 
   };
 };

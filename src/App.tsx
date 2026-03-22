@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { calculateSaju } from '@fullstackfamily/manseryeok';
-import type { PersonInput, SajuResult, RelationResult } from './types/saju';import { getElements, getFortuneFlow, getRelation, getScoreComment, buildServerPayload } from './utils/sajuEngine';
+import type { PersonInput, SajuResult, RelationResult } from './types/saju';
+import { getElements, getFortuneFlow, getRelation, getScoreComment, buildServerPayload } from './utils/sajuEngine';
 import SajuInputForm from './components/SajuInputForm';
 import SajuResultView from './components/SajuResultView';
 
@@ -8,8 +9,10 @@ export default function App() {
   const [step, setStep] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
 
-  const [me, setMe] = useState<PersonInput>({ name: '나', gender: 'F', date: '1995-08-12', time: '14:30', isUnknownTime: false });
-  const [pt, setPt] = useState<PersonInput>({ name: '그 사람', gender: 'M', date: '1993-04-05', time: '09:00', isUnknownTime: false });
+  // ✅ 초기값 수정: 이름 빈칸, 2000-01-01, 23:30(자시)
+  const [me, setMe] = useState<PersonInput>({ name: '', gender: 'F', date: '2000-01-01', time: '23:30', isUnknownTime: false });
+  const [pt, setPt] = useState<PersonInput>({ name: '', gender: 'M', date: '2000-01-01', time: '23:30', isUnknownTime: false });
+  
   const [analysis, setAnalysis] = useState<{ 
     meSaju: SajuResult, 
     ptSaju: SajuResult, 
@@ -35,25 +38,12 @@ export default function App() {
       const relationTexts = getRelation(meRaw.dayPillarHanja || '甲子', ptRaw.dayPillarHanja || '甲子');
       const scoreComment = getScoreComment(relationTexts.finalScore, relationTexts, meElements.stats, ptElements.stats);
 
-      // ==========================================
-      // 🚀 서버 전송용 JSON 객체 생성
-      // ==========================================
       const serverPayload = {
         me: buildServerPayload(meRaw, meElements, meFortune, me.isUnknownTime),
         partner: buildServerPayload(ptRaw, ptElements, ptFortune, pt.isUnknownTime)
       };
 
       console.log("🚀 [서버 전송용 JSON 완벽본]:", JSON.stringify(serverPayload, null, 2));
-
-      // 💡 [여기에 서버 API 호출 로직을 넣으세요]
-      /*
-      await fetch('https://api.yourdomain.com/saju', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(serverPayload),
-      });
-      */
-      // ==========================================
 
       setAnalysis({
         meSaju: { year: meRaw.yearPillarHanja || '??', month: meRaw.monthPillarHanja || '??', day: meRaw.dayPillarHanja || '??', hour: me.isUnknownTime ? '??' : (meRaw.hourPillarHanja || '??'), elements: meElements.stats, totalChars: meElements.total, fortune: meFortune },
@@ -74,8 +64,9 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-100 flex justify-center font-sans text-slate-800 pb-10 pt-4">
-      <div className="w-full max-w-md bg-white shadow-2xl rounded-2xl overflow-hidden relative border border-slate-200">
+    // ✅ 배경색을 #07060c로 맞추고, 불필요한 하얀색 박스(bg-white, border)를 제거했습니다.
+    <div className="min-h-screen bg-[#07060c] flex justify-center font-sans text-[#f0eaf8]">
+      <div className="w-full max-w-md relative">
         
         {step === 0 && (
           <SajuInputForm 
