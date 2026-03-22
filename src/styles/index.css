@@ -1,25 +1,53 @@
+<<<<<<< Updated upstream
+=======
+/* index.css 맨 윗줄을 이렇게 바꿔주세요 */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@700;900&family=Noto+Sans+KR:wght@300;400;700&display=swap');
+>>>>>>> Stashed changes
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+<<<<<<< Updated upstream
 /* 기본 리셋 */
+=======
+/* 기본 리셋 & 다크 테마 배경 고정 */
+>>>>>>> Stashed changes
 * {
   box-sizing: border-box;
 }
 
 body {
   margin: 0;
+<<<<<<< Updated upstream
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
     Roboto, Helvetica, Arial, sans-serif;
   background: #f9fafb;
+=======
+  /* 기본 폰트는 돋움계열(sans), 타이틀만 나중에 Serif로 뺍니다 */
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, Helvetica, Arial, sans-serif;
+  background-color: #07060c; 
+  color: #f0eaf8;
+>>>>>>> Stashed changes
   min-height: 100vh;
 }
 
 /* 모바일 input 확대 방지 */
+<<<<<<< Updated upstream
 input,
 select,
 textarea,
 button {
   font-family: inherit;
   font-size: 16px;
+=======
+input, select, textarea, button {
+  font-family: inherit;
+  font-size: 16px;
+}
+
+#root {
+  width: 100%;
+  margin: 0 auto;
+>>>>>>> Stashed changes
 }
