@@ -4,12 +4,12 @@ import type { PersonInput, SajuResult, RelationResult } from './types/saju';
 import { getElements, getFortuneFlow, getRelation, getScoreComment, buildServerPayload } from './utils/sajuEngine';
 import SajuInputForm from './components/SajuInputForm';
 import SajuResultView from './components/SajuResultView';
+import LoadingScreen from './components/LoadingScreen'; // 🚀 로딩 컴포넌트 추가
 
 export default function App() {
-  const [step, setStep] = useState(0);
+  const [step, setStep] = useState(0); // 0: 입력, 0.5: 로딩, 1: 결과
   const [isLoading, setIsLoading] = useState(false);
 
-  // ✅ 초기값 수정: 이름 빈칸, 2000-01-01, 23:30(자시)
   const [me, setMe] = useState<PersonInput>({ name: '', gender: 'F', date: '2000-01-01', time: '23:30', isUnknownTime: false });
   const [pt, setPt] = useState<PersonInput>({ name: '', gender: 'M', date: '2000-01-01', time: '23:30', isUnknownTime: false });
   
@@ -24,7 +24,9 @@ export default function App() {
   const handleCalculate = async () => {
     try {
       setIsLoading(true);
-      
+      setStep(0.5); // 🚀 로딩 화면으로 전환 (0.5단계)
+
+      // 1. 실제 사주 계산 로직 (즉시 실행됨)
       const [y1, m1, d1] = me.date.split('-').map(Number); const [hh1, mm1] = me.time.split(':').map(Number);
       const meRaw = me.isUnknownTime ? calculateSaju(y1, m1, d1) : calculateSaju(y1, m1, d1, hh1, mm1);
       const meElements = getElements(meRaw, me.isUnknownTime);
@@ -53,21 +55,26 @@ export default function App() {
         scoreComment: scoreComment
       });
 
-      setStep(1);
+      // 2. ⏳ 인위적인 딜레이 추가 (약 3초 동안 로딩 화면을 보여줌)
+      // 로딩 화면의 4단계 텍스트가 모두 뜰 수 있는 충분한 시간을 줍니다.
+      await new Promise(resolve => setTimeout(resolve, 3200));
+
+      setStep(1); // 🚀 결과 화면으로 전환
     } 
     catch (error) { 
       console.error("계산 중 에러 발생:", error);
       alert('입력하신 날짜를 다시 확인해주세요.'); 
+      setStep(0); // 에러 발생 시 입력 폼으로 복귀
     } finally { 
       setIsLoading(false); 
     }
   };
 
   return (
-    // ✅ 배경색을 #07060c로 맞추고, 불필요한 하얀색 박스(bg-white, border)를 제거했습니다.
     <div className="min-h-screen bg-[#07060c] flex justify-center font-sans text-[#f0eaf8]">
       <div className="w-full max-w-md relative">
         
+        {/* 입력 단계 */}
         {step === 0 && (
           <SajuInputForm 
             me={me} setMe={setMe} 
@@ -77,6 +84,10 @@ export default function App() {
           />
         )}
         
+        {/* 🚀 로딩 단계 */}
+        {step === 0.5 && <LoadingScreen />}
+        
+        {/* 결과 단계 */}
         {step === 1 && analysis && (
           <SajuResultView 
             me={me} pt={pt} 
