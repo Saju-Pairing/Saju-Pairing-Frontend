@@ -10,7 +10,7 @@ interface Props {
   isLoading: boolean;
 }
 
-// ✅ 컴포넌트 밖으로 분리된 SelectIcon (에러 해결)
+// 컴포넌트 밖으로 분리된 SelectIcon 
 const SelectIcon = () => (
   <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[#4a4068]">
     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -50,7 +50,6 @@ export default function SajuInputForm({ me, setMe, pt, setPt, onCalculate, isLoa
         
         {/* ☀️ 나의 정보 카드 */}
         <div className="bg-[#0f0d18] rounded-[1.5rem] p-6 border border-[rgba(180,140,255,0.11)] shadow-lg">
-          {/* 👇 이 부분의 클래스를 요청하신 수치로 완벽하게 맞췄습니다! */}
           <div className="text-[#7eb8f7] font-['Noto_Sans_KR'] text-[10px] font-light tracking-[2px] mb-5 flex items-center gap-2">
             <span>☀️</span> 나의 정보
           </div>

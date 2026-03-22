@@ -8,6 +8,8 @@ interface Props {
   pt: PersonInput;
   analysis: { meSaju: SajuResult; ptSaju: SajuResult; score: number; relation: RelationResult; scoreComment: { title: string; desc: string } };
   onReset: () => void;
+  isLoggedIn: boolean; //로그인 관련
+  onRequireLogin: () => void; 
 }
 
 // PremiumCard 컴포넌트 (카테고리 기능 추가 & 깔끔한 잠금화면)
@@ -47,11 +49,22 @@ const PremiumCard = ({ num, title, icon, isUnlocked, onUnlock, children }: Premi
   </div>
 );
 
-export default function SajuResultView({ me, pt, analysis, onReset }: Props) {
+export default function SajuResultView({ me, pt, analysis, onReset, isLoggedIn, onRequireLogin }: Props) {
   const [isUnlocked, setIsUnlocked] = useState(false);
-  const handleUnlock = () => setIsUnlocked(true);
 
-  // ✅ 사주 팔자 렌더링 함수 (이미지처럼 배경 없이 깔끔하게, 일주만 보라색 그라데이션)
+  // 잠금 해제 버튼 눌렀을 때의 동작 수정
+  const handleUnlock = () => {
+    if (!isLoggedIn) {
+      // 로그인이 안 되어 있다면? -> App.tsx가 넘겨준 함수 실행 (step 99로 이동!)
+      onRequireLogin();
+      return; 
+    }
+    
+    // 로그인이 되어 있다면? -> 잠금 해제 (나중엔 결제창 띄우는 로직이 들어갈 자리)
+    setIsUnlocked(true);
+  };
+
+  // 사주 팔자 렌더링 함수 (이미지처럼 배경 없이 깔끔하게, 일주만 보라색 그라데이션)
   const renderSajuChar = (char: string | undefined, dayMaster: string, isDayPillar: boolean) => {
     if (!char || char === '?') {
       return (
@@ -82,7 +95,7 @@ export default function SajuResultView({ me, pt, analysis, onReset }: Props) {
   return (
     <div className="min-h-screen relative overflow-x-hidden font-sans text-[#f0eaf8] bg-[#07060c] pb-20 pt-8 animate-fade-in-up">
       
-      {/* 몽환적인 오라 배경 */}
+      {/* 몽환적 배경 */}
       <div className="fixed top-[-10%] left-[-10%] w-[50vw] h-[50vw] bg-[#c084fc] rounded-full blur-[120px] opacity-10 -z-10 mix-blend-screen pointer-events-none"></div>
       <div className="fixed bottom-[-10%] right-[-10%] w-[60vw] h-[60vw] bg-[#f472b6] rounded-full blur-[140px] opacity-10 -z-10 mix-blend-screen pointer-events-none"></div>
       <div className="max-w-md mx-auto p-5 space-y-6">

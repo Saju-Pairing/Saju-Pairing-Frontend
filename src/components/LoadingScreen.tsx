@@ -2,11 +2,10 @@ import React, { useState, useEffect } from 'react';
 
 export default function LoadingScreen() {
   const [step, setStep] = useState(0);
-  // 💡 마지막 단계 텍스트도 스크린샷에 맞춰 "심층 리포트 작성 중"으로 수정했습니다.
   const steps = ["사주 원국 계산 중", "두 사람의 기운 비교 중", "재회 가능성 분석 중", "심층 리포트 작성 중"];
 
   useEffect(() => {
-    // 1초마다 다음 단계로 넘어갑니다.
+    // 1초마다 다음 단계로
     const timer = setInterval(() => {
       setStep((prev) => (prev < steps.length ? prev + 1 : prev));
     }, 1000);
@@ -37,7 +36,7 @@ export default function LoadingScreen() {
       </h2>
       <p className="text-[#9d8fba] text-[13px] mb-10">잠시만 기다려주세요.</p>
 
-      {/* 📋 카드 형태의 단계별 체크리스트 */}
+      {/* 카드 형태의 단계별 체크리스트 */}
       <div className="w-full max-w-[280px] space-y-3 text-left">
         {steps.map((text, i) => {
           const isPast = i < step;    // 이미 지나간 단계 (보라색)
