@@ -2,100 +2,117 @@ import { useState } from 'react';
 import { calculateSaju } from '@fullstackfamily/manseryeok';
 import type { PersonInput, SajuResult, RelationResult } from './types/saju';
 import { getElements, getFortuneFlow, getRelation, getScoreComment, buildServerPayload } from './utils/sajuEngine';
+
 import SajuInputForm from './components/SajuInputForm';
 import SajuResultView from './components/SajuResultView';
 import LoadingScreen from './components/LoadingScreen';
-import LoginScreen from './components/LoginScreen'; // 💡 로그인 스크린 임포트 추가!
+import LoginScreen from './components/LoginScreen'; 
+import HomeScreen from './components/HomeScreen';
+import TopBar from './components/TopBar';
+import BottomNav from './components/BottomNav';
 
 export default function App() {
-  // 💡 step 관리: 0(입력), 0.5(로딩), 1(결과), 99(로그인 화면)
+  // --- 상태 관리 ---
+  // step: 0(홈), 1(입력), 1.5(로딩), 2(결과), 99(로그인)
   const [step, setStep] = useState(0); 
   const [isLoading, setIsLoading] = useState(false);
   
-  // 💡 무조건 로그인 안 된 상태로 고정 (테스트용)
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  // 로그인 유저 정보 (추후 Supabase 연동 시 동적 업데이트 예정)
+  const [isLoggedIn] = useState(false); 
+  const [userName] = useState("김지은"); 
 
+  // 사주 입력 폼 데이터
   const [me, setMe] = useState<PersonInput>({ name: '', gender: 'F', date: '2000-01-01', time: '23:30', isUnknownTime: false });
   const [pt, setPt] = useState<PersonInput>({ name: '', gender: 'M', date: '2000-01-01', time: '23:30', isUnknownTime: false });
   
+  // 사주 분석 결과 데이터
   const [analysis, setAnalysis] = useState<{ 
-    meSaju: SajuResult, 
-    ptSaju: SajuResult, 
-    score: number, 
-    relation: RelationResult,
-    scoreComment: { title: string, desc: string }
+    meSaju: SajuResult, ptSaju: SajuResult, score: number, relation: RelationResult, scoreComment: { title: string, desc: string }
   } | null>(null);
 
+  // --- 사주 계산 로직 ---
   const handleCalculate = async () => {
     try {
       setIsLoading(true);
-      setStep(0.5);
+      setStep(1.5); 
 
+      // 본인 사주 계산
       const [y1, m1, d1] = me.date.split('-').map(Number); const [hh1, mm1] = me.time.split(':').map(Number);
       const meRaw = me.isUnknownTime ? calculateSaju(y1, m1, d1) : calculateSaju(y1, m1, d1, hh1, mm1);
       const meElements = getElements(meRaw, me.isUnknownTime);
       const meFortune = getFortuneFlow(y1, d1, me.gender, meRaw.yearPillarHanja || '', meRaw.monthPillarHanja || '');
 
+      // 상대방 사주 계산
       const [y2, m2, d2] = pt.date.split('-').map(Number); const [hh2, mm2] = pt.time.split(':').map(Number);
       const ptRaw = pt.isUnknownTime ? calculateSaju(y2, m2, d2) : calculateSaju(y2, m2, d2, hh2, mm2);
       const ptElements = getElements(ptRaw, pt.isUnknownTime);
       const ptFortune = getFortuneFlow(y2, d2, pt.gender, ptRaw.yearPillarHanja || '', ptRaw.monthPillarHanja || '');
 
+      // 관계 분석 (궁합 점수 및 코멘트)
       const relationTexts = getRelation(meRaw.dayPillarHanja || '甲子', ptRaw.dayPillarHanja || '甲子');
       const scoreComment = getScoreComment(relationTexts.finalScore, relationTexts, meElements.stats, ptElements.stats);
 
       setAnalysis({
         meSaju: { year: meRaw.yearPillarHanja || '??', month: meRaw.monthPillarHanja || '??', day: meRaw.dayPillarHanja || '??', hour: me.isUnknownTime ? '??' : (meRaw.hourPillarHanja || '??'), elements: meElements.stats, totalChars: meElements.total, fortune: meFortune },
         ptSaju: { year: ptRaw.yearPillarHanja || '??', month: ptRaw.monthPillarHanja || '??', day: ptRaw.dayPillarHanja || '??', hour: pt.isUnknownTime ? '??' : (ptRaw.hourPillarHanja || '??'), elements: ptElements.stats, totalChars: ptElements.total, fortune: ptFortune },
-        score: relationTexts.finalScore, 
-        relation: relationTexts,
-        scoreComment: scoreComment
+        score: relationTexts.finalScore, relation: relationTexts, scoreComment: scoreComment
       });
 
+      // 자연스러운 로딩 연출을 위한 딜레이
       await new Promise(resolve => setTimeout(resolve, 3200));
+      setStep(2); 
 
-      setStep(1);
-    } 
-    catch (error) { 
+    } catch (error) { 
       console.error("계산 중 에러 발생:", error);
       alert('입력하신 날짜를 다시 확인해주세요.'); 
-      setStep(0); 
+      setStep(1); 
     } finally { 
       setIsLoading(false); 
     }
   };
 
+  // --- UI 렌더링 ---
   return (
     <div className="min-h-screen bg-[#07060c] flex justify-center font-sans text-[#f0eaf8]">
-      <div className="w-full max-w-md relative">
+      
+      {/* 상단 공통 네비게이션 바 (스크롤 시 자동 숨김) */}
+      <TopBar 
+        isLoggedIn={isLoggedIn} 
+        userName={userName} 
+        onLoginClick={() => {
+          window.scrollTo(0, 0);
+          setStep(99);
+        }} 
+      />
+
+      {/* 메인 화면 컨테이너 (TopBar 영역 확보를 위해 특정 스텝에서만 상단 패딩 추가) */}
+      <div className={`w-full max-w-md relative ${step === 1 || step === 2 ? 'pt-[70px]' : ''}`}>
         
-        {step === 0 && (
-          <SajuInputForm me={me} setMe={setMe} pt={pt} setPt={setPt} onCalculate={handleCalculate} isLoading={isLoading} />
-        )}
+        {step === 0 && <HomeScreen onStart={() => setStep(1)} />}
+
+        {step === 1 && <SajuInputForm me={me} setMe={setMe} pt={pt} setPt={setPt} onCalculate={handleCalculate} isLoading={isLoading} />}
         
-        {step === 0.5 && <LoadingScreen />}
+        {step === 1.5 && <LoadingScreen />}
         
-        {step === 1 && analysis && (
+        {step === 2 && analysis && (
           <SajuResultView 
-            me={me} pt={pt} 
-            analysis={analysis} 
-            onReset={() => setStep(0)}
-            
-            // 💡 로그인 상태와, 로그인 화면으로 이동하는 함수를 전달!
-            isLoggedIn={isLoggedIn} // 현재 false로 고정됨
+            me={me} pt={pt} analysis={analysis} 
+            onReset={() => { window.scrollTo(0,0); setStep(0); }} 
+            isLoggedIn={isLoggedIn}
             onRequireLogin={() => {
-              window.scrollTo(0, 0); // 화면 맨 위로 올리기
-              setStep(99); // 로그인 화면 단계로 이동
+              window.scrollTo(0, 0); 
+              setStep(99); 
             }}
           />
         )}
 
-        {/* 💡 99단계: 로그인 화면 렌더링 */}
-        {step === 99 && (
-          <LoginScreen />
-        )}
+        {step === 99 && <LoginScreen />}
 
       </div>
+
+      {/* 하단 탭바 (홈 화면과 로그인 화면에서 노출) */}
+      {(step === 0 || step === 99) && <BottomNav activeTab="saju" />}
+
     </div>
   );
 }

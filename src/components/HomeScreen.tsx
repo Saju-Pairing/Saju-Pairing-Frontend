@@ -1,23 +1,18 @@
 import React from 'react';
 
-export default function LoginScreen() {
-  const REST_API_KEY = import.meta.env.VITE_KAKAO_REST_API_KEY; 
-  const REDIRECT_URI = import.meta.env.VITE_REDIRECT_URI; 
-  
-  const KAKAO_AUTH_URL = `https://kauth.kakao.com/oauth/authorize?client_id=${REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code`;
+interface Props {
+  onStart: () => void;      
+}
 
-  const handleKakaoLogin = () => {
-    window.location.href = KAKAO_AUTH_URL;
-  };
-
+export default function HomeScreen({ onStart }: Props) {
   return (
+    // 전체 화면 컨테이너
     <div className="h-[100dvh] bg-[#07060c] flex justify-center font-sans text-[#f0eaf8] relative overflow-x-hidden overflow-y-auto">
       
       {/* --- 배경 애니메이션 요소 --- */}
       <div className="fixed top-[-10%] left-[-10%] w-[60vw] max-w-[400px] h-[60vw] max-h-[400px] bg-[#c084fc] rounded-full blur-[120px] opacity-15 pointer-events-none"></div>
       <div className="fixed bottom-[10%] right-[-10%] w-[50vw] max-w-[300px] h-[50vw] max-h-[300px] bg-[#f472b6] rounded-full blur-[130px] opacity-10 pointer-events-none"></div>
-
-      {/* 밤하늘 별빛 레이어 */}
+      
       <div className="fixed inset-0 pointer-events-none opacity-60">
         <div className="absolute top-[12%] left-[22%] w-[2px] h-[2px] bg-white rounded-full opacity-30"></div>
         <div className="absolute top-[25%] left-[15%] w-[1px] h-[1px] bg-white rounded-full opacity-50"></div>
@@ -29,7 +24,7 @@ export default function LoginScreen() {
         <div className="absolute bottom-[15%] right-[32%] w-[2px] h-[2px] bg-white rounded-full opacity-40"></div>
       </div>
 
-      {/* --- 메인 콘텐츠 영역 --- */}
+      {/* --- 메인 콘텐츠 영역 (h-full로 전체 화면 높이 채움) --- */}
       <div className="w-full max-w-md flex flex-col relative z-10 animate-fade-in-up h-full">
 
         {/* 상단 앵커: 최상단에서 135px 고정 여백 */}
@@ -39,20 +34,21 @@ export default function LoginScreen() {
               <div className="absolute top-[-3px] left-1/2 -translate-x-1/2 w-[6px] h-[6px] rounded-full bg-[#c084fc] shadow-[0_0_10px_#c084fc]"></div>
             </div>
             <div className="absolute w-[72px] h-[72px] rounded-full border border-[rgba(180,140,255,0.25)]"></div>
-            <div className="absolute w-[62px] h-[62px] rounded-full bg-gradient-to-b from-[#1d162d] to-[#0a0812] shadow-[0_0_50px_rgba(192,132,252,0.3)] flex items-center justify-center">
-              <span className="text-[32px] drop-shadow-[0_0_15px_rgba(192,132,252,0.8)]">🔮</span>
+            <div className="absolute w-[62px] h-[62px] rounded-full bg-gradient-to-b from-[#1d162d] to-[#0a0812] shadow-[0_0_50px_rgba(192,132,252,0.2)] flex items-center justify-center">
+              <svg viewBox="0 0 24 24" fill="white" className="w-[24px] h-[24px] opacity-90">
+                <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8zm0-14a4 4 0 0 0 0 8 2 2 0 0 1 0 4 6 6 0 0 1 0-12zm0 6a2 2 0 1 1 2-2 2 2 0 0 1-2 2z"/>
+              </svg>
             </div>
           </div>
         </div>
 
-        {/* 스프링 */}
+        {/* 기기 해상도에 따라 유연하게 늘어나는 스프링(Spacer) 역할 */}
         <div className="flex-1"></div>
 
-        {/* 하단 앵커: 바닥에서 222px 고정 여백 */}
+        {/* 하단 앵커: 바닥에서 162px 고정 여백 */}
         <div className="w-full px-[20px] mb-[222px] flex flex-col items-center">
-
-          {/* 메인 타이틀 및 서브 카피 */}
-          <div className="text-center mb-[28px]">
+          
+          <div className="text-center">
             <h1 className="text-[26px] font-['Noto_Serif_KR'] font-bold leading-snug tracking-tight mb-4">
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#f472b6] to-[#c084fc]">다시 시작하고 싶은</span><br />
               <span className="text-[#f0eaf8]">당신을 위해</span>
@@ -63,21 +59,17 @@ export default function LoginScreen() {
             </p>
           </div>
 
-          {/* 카카오 소셜 로그인 버튼 */}
+          {/* 버튼 위쪽 여백 28px 고정 */}
           <button 
-            onClick={handleKakaoLogin}
-            className="w-full h-[52px] flex items-center justify-center gap-2.5 bg-[#FEE500] hover:bg-[#e6cf00] text-[#000000] font-black rounded-[1rem] transition-transform hover:scale-[1.02] shadow-[0_4px_14px_rgba(254,229,0,0.15)] mb-4"
+            onClick={onStart}
+            className="w-full h-[52px] mt-[28px] flex items-center justify-center gap-2 bg-gradient-to-r from-[#C084FC] to-[#F472B6] text-white font-bold rounded-[1rem] transition-transform hover:scale-[1.02] shadow-[0_4px_20px_rgba(192,132,252,0.3)]"
           >
-            <span className="text-lg">💬</span>
-            <span className="text-[15px]">카카오로 5초만에 시작</span>
+            <span className="text-[13px]">✦</span>
+            <span className="text-[15px]">재회사주 보러 가기</span>
           </button>
-
-          {/* 약관 및 정책 동의 안내 */}
-          <div className="text-[11px] text-[#4a4068]">
-            로그인 시 <a href="#" className="underline decoration-[#4a4068] hover:text-[#9d8fba]">개인정보처리방침</a> 및 <a href="#" className="underline decoration-[#4a4068] hover:text-[#9d8fba]">이용약관</a>에 동의합니다
-          </div>
-
+          
         </div>
+
       </div>
     </div>
   );
