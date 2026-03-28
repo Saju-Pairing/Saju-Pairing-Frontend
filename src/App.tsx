@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { calculateSaju } from '@fullstackfamily/manseryeok';
 import type { PersonInput, SajuResult, RelationResult } from './types/saju';
 import { getElements, getFortuneFlow, getRelation, getScoreComment, buildServerPayload } from './utils/sajuEngine';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
 import SajuInputForm from './components/SajuInputForm';
 import SajuResultView from './components/SajuResultView';
@@ -10,6 +11,7 @@ import LoginScreen from './components/LoginScreen';
 import HomeScreen from './components/HomeScreen';
 import TopBar from './components/TopBar';
 import BottomNav from './components/BottomNav';
+import MyPageView from './components/MyPageView';
 
 export default function App() {
   // --- 상태 관리 ---
@@ -71,48 +73,50 @@ export default function App() {
     }
   };
 
+  const SajuService = () => (
+    <div className={`w-full max-w-md relative ${step === 1 || step === 2 ? 'pt-[70px]' : ''}`}>
+      {step === 0 && <HomeScreen onStart={() => setStep(1)} />}
+      {step === 1 && <SajuInputForm me={me} setMe={setMe} pt={pt} setPt={setPt} onCalculate={handleCalculate} isLoading={isLoading} />}
+      {step === 1.5 && <LoadingScreen />}
+      {step === 2 && analysis && (
+        <SajuResultView 
+          me={me} pt={pt} analysis={analysis} 
+          onReset={() => { window.scrollTo(0,0); setStep(0); }} 
+          isLoggedIn={isLoggedIn}
+          onRequireLogin={() => { window.scrollTo(0, 0); setStep(99); }}
+        />
+      )}
+      {step === 99 && <LoginScreen />}
+    </div>
+  );
+
   // --- UI 렌더링 ---
   return (
-    <div className="min-h-screen bg-[#07060c] flex justify-center font-sans text-[#f0eaf8]">
-      
-      {/* 상단 공통 네비게이션 바 (스크롤 시 자동 숨김) */}
-      <TopBar 
-        isLoggedIn={isLoggedIn} 
-        userName={userName} 
-        onLoginClick={() => {
-          window.scrollTo(0, 0);
-          setStep(99);
-        }} 
-      />
-
-      {/* 메인 화면 컨테이너 (TopBar 영역 확보를 위해 특정 스텝에서만 상단 패딩 추가) */}
-      <div className={`w-full max-w-md relative ${step === 1 || step === 2 ? 'pt-[70px]' : ''}`}>
+    <BrowserRouter>
+      <div className="min-h-screen bg-[#07060c] flex justify-center font-sans text-[#f0eaf8]">
         
-        {step === 0 && <HomeScreen onStart={() => setStep(1)} />}
+        <TopBar 
+          isLoggedIn={isLoggedIn} 
+          userName={userName} 
+          onLoginClick={() => { window.scrollTo(0, 0); setStep(99); }} 
+        />
 
-        {step === 1 && <SajuInputForm me={me} setMe={setMe} pt={pt} setPt={setPt} onCalculate={handleCalculate} isLoading={isLoading} />}
-        
-        {step === 1.5 && <LoadingScreen />}
-        
-        {step === 2 && analysis && (
-          <SajuResultView 
-            me={me} pt={pt} analysis={analysis} 
-            onReset={() => { window.scrollTo(0,0); setStep(0); }} 
-            isLoggedIn={isLoggedIn}
-            onRequireLogin={() => {
-              window.scrollTo(0, 0); 
-              setStep(99); 
-            }}
-          />
-        )}
+        {/* 라우팅 설정 영역 */}
+        <Routes>
+          {/* 기본 경로(/)에서는 메인 화면 노출 */}
+          <Route path="/" element={<SajuService />} />
+          
+          {/* /mypage 경로에서는 마이페이지 노출 */}
+          <Route path="/mypage" element={<MyPageView />} />
+          
+          {/* 잘못된 경로는 홈으로 리다이렉트 */}
+          <Route path="*" element={<Navigate to="/" />} />
+        </Routes>
 
-        {step === 99 && <LoginScreen />}
+        {/* 하단 탭바: 모든 페이지에서 노출되도록 Routes 밖에 배치 */}
+        <BottomNav />
 
       </div>
-
-      {/* 하단 탭바 (홈 화면과 로그인 화면에서 노출) */}
-      {(step === 0 || step === 99) && <BottomNav activeTab="saju" />}
-
-    </div>
+    </BrowserRouter>
   );
 }
