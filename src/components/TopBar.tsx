@@ -52,7 +52,17 @@ export default function TopBar({ isLoggedIn, userName, onLoginClick }: Props) {
           ) : (
             <button 
               onClick={onLoginClick}
-              className="text-[12px] font-bold text-[#c0bad0] bg-[#141120] border border-[rgba(180,140,255,0.15)] px-4 py-1.5 rounded-full hover:bg-[rgba(180,140,255,0.1)] transition-colors"
+              className="
+                flex flex-col justify-center items-center
+                px-3 py-1
+                text-[12.5px] font-light leading-[19.38px]
+                font-['Noto_Sans_KR'] 
+                text-[#C084FC] text-center
+                bg-[#141120] border border-[rgba(180,140,255,0.15)]
+                rounded-full 
+                hover:bg-[rgba(180,140,255,0.1)] 
+                transition-colors
+              "
             >
               로그인
             </button>

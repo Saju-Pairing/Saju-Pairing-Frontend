@@ -3,7 +3,7 @@ import type { RawSaju, RelationResult, FortuneFlow } from '../types/saju';
 import { CHAR_INFO, FIVE_ELEMENTS, RELATION_MAP, HANJA_TO_HANGUL } from '../constants/saju';
 
 export const isPair = (arr: string[][], c1: string, c2: string) => arr.some(pair => (pair[0] === c1 && pair[1] === c2) || (pair[0] === c2 && pair[1] === c1));
-export const isSamhap = (b1: string, b2: string) => isPair([['亥','卯'], ['卯','未'], ['亥','미'], ['寅','午'], ['午','戌'], ['寅','戌'], ['巳','酉'], ['酉','丑'], ['巳','丑'], ['申','子'], ['子','辰'], ['申','辰']], b1, b2);
+export const isSamhap = (b1: string, b2: string) => isPair([['亥','卯'], ['卯','未'], ['亥','未'], ['寅','午'], ['午','戌'], ['寅','戌'], ['巳','酉'], ['酉','丑'], ['巳','丑'], ['申','子'], ['子','辰'], ['申','辰']], b1, b2);
 export const isGwimun = (b1: string, b2: string) => isPair([['子','酉'], ['丑','午'], ['寅','未'], ['卯','申'], ['辰','亥'], ['巳','戌']], b1, b2);
 
 export const getSengGeuk = (e1: string, e2: string) => {

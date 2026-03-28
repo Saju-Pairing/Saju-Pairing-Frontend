@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import type { PersonInput, SajuResult, RelationResult } from '../types/saju';
 import { HANJA_TO_HANGUL } from '../constants/saju';
 import { getSipseong } from '../utils/sajuEngine';
+import crystalBall from '../assets/icon-crystal-ball.svg';
+import heartIcon from '../assets/icon-heart.svg';
 
 interface Props {
   me: PersonInput;
@@ -102,8 +104,10 @@ export default function SajuResultView({ me, pt, analysis, onReset, isLoggedIn, 
         
         {/* 상단: 분석 완료 라벨 */}
         <div className="flex justify-center mb-6">
-          <div className="px-5 py-1.5 rounded-full bg-[#141120] border border-[rgba(180,140,255,0.20)] text-[#c084fc] text-[10px] font-bold tracking-[0.2em] shadow-[0_0_15px_rgba(192,132,252,0.15)] flex items-center gap-2">
-            <span>✦</span> 분석 완료 <span>✦</span>
+          <div className="px-5 py-1.5 rounded-full bg-[#141120] border border-[rgba(180,140,255,0.20)] text-[#9D8FBA] text-[10px] font-light tracking-[0.3px] shadow-[0_0_15px_rgba(192,132,252,0.15)] flex items-center gap-2 font-['Noto_Sans_KR']">
+            <span className="text-[#c084fc]">✦</span> 
+            분석 완료 
+            <span className="text-[#c084fc]">✦</span>
           </div>
         </div>
 
@@ -117,7 +121,11 @@ export default function SajuResultView({ me, pt, analysis, onReset, isLoggedIn, 
           
           <div className="flex flex-col items-center px-2">
             <div className="w-14 h-14 rounded-full bg-[rgba(180,140,255,0.08)] border border-[rgba(180,140,255,0.2)] flex items-center justify-center mb-2 shadow-[0_0_20px_rgba(192,132,252,0.15)]">
-              <span className="text-2xl animate-pulse">💜</span>
+              <img
+                src={heartIcon}
+                alt="heart icon"
+                className="w-[24px] h-[24px]"
+              />
             </div>
             <div className="text-[12px] font-black text-[#f472b6]">궁합 {analysis.score}점</div>
           </div>
@@ -361,7 +369,11 @@ export default function SajuResultView({ me, pt, analysis, onReset, isLoggedIn, 
         {/* 결제 유도 메인 배너 */}
         {!isUnlocked && (
           <div className="bg-[#141120] rounded-[2rem] p-8 text-center border border-[rgba(180,140,255,0.15)] shadow-[0_0_30px_rgba(192,132,252,0.05)] mb-8">
-            <div className="text-4xl mb-5 animate-bounce">🔮</div>
+            <div className="flex justify-center mb-5">
+                  <img src={crystalBall} alt="" width={38} height={38} 
+                    className="drop-shadow-[0_0_8px_rgba(192,132,252,0.8)] animate-bounce" 
+                  />
+                </div>
             <h3 className="text-[20px] font-['Noto_Serif_KR'] font-bold mb-3 text-[#f0eaf8] tracking-tight">심층 분석 전체 보기</h3>
             <p className="text-[12px] text-[#9d8fba] mb-8 leading-relaxed font-medium">10년차 전문 연애 상담가가<br/>두 사람의 상황을 깊이 분석해 드려요.</p>
             
