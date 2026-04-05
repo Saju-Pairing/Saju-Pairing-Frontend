@@ -64,14 +64,12 @@ export default function SajuInputForm({ me, setMe, pt, setPt, onCalculate, isLoa
   };
 
   return (
-    // 💡 변경된 부분: pt-6을 pt-[70px]로 변경하여 탑바 54px + 여백 16px 확보!
     <div className="min-h-screen relative overflow-x-hidden font-sans text-[#f0eaf8] p-5 pb-12 pt-[70px] bg-[#07060c]">
       
       {/* 배경 효과 */}
       <div className="fixed top-[-10%] left-[-10%] w-[50vw] h-[50vw] bg-[#c084fc] rounded-full blur-[120px] opacity-10 -z-10 mix-blend-screen pointer-events-none"></div>
       <div className="fixed bottom-[-10%] right-[-10%] w-[60vw] h-[60vw] bg-[#f472b6] rounded-full blur-[140px] opacity-10 -z-10 mix-blend-screen pointer-events-none"></div>
 
-      {/* 헤더 부분의 pt-6는 삭제했습니다 (최상단 div로 여백을 통일하기 위해) */}
       <header className="text-center mb-8 animate-fade-in-up">
         <div className="inline-block px-5 py-1.5 rounded-full bg-[#141120] border border-[rgba(180,140,255,0.20)] text-center text-[#C084FC] text-[10px] font-light tracking-[2.5px] mb-6 font-['Noto_Sans_KR']">
           <span className="text-[#c084fc]">✦</span> 
@@ -106,6 +104,7 @@ export default function SajuInputForm({ me, setMe, pt, setPt, onCalculate, isLoa
               <label className={labelStyle}>이름 (선택)</label>
               <input
                 type="text"
+                maxLength={4} // 최대 5자 제한 추가
                 placeholder="최대 5글자까지 입력 가능"
                 value={me.name || ''}
                 onChange={e => setMe({...me, name: e.target.value})}
@@ -175,6 +174,7 @@ export default function SajuInputForm({ me, setMe, pt, setPt, onCalculate, isLoa
               <label className={labelStyle}>이름 (선택)</label>
               <input
                 type="text"
+                maxLength={4} // 최대 5자 제한 추가
                 placeholder="최대 5글자까지 입력 가능"
                 value={pt.name || ''}
                 onChange={e => setPt({...pt, name: e.target.value})}
@@ -273,6 +273,7 @@ export default function SajuInputForm({ me, setMe, pt, setPt, onCalculate, isLoa
               <label className={labelStyle}>이별한 이유 (간단히)</label>
               <input
                 type="text"
+                maxLength={29} // 최대 30자 제한 추가
                 placeholder="예) 자주 싸워서, 연락이 줄어서"
                 value={breakupReason}
                 onChange={(e) => setBreakupReason(e.target.value)}
