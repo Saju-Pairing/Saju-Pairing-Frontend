@@ -28,7 +28,7 @@ const SelectIcon = () => (
 
 type ActivePicker = 'me' | 'pt' | null;
 
-// 공통 라벨 스타일 정의 (제공해주신 스타일 적용)
+// 공통 라벨 스타일 정의
 const labelStyle = "text-[#9D8FBA] font-['Noto_Sans_KR'] text-[11px] font-light leading-normal tracking-[0.3px] mb-1.5 block";
 
 export default function SajuInputForm({ me, setMe, pt, setPt, onCalculate, isLoading }: Props) {
@@ -64,13 +64,15 @@ export default function SajuInputForm({ me, setMe, pt, setPt, onCalculate, isLoa
   };
 
   return (
-    <div className="min-h-screen relative overflow-x-hidden font-sans text-[#f0eaf8] p-5 pb-12 bg-[#07060c]">
+    // 💡 변경된 부분: pt-6을 pt-[70px]로 변경하여 탑바 54px + 여백 16px 확보!
+    <div className="min-h-screen relative overflow-x-hidden font-sans text-[#f0eaf8] p-5 pb-12 pt-[70px] bg-[#07060c]">
       
       {/* 배경 효과 */}
       <div className="fixed top-[-10%] left-[-10%] w-[50vw] h-[50vw] bg-[#c084fc] rounded-full blur-[120px] opacity-10 -z-10 mix-blend-screen pointer-events-none"></div>
       <div className="fixed bottom-[-10%] right-[-10%] w-[60vw] h-[60vw] bg-[#f472b6] rounded-full blur-[140px] opacity-10 -z-10 mix-blend-screen pointer-events-none"></div>
 
-      <header className="text-center mb-8 pt-6 animate-fade-in-up">
+      {/* 헤더 부분의 pt-6는 삭제했습니다 (최상단 div로 여백을 통일하기 위해) */}
+      <header className="text-center mb-8 animate-fade-in-up">
         <div className="inline-block px-5 py-1.5 rounded-full bg-[#141120] border border-[rgba(180,140,255,0.20)] text-center text-[#C084FC] text-[10px] font-light tracking-[2.5px] mb-6 font-['Noto_Sans_KR']">
           <span className="text-[#c084fc]">✦</span> 
             재회 사주 
