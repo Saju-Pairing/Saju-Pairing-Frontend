@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import type { PersonInput, SajuResult, RelationResult } from '../types/saju';
 import { HANJA_TO_HANGUL } from '../constants/saju';
 import { getSipseong } from '../utils/sajuEngine';
+import { useNavigate } from 'react-router';
 import crystalBall from '../assets/icon-crystal-ball.svg';
 import heartIcon from '../assets/icon-heart.svg';
 
@@ -53,6 +54,8 @@ const PremiumCard = ({ num, title, icon, isUnlocked, onUnlock, children }: Premi
 
 export default function SajuResultView({ me, pt, analysis, onReset, isLoggedIn, onRequireLogin }: Props) {
   const [isUnlocked, setIsUnlocked] = useState(false);
+  const handleUnlock = () => setIsUnlocked(true);
+  const navigate = useNavigate();
 
   // 잠금 해제 버튼 눌렀을 때의 동작 수정
   const handleUnlock = () => {
@@ -384,7 +387,7 @@ export default function SajuResultView({ me, pt, analysis, onReset, isLoggedIn, 
               <div className="flex items-center gap-2"><span className="text-[#c084fc] text-[10px]">✦</span> 지금 당장의 행동 지침 · 종합 총평</div>
             </div>
             
-            <button onClick={handleUnlock} className="w-full py-3.5 bg-[linear-gradient(135deg,#C084FC,#F472B6)] text-white rounded-[1.2rem] shadow-[0_4px_20px_rgba(192,132,252,0.3)] hover:scale-[1.02] transition-transform flex flex-col items-center justify-center gap-0.5">
+            <button onClick={() => navigate('/payment')} className="w-full py-3.5 bg-[linear-gradient(135deg,#C084FC,#F472B6)] text-white rounded-[1.2rem] shadow-[0_4px_20px_rgba(192,132,252,0.3)] hover:scale-[1.02] transition-transform flex flex-col items-center justify-center gap-0.5">
               <span className="font-black text-[15px]">지금 바로 분석 보기</span>
               <span className="text-[10px] text-white/90 font-medium">₩990 · 평생 소장</span>
             </button>
