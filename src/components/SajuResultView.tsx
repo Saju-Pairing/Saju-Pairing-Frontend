@@ -5,6 +5,9 @@ import { getSipseong } from '../utils/sajuEngine';
 import { useNavigate } from 'react-router';
 import crystalBall from '../assets/icon-crystal-ball.svg';
 import heartIcon from '../assets/icon-heart.svg';
+=======
+import { useNavigate } from 'react-router';
+>>>>>>> feature/1
 
 interface Props {
   me: PersonInput;
