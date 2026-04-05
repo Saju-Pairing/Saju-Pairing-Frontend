@@ -1,14 +1,19 @@
+import { useEffect } from 'react'; 
 import crystalBall from '../assets/icon-crystal-ball.svg';
 
 export default function LoginScreen() {
   const REST_API_KEY = import.meta.env.VITE_KAKAO_REST_API_KEY; 
   const REDIRECT_URI = import.meta.env.VITE_REDIRECT_URI; 
-  
   const KAKAO_AUTH_URL = `https://kauth.kakao.com/oauth/authorize?client_id=${REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code`;
-
+  
   const handleKakaoLogin = () => {
     window.location.href = KAKAO_AUTH_URL;
   };
+
+  // 스크롤을 맨 위로 초기화
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   return (
     <div className="h-[100dvh] bg-[#07060c] flex justify-center font-sans text-[#f0eaf8] relative overflow-x-hidden overflow-y-auto">
@@ -30,7 +35,7 @@ export default function LoginScreen() {
       {/* --- 메인 콘텐츠 영역 --- */}
       <div className="w-full max-w-md flex flex-col relative z-10 animate-fade-in-up h-full">
 
-        {/* 💡 핵심 변경점: 전체를 화면 중앙에 정렬 */}
+        {/* 전체를 화면 중앙에 정렬 */}
         <div className="flex-1 flex flex-col items-center justify-center w-full pb-[84px]">
           
           {/* 1. 상단 일러스트 (아래 텍스트와 28px 간격) */}

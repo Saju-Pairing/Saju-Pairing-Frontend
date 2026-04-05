@@ -1,9 +1,19 @@
-import React from 'react';
+import React, { useState } from 'react';
 import kakaoLogo from '../assets/images/logo_kakao_profile.png';
 import mailIcon from '../assets/images/mail.png';
 import storageIcon from '../assets/images/storage.png';
 import payIcon from '../assets/images/pay.png';
 import { useNavigate } from 'react-router-dom';
+
+// 별 스타일의 타입 정의
+interface StarStyle {
+  id: number;
+  width: string;
+  height: string;
+  opacity: string;
+  left: string;
+  top: string;
+}
 
 export default function MyPageView() {
   // 별 입자 배경 생성을 위한 배열 (1~55)
@@ -31,24 +41,23 @@ export default function MyPageView() {
 
         {/* 미세 별 입자 컨테이너 */}
         <div className="container absolute inset-0 overflow-hidden pointer-events-none">
-          {stars.map((star) => (
+          {starStyles.map((star) => (
             <div
-              key={star}
-              className={`background${star} absolute bg-white rounded-full`}
+              key={star.id}
+              className={`background${star.id} absolute bg-white rounded-full`}
               style={{
-                width: star % 3 === 0 ? '3px' : '1px',
-                height: star % 3 === 0 ? '3px' : '1px',
-                opacity: (Math.random() * 0.2 + 0.05).toFixed(2),
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
+                width: star.width,
+                height: star.height,
+                opacity: star.opacity,
+                left: star.left,
+                top: star.top,
               }}
             />
           ))}
         </div>
 
-        {/* 상단 프로필 영역 (frame-1707482110) */}
+        {/* 상단 프로필 영역 */}
         <div className="frame-1707482110 absolute top-[114px] left-1/2 -translate-x-1/2 w-[335px] flex flex-row items-center gap-[20px]">
-          {/* 프로필 이미지 (group-36333) */}
           <div className="group-36333 relative w-[40px] h-[40px] flex-shrink-0">
             <div className="absolute inset-0 rounded-full border border-[#f472b6] opacity-20"></div>
             <div className="w-full h-full rounded-full flex items-center justify-center bg-gradient-to-br from-[#c084fc4d] to-[#f472b626]">
@@ -56,7 +65,6 @@ export default function MyPageView() {
             </div>
           </div>
 
-          {/* 유저 정보 (frame-1707481497) */}
           <div className="frame-1707481497 flex flex-col gap-[4px] justify-center flex-shrink-0">
             <div className="div7 text-white text-[14px] font-normal font-['Noto_Sans_KR']">
               카카오 로그인 사용자입니다.
@@ -74,10 +82,10 @@ export default function MyPageView() {
           </div>
         </div>
 
-        {/* 구분선 (rectangle-1091) */}
+        {/* 구분선 */}
         <div className="rectangle-1091 absolute top-[182px] left-0 w-[375px] h-[8px] bg-[#c084fc1f]"></div>
 
-        {/* 메뉴 리스트 (frame-1707482466) */}
+        {/* 메뉴 리스트 */}
         <div className="frame-1707482466 absolute top-[202px] left-[20px] w-[335px] flex flex-col">
 
           {/* 메뉴 아이템: 결제내역 */}
@@ -127,7 +135,7 @@ export default function MyPageView() {
           </div>
         </div>
 
-        {/* 하단 링크 영역 (frame-1707482471) */}
+        {/* 하단 링크 영역 */}
         <div className="absolute bottom-[110px] left-0 w-full flex flex-row justify-center items-center gap-[40px] z-10">
           <button className="text-[#9d8fba] text-[13px] font-light opacity-80 hover:opacity-100 transition-opacity">
             개인정보 및 이용약관

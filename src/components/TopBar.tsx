@@ -35,8 +35,8 @@ export default function TopBar({ isLoggedIn, userName, onLoginClick }: Props) {
       }`}
     >
       {/* 반투명 블랙 배경 + 블러 효과 */}
-      <div className="w-full bg-[#07060c]/80 backdrop-blur-md border-b border-[rgba(180,140,255,0.08)]">
-        <div className="max-w-md mx-auto flex items-center justify-between px-6 py-4">
+      <div className="w-full h-[54px] bg-[#07060c]/80 backdrop-blur-md border-b border-[rgba(180,140,255,0.08)] flex items-center">
+        <div className="max-w-md w-full mx-auto flex items-center justify-between px-6">
           
           {/* (Noto Serif KR, 14px, SemiBold, Line-height 18.9px) */}
           <div className="cursor-pointer font-['Noto_Serif_KR'] text-[14px] font-semibold leading-[18.9px] tracking-tight">
