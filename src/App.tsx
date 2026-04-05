@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { calculateSaju } from '@fullstackfamily/manseryeok';
 import type { PersonInput, SajuResult, RelationResult } from './types/saju';
-import { getElements, getFortuneFlow, getRelation, getScoreComment, buildServerPayload } from './utils/sajuEngine';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { getElements, getFortuneFlow, getRelation, getScoreComment} from './utils/sajuEngine';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 
 import SajuInputForm from './components/SajuInputForm';
 import SajuResultView from './components/SajuResultView';
@@ -12,8 +12,16 @@ import HomeScreen from './components/HomeScreen';
 import TopBar from './components/TopBar';
 import BottomNav from './components/BottomNav';
 import MyPageView from './components/MyPageView';
+import PaymentHistoryView from './components/PaymentHistoryView';
+import SajuStorageView from './components/SajuStorageView';
 
-export default function App() {
+function AppContent() {
+  const location = useLocation();
+  
+  // 상단바를 숨길 경로 설정
+  const hideTopBarPaths = ['/payment-history', '/saju-storage'];
+  const shouldHideTopBar = hideTopBarPaths.includes(location.pathname);
+
   // --- 상태 관리 ---
   // step: 0(홈), 1(입력), 1.5(로딩), 2(결과), 99(로그인)
   const [step, setStep] = useState(0); 
@@ -92,14 +100,15 @@ export default function App() {
 
   // --- UI 렌더링 ---
   return (
-    <BrowserRouter>
-      <div className="min-h-screen bg-[#07060c] flex justify-center font-sans text-[#f0eaf8]">
+    <div className="min-h-screen bg-[#07060c] flex justify-center font-sans text-[#f0eaf8]">
         
+        {!shouldHideTopBar && (
         <TopBar 
           isLoggedIn={isLoggedIn} 
           userName={userName} 
           onLoginClick={() => { window.scrollTo(0, 0); setStep(99); }} 
         />
+      )}
 
         {/* 라우팅 설정 영역 */}
         <Routes>
@@ -108,6 +117,8 @@ export default function App() {
           
           {/* /mypage 경로에서는 마이페이지 노출 */}
           <Route path="/mypage" element={<MyPageView />} />
+          <Route path="/payment-history" element={<PaymentHistoryView />} />
+          <Route path="/saju-storage" element={<SajuStorageView />} />
           
           {/* 잘못된 경로는 홈으로 리다이렉트 */}
           <Route path="*" element={<Navigate to="/" />} />
@@ -115,8 +126,14 @@ export default function App() {
 
         {/* 하단 탭바: 모든 페이지에서 노출되도록 Routes 밖에 배치 */}
         <BottomNav />
-
       </div>
+  );
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <AppContent />
     </BrowserRouter>
   );
 }
