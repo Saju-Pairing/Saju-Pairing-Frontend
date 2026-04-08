@@ -16,18 +16,26 @@ interface StarStyle {
 }
 
 export default function MyPageView() {
-  // 별 입자 배경 생성을 위한 배열 (1~55)
-  const stars = Array.from({ length: 55 }, (_, i) => i + 1);
+  const [starStyles] = useState<StarStyle[]>(() => {
+    const stars = Array.from({ length: 55 }, (_, i) => i + 1);
+    return stars.map((star) => ({
+      id: star,
+      width: star % 3 === 0 ? '3px' : '1px',
+      height: star % 3 === 0 ? '3px' : '1px',
+      opacity: (Math.random() * 0.2 + 0.05).toFixed(2),
+      left: `${Math.random() * 100}%`,
+      top: `${Math.random() * 100}%`,
+    }));
+  });
   const navigate = useNavigate();
 
   // 문의하기 클릭 핸들러
   const handleInquiryClick = () => {
     const email = "2019ootd@gmail.com";
     const subject = encodeURIComponent("[사주페어링] 서비스 문의사항");
-    const body = encodeURIComponent("문의하실 내용을 입력해주세요.\n\n사용자 이메일: \n문의 내용: ");
 
     // 메일 앱 호출 (수신자, 제목, 본문 미리 채우기)
-    window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+    window.location.href = `mailto:${email}?subject=${subject}`;
   };
 
   return (
@@ -118,11 +126,7 @@ export default function MyPageView() {
 
           {/* 메뉴 아이템: 문의하기 */}
           <div
-            onClick={() => {
-              const email = "2019ootd@gmail.com";
-              const subject = encodeURIComponent("[사주페어링] 서비스 문의사항");
-              window.location.href = `mailto:${email}?subject=${subject}`;
-            }}
+            onClick={() => handleInquiryClick()}
             className="background-border p-[16px_14px] flex flex-row items-center gap-[12px] self-stretch">
             <img
               src={mailIcon}
