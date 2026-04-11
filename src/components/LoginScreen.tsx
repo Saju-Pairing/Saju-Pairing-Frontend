@@ -1,13 +1,19 @@
 import { useEffect } from 'react'; 
+import { supabase } from '../lib/supabase'; // supabase 설정 파일 불러오기
 import crystalBall from '../assets/icon-crystal-ball.svg';
 
 export default function LoginScreen() {
-  const REST_API_KEY = import.meta.env.VITE_KAKAO_REST_API_KEY; 
-  const REDIRECT_URI = import.meta.env.VITE_REDIRECT_URI; 
-  const KAKAO_AUTH_URL = `https://kauth.kakao.com/oauth/authorize?client_id=${REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code`;
-  
-  const handleKakaoLogin = () => {
-    window.location.href = KAKAO_AUTH_URL;
+  const handleKakaoLogin = async () => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'kakao',
+      options: {
+        redirectTo: 'http://localhost:3000/auth/callback' 
+      }
+    });
+
+    if (error) {
+      console.error('카카오 로그인 에러:', error.message);
+    }
   };
 
   // 스크롤을 맨 위로 초기화
