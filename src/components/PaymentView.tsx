@@ -53,13 +53,13 @@ export default function PaymentView() {
     }
   };
 
-  // 반복되는 푸터 스타일 공통화
+  // 반복되는 스타일 공통화
   const footerTextStyle = {
     fontFamily: '"Noto Sans KR", sans-serif',
     fontSize: '11px',
     lineHeight: '18.7px',
     fontWeight: 300,
-    color: '#4a4068'
+    color: '#9D8FBA'
   };
 
   return (
@@ -162,14 +162,47 @@ export default function PaymentView() {
           </div>
         </div>
 
-        <footer className="text-center pb-[40px] w-full">
-          <span className="block" style={footerTextStyle}>
-            결제 즉시 분석 결과가 잠금 해제됩니다.
-          </span>
-          <div className="flex items-center justify-center gap-[4px]">
-            <span style={{ ...footerTextStyle, textDecoration: 'underline', cursor: 'pointer' }}>환불 정책 보기</span>
-            <span style={footerTextStyle}>·</span>
-            <span style={{ ...footerTextStyle, textDecoration: 'underline', cursor: 'pointer' }}>이용약관</span>
+        {/* 하단 정보 섹션 */}
+        <footer className="w-full flex flex-col items-center gap-[40px] pt-[20px] pb-[60px] text-center">
+          
+          {/* 이용약관 안내 */}
+          <div className="flex flex-col gap-[8px] items-center">
+            <span style={footerTextStyle}>
+              결제 즉시 분석 결과가 잠금 해제됩니다.
+            </span>
+            <button 
+              style={{ 
+                ...footerTextStyle, 
+                textDecoration: 'underline',
+                textUnderlineOffset: '4px' // 밑줄과 텍스트 사이 간격 (선택사항)
+              }}
+            >
+              이용약관 및 개인정보처리방침
+            </button>
+          </div>
+
+          {/* 사업자 정보 */}
+          <div className="w-full flex flex-col gap-[24px] items-start text-left px-1">
+            <div className="flex flex-col gap-[4px]">
+              <h3 className="text-[11px] font-bold text-[#9D8FBA]">사주페어링</h3>
+              <div className="flex flex-col gap-[2px]">
+                <span style={{ ...footerTextStyle, fontSize: '10px' }}>대표자명: 김순천</span>
+                <span style={{ ...footerTextStyle, fontSize: '10px' }}>상호명: 모두모두상점</span>
+                <span style={{ ...footerTextStyle, fontSize: '10px' }}>사업자번호: 799-25-01441</span>
+                <span style={{ ...footerTextStyle, fontSize: '10px' }}>통신판매번호: </span>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-[4px]">
+              <h3 className="text-[11px] font-bold text-[#9D8FBA]">고객센터</h3>
+              <div className="flex flex-col gap-[2px]">
+                <span style={{ ...footerTextStyle, fontSize: '10px' }}>이메일: 2019ootd@gmail.com</span>
+                <span style={{ ...footerTextStyle, fontSize: '10px', color: '#4A4068' }}>사업자주소: 서울특별시 영등포구 국회대로 632, 11층 5호</span>
+                <span style={{ ...footerTextStyle, fontSize: '10px', color: '#4A4068' }}>유선번호: 000-0000-0000</span>
+                <span style={{ ...footerTextStyle, fontSize: '10px', color: '#4A4068' }}>전화상담은 제공하지 않습니다.</span>
+                <span style={{ ...footerTextStyle, fontSize: '10px', color: '#4A4068' }}>설정 내 문의하기를 통해 문의해주세요.</span>
+              </div>
+            </div>
           </div>
         </footer>
       </div>
