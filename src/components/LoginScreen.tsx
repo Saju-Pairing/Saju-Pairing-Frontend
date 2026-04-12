@@ -22,11 +22,11 @@ export default function LoginScreen() {
   useEffect(() => {
     window.scrollTo(0, 0);
 
-    // ⭐️ 로그인 화면 로드 시: 돌아갈 주소가 state로 전달되었다면 로컬 스토리지에 저장
-    const returnPath = location.state?.from || '/';
-    localStorage.setItem('returnPath', returnPath);
-    console.log('📌 로그인 후 돌아갈 목적지 저장:', returnPath);
-
+    // ⭐️ 넘어온 state.from이 있을 때만 로컬스토리지에 저장 (없으면 냅두기)
+    if (location.state?.from) {
+      localStorage.setItem('returnPath', location.state.from);
+      console.log('📌 로그인 후 돌아갈 목적지 저장:', location.state.from);
+    }
   }, [location]);
 
   return (

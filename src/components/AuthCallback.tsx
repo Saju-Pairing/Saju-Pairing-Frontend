@@ -1,30 +1,48 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase'; // 본인의 경로에 맞게 수정 필요
 
 export default function AuthCallback() {
   const navigate = useNavigate();
+  // 중복 이동을 막기 위한 스위치 생성
+  const hasNavigated = useRef(false);
 
   useEffect(() => {
-    const checkSession = async () => {
-      const { data } = await supabase.auth.getSession();
+    // 화면이 켜지자마자 로컬 스토리지에서 주소를 한 번만 딱 꺼내서 변수에 안전하게 보관합니다.
+    const returnPath = localStorage.getItem('returnPath') || '/';
+
+    // 성공 시 실행할 공통 함수
+    const handleSuccess = () => {
+      // 이미 이동 처리를 했다면 무시합니다.
+      if (hasNavigated.current) return; 
       
-      if (data.session) {
-        console.log("✅ 로그인 성공! 환영합니다:", data.session.user.email);
-        
-        // ⭐️ 로컬 스토리지에서 원래 목적지 꺼내기 (없으면 홈으로)
-        const returnPath = localStorage.getItem('returnPath') || '/';
-        localStorage.removeItem('returnPath'); // 사용 후 삭제
-        
-        // 해당 주소로 이동 (뒤로가기 방지를 위해 replace 옵션 사용)
-        navigate(returnPath, { replace: true }); 
-      } else {
-        console.log("❌ 세션이 없습니다. 로그인 실패.");
-        navigate('/', { replace: true }); 
-      }
+      hasNavigated.current = true; // 이동했다고 스위치 켜기
+      console.log("로그인 성공! 돌아갈 곳:", returnPath);
+      
+      localStorage.removeItem('returnPath'); // 메모지 삭제
+      navigate(returnPath, { replace: true }); // 진짜 목적지로 이동!
     };
-    
-    checkSession();
+
+    // 1. 이벤트 감지 로직
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' || session) {
+        handleSuccess();
+      }
+    });
+
+    // 2. 수동 체크 로직 (이벤트가 이미 처리했으면 handleSuccess 안에서 걸러짐)
+    supabase.auth.getSession().then(({ data }) => {
+      if (data.session) {
+        handleSuccess();
+      } else {
+        // 주소창에 토큰(hash)이나 에러(search) 흔적조차 없다면 진짜 로그인 실패로 간주
+        if (!window.location.hash && !window.location.search) {
+          navigate('/', { replace: true });
+        }
+      }
+    });
+
+    return () => subscription.unsubscribe();
   }, [navigate]);
 
   return (

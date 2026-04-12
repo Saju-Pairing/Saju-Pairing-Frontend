@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useNavigate, Navigate, useLocation } from 'react-router-dom';
 import { calculateSaju } from '@fullstackfamily/manseryeok';
 import { supabase } from './lib/supabase';
-import type { Session } from '@supabase/supabase-js'; // 👈 1. Session 타입 불러오기 추가
+import type { Session } from '@supabase/supabase-js';
 
 // Types & Utils
 import type { PersonInput, SajuResult, RelationResult } from './types/saju';
@@ -35,16 +35,13 @@ function AppContent() {
 
   const [isLoading, setIsLoading] = useState(false);
 
-  // 실제 로그인 상태 관리
+  const [isAuthLoading, setIsAuthLoading] = useState(true); 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userName, setUserName] = useState("사용자");
 
-  // 앱 로드 및 로그인 상태 변경 감지
   useEffect(() => {
-    // any 대신 Session | null 타입으로 명시
     const extractNameAndSet = (session: Session | null) => {
       if (session) {
-        // 카카오에서 넘겨준 닉네임이 있으면 쓰고, 없으면 이메일 아이디 부분, 둘 다 없으면 "사용자"
         const name = session.user.user_metadata?.name 
                   || session.user.email?.split('@')[0] 
                   || "사용자";
@@ -59,7 +56,7 @@ function AppContent() {
       const loggedIn = !!session;
       setIsLoggedIn(loggedIn);
       extractNameAndSet(session);
-      console.log("🧐 [초기 세션 확인] 로그인 상태:", loggedIn, session?.user?.email);
+      setIsAuthLoading(false); 
     });
 
     // 2. 로그인 상태가 바뀔 때
@@ -67,28 +64,42 @@ function AppContent() {
       const loggedIn = !!session;
       setIsLoggedIn(loggedIn);
       extractNameAndSet(session);
-      console.log(`🧐 [상태 변경: ${event}] 로그인 상태:`, loggedIn, session?.user?.email);
+      setIsAuthLoading(false); 
     });
 
     return () => subscription.unsubscribe();
   }, []);
 
-  // 입력값 상태
-  const [me, setMe] = useState<PersonInput>({
-    name: '', gender: 'F', date: '2000-01-01', time: '23:30', isUnknownTime: false
+  // 입력값과 분석 결과를 초기화할 때, sessionStorage에 저장된 게 있으면 가져오도록 설정
+  const [me, setMe] = useState<PersonInput>(() => {
+    const saved = sessionStorage.getItem('saju_me');
+    return saved ? JSON.parse(saved) : { name: '', gender: 'F', date: '2000-01-01', time: '23:30', isUnknownTime: false };
   });
-  const [pt, setPt] = useState<PersonInput>({
-    name: '', gender: 'M', date: '2000-01-01', time: '23:30', isUnknownTime: false
+  
+  const [pt, setPt] = useState<PersonInput>(() => {
+    const saved = sessionStorage.getItem('saju_pt');
+    return saved ? JSON.parse(saved) : { name: '', gender: 'M', date: '2000-01-01', time: '23:30', isUnknownTime: false };
   });
 
-  // 결과 상태
   const [analysis, setAnalysis] = useState<{
     meSaju: SajuResult;
     ptSaju: SajuResult;
     score: number;
     relation: RelationResult;
     scoreComment: { title: string; desc: string };
-  } | null>(null);
+  } | null>(() => {
+    const saved = sessionStorage.getItem('saju_analysis');
+    return saved ? JSON.parse(saved) : null;
+  });
+
+  // 결과 초기화 함수 (처음으로 돌아갈 때 스토리지도 비워줌)
+  const handleReset = () => {
+    sessionStorage.removeItem('saju_me');
+    sessionStorage.removeItem('saju_pt');
+    sessionStorage.removeItem('saju_analysis');
+    setAnalysis(null);
+    navigate('/');
+  };
 
   // 계산 로직
   const handleCalculate = async () => {
@@ -111,7 +122,7 @@ function AppContent() {
       const relationTexts = getRelation(meRaw.dayPillarHanja || '甲子', ptRaw.dayPillarHanja || '甲子');
       const scoreComment = getScoreComment(relationTexts.finalScore, relationTexts, meElements.stats, ptElements.stats);
 
-      setAnalysis({
+      const newAnalysis = {
         meSaju: {
           year: meRaw.yearPillarHanja || '??',
           month: meRaw.monthPillarHanja || '??',
@@ -133,7 +144,15 @@ function AppContent() {
         score: relationTexts.finalScore,
         relation: relationTexts,
         scoreComment: scoreComment
-      });
+      };
+
+      // 상태 업데이트
+      setAnalysis(newAnalysis);
+
+      // 새로고침에 대비해 세션 스토리지에 계산 결과 저장
+      sessionStorage.setItem('saju_me', JSON.stringify(me));
+      sessionStorage.setItem('saju_pt', JSON.stringify(pt));
+      sessionStorage.setItem('saju_analysis', JSON.stringify(newAnalysis));
 
       const serverPayload = {
         me: buildServerPayload(meRaw, meElements, meFortune, me.isUnknownTime),
@@ -162,6 +181,9 @@ function AppContent() {
           isLoggedIn={isLoggedIn}
           userName={userName}
           onLoginClick={() => navigate('/login', { state: { from: location.pathname } })}
+          onLogoutClick={async () => {
+            await supabase.auth.signOut();
+          }}
         />
       )}
 
@@ -186,17 +208,22 @@ function AppContent() {
             <SajuResultView
               me={me} pt={pt}
               analysis={analysis}
-              onReset={() => navigate('/')}
+              onReset={handleReset}
               isLoggedIn={isLoggedIn}
-              onRequireLogin={() => navigate('/login', { state: { from: '/result' } })}
+              // ⭐️ 수정: 잠금 해제(결제)를 위해 로그인하는 것이므로 목적지를 /payment로 변경!
+              onRequireLogin={() => navigate('/login', { state: { from: '/payment' } })}
             />
           ) : <Navigate to="/" />
         } />
 
         <Route path="/payment" element={
-          isLoggedIn 
-            ? <PaymentView /> 
-            : <Navigate to="/login" state={{ from: '/payment' }} replace />
+          isAuthLoading ? (
+            <LoadingScreen /> 
+          ) : (
+            isLoggedIn 
+              ? <PaymentView /> 
+              : <Navigate to="/login" state={{ from: '/payment' }} replace />
+          )
         } />
 
         {/* /mypage 경로에서는 마이페이지 노출 */}
