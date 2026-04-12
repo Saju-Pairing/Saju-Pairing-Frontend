@@ -1,0 +1,67 @@
+{
+  "hash": "cc6a94ef",
+  "configHash": "4d29d0f1",
+  "lockfileHash": "a822fbce",
+  "browserHash": "2ab7d8fc",
+  "optimized": {
+    "react/jsx-dev-runtime": {
+      "src": "../../node_modules/react/jsx-dev-runtime.js",
+      "file": "react_jsx-dev-runtime.js",
+      "fileHash": "48a8e123",
+      "needsInterop": true
+    },
+    "react": {
+      "src": "../../node_modules/react/index.js",
+      "file": "react.js",
+      "fileHash": "d49dfc34",
+      "needsInterop": true
+    },
+    "react-dom/client": {
+      "src": "../../node_modules/react-dom/client.js",
+      "file": "react-dom_client.js",
+      "fileHash": "9533a67b",
+      "needsInterop": true
+    },
+    "react-router-dom": {
+      "src": "../../node_modules/react-router-dom/dist/index.mjs",
+      "file": "react-router-dom.js",
+      "fileHash": "1c508f0e",
+      "needsInterop": false
+    },
+    "@fullstackfamily/manseryeok": {
+      "src": "../../node_modules/@fullstackfamily/manseryeok/dist/index.esm.js",
+      "file": "@fullstackfamily_manseryeok.js",
+      "fileHash": "14a35b09",
+      "needsInterop": false
+    },
+    "@portone/browser-sdk/v2": {
+      "src": "../../node_modules/@portone/browser-sdk/dist/v2.js",
+      "file": "@portone_browser-sdk_v2.js",
+      "fileHash": "04db851a",
+      "needsInterop": false
+    },
+    "react-mobile-picker": {
+      "src": "../../node_modules/react-mobile-picker/dist/react-mobile-picker.js",
+      "file": "react-mobile-picker.js",
+      "fileHash": "f76b9e0f",
+      "needsInterop": false
+    },
+    "@supabase/supabase-js": {
+      "src": "../../node_modules/@supabase/supabase-js/dist/index.mjs",
+      "file": "@supabase_supabase-js.js",
+      "fileHash": "33ef26ba",
+      "needsInterop": false
+    }
+  },
+  "chunks": {
+    "chunk-X5EBYUPF": {
+      "file": "chunk-X5EBYUPF.js"
+    },
+    "chunk-NO6UH6X3": {
+      "file": "chunk-NO6UH6X3.js"
+    },
+    "chunk-5WRI5ZAA": {
+      "file": "chunk-5WRI5ZAA.js"
+    }
+  }
+}

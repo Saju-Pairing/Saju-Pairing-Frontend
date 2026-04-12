@@ -1,118 +1,257 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { BrowserRouter, Routes, Route, useNavigate, Navigate, useLocation } from 'react-router-dom';
 import { calculateSaju } from '@fullstackfamily/manseryeok';
+import { supabase } from './lib/supabase';
+import type { Session } from '@supabase/supabase-js';
+
+// Types & Utils
 import type { PersonInput, SajuResult, RelationResult } from './types/saju';
 import { getElements, getFortuneFlow, getRelation, getScoreComment, buildServerPayload } from './utils/sajuEngine';
 
 import SajuInputForm from './components/SajuInputForm';
 import SajuResultView from './components/SajuResultView';
 import LoadingScreen from './components/LoadingScreen';
-import LoginScreen from './components/LoginScreen'; 
+import LoginScreen from './components/LoginScreen';
 import HomeScreen from './components/HomeScreen';
 import TopBar from './components/TopBar';
 import BottomNav from './components/BottomNav';
+import MyPageView from './components/MyPageView';
+import PaymentHistoryView from './components/PaymentHistoryView';
+import SajuStorageView from './components/SajuStorageView';
+import PaymentView from './components/PaymentView';
+import AuthCallback from './components/AuthCallback';
 
-export default function App() {
-  // --- 상태 관리 ---
-  // step: 0(홈), 1(입력), 1.5(로딩), 2(결과), 99(로그인)
-  const [step, setStep] = useState(0); 
+function AppContent() {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const onStart = () => {
+    navigate('/input');
+  };
+
+  // 상단바를 숨길 경로 설정
+  const hideTopBarPaths = ['/payment-history', '/saju-storage'];
+  const shouldHideTopBar = hideTopBarPaths.includes(location.pathname);
+
   const [isLoading, setIsLoading] = useState(false);
-  
-  // 로그인 유저 정보 (추후 Supabase 연동 시 동적 업데이트 예정)
-  const [isLoggedIn] = useState(false); 
-  const [userName] = useState("김지은"); 
 
-  // 사주 입력 폼 데이터
-  const [me, setMe] = useState<PersonInput>({ name: '', gender: 'F', date: '2000-01-01', time: '23:30', isUnknownTime: false });
-  const [pt, setPt] = useState<PersonInput>({ name: '', gender: 'M', date: '2000-01-01', time: '23:30', isUnknownTime: false });
-  
-  // 사주 분석 결과 데이터
-  const [analysis, setAnalysis] = useState<{ 
-    meSaju: SajuResult, ptSaju: SajuResult, score: number, relation: RelationResult, scoreComment: { title: string, desc: string }
-  } | null>(null);
+  const [isAuthLoading, setIsAuthLoading] = useState(true); 
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userName, setUserName] = useState("사용자");
 
-  // --- 사주 계산 로직 ---
+  useEffect(() => {
+    const extractNameAndSet = (session: Session | null) => {
+      if (session) {
+        const name = session.user.user_metadata?.name 
+                  || session.user.email?.split('@')[0] 
+                  || "사용자";
+        setUserName(name);
+      } else {
+        setUserName("사용자");
+      }
+    };
+
+    // 1. 처음 켜졌을 때
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      const loggedIn = !!session;
+      setIsLoggedIn(loggedIn);
+      extractNameAndSet(session);
+      setIsAuthLoading(false); 
+    });
+
+    // 2. 로그인 상태가 바뀔 때
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      const loggedIn = !!session;
+      setIsLoggedIn(loggedIn);
+      extractNameAndSet(session);
+      setIsAuthLoading(false); 
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  // 입력값과 분석 결과를 초기화할 때, sessionStorage에 저장된 게 있으면 가져오도록 설정
+  const [me, setMe] = useState<PersonInput>(() => {
+    const saved = sessionStorage.getItem('saju_me');
+    return saved ? JSON.parse(saved) : { name: '', gender: 'F', date: '2000-01-01', time: '23:30', isUnknownTime: false };
+  });
+  
+  const [pt, setPt] = useState<PersonInput>(() => {
+    const saved = sessionStorage.getItem('saju_pt');
+    return saved ? JSON.parse(saved) : { name: '', gender: 'M', date: '2000-01-01', time: '23:30', isUnknownTime: false };
+  });
+
+  const [analysis, setAnalysis] = useState<{
+    meSaju: SajuResult;
+    ptSaju: SajuResult;
+    score: number;
+    relation: RelationResult;
+    scoreComment: { title: string; desc: string };
+  } | null>(() => {
+    const saved = sessionStorage.getItem('saju_analysis');
+    return saved ? JSON.parse(saved) : null;
+  });
+
+  // 결과 초기화 함수 (처음으로 돌아갈 때 스토리지도 비워줌)
+  const handleReset = () => {
+    sessionStorage.removeItem('saju_me');
+    sessionStorage.removeItem('saju_pt');
+    sessionStorage.removeItem('saju_analysis');
+    setAnalysis(null);
+    navigate('/');
+  };
+
+  // 계산 로직
   const handleCalculate = async () => {
     try {
       setIsLoading(true);
-      setStep(1.5); 
+      navigate('/loading');
 
-      // 본인 사주 계산
-      const [y1, m1, d1] = me.date.split('-').map(Number); const [hh1, mm1] = me.time.split(':').map(Number);
+      const [y1, m1, d1] = me.date.split('-').map(Number);
+      const [hh1, mm1] = me.time.split(':').map(Number);
       const meRaw = me.isUnknownTime ? calculateSaju(y1, m1, d1) : calculateSaju(y1, m1, d1, hh1, mm1);
       const meElements = getElements(meRaw, me.isUnknownTime);
       const meFortune = getFortuneFlow(y1, d1, me.gender, meRaw.yearPillarHanja || '', meRaw.monthPillarHanja || '');
 
-      // 상대방 사주 계산
-      const [y2, m2, d2] = pt.date.split('-').map(Number); const [hh2, mm2] = pt.time.split(':').map(Number);
+      const [y2, m2, d2] = pt.date.split('-').map(Number);
+      const [hh2, mm2] = pt.time.split(':').map(Number);
       const ptRaw = pt.isUnknownTime ? calculateSaju(y2, m2, d2) : calculateSaju(y2, m2, d2, hh2, mm2);
       const ptElements = getElements(ptRaw, pt.isUnknownTime);
       const ptFortune = getFortuneFlow(y2, d2, pt.gender, ptRaw.yearPillarHanja || '', ptRaw.monthPillarHanja || '');
 
-      // 관계 분석 (궁합 점수 및 코멘트)
       const relationTexts = getRelation(meRaw.dayPillarHanja || '甲子', ptRaw.dayPillarHanja || '甲子');
       const scoreComment = getScoreComment(relationTexts.finalScore, relationTexts, meElements.stats, ptElements.stats);
 
-      setAnalysis({
-        meSaju: { year: meRaw.yearPillarHanja || '??', month: meRaw.monthPillarHanja || '??', day: meRaw.dayPillarHanja || '??', hour: me.isUnknownTime ? '??' : (meRaw.hourPillarHanja || '??'), elements: meElements.stats, totalChars: meElements.total, fortune: meFortune },
-        ptSaju: { year: ptRaw.yearPillarHanja || '??', month: ptRaw.monthPillarHanja || '??', day: ptRaw.dayPillarHanja || '??', hour: pt.isUnknownTime ? '??' : (ptRaw.hourPillarHanja || '??'), elements: ptElements.stats, totalChars: ptElements.total, fortune: ptFortune },
-        score: relationTexts.finalScore, relation: relationTexts, scoreComment: scoreComment
-      });
+      const newAnalysis = {
+        meSaju: {
+          year: meRaw.yearPillarHanja || '??',
+          month: meRaw.monthPillarHanja || '??',
+          day: meRaw.dayPillarHanja || '??',
+          hour: me.isUnknownTime ? '??' : (meRaw.hourPillarHanja || '??'),
+          elements: meElements.stats,
+          totalChars: meElements.total,
+          fortune: meFortune
+        },
+        ptSaju: {
+          year: ptRaw.yearPillarHanja || '??',
+          month: ptRaw.monthPillarHanja || '??',
+          day: ptRaw.dayPillarHanja || '??',
+          hour: pt.isUnknownTime ? '??' : (ptRaw.hourPillarHanja || '??'),
+          elements: ptElements.stats,
+          totalChars: ptElements.total,
+          fortune: ptFortune
+        },
+        score: relationTexts.finalScore,
+        relation: relationTexts,
+        scoreComment: scoreComment
+      };
 
-      // 자연스러운 로딩 연출을 위한 딜레이
+      // 상태 업데이트
+      setAnalysis(newAnalysis);
+
+      // 새로고침에 대비해 세션 스토리지에 계산 결과 저장
+      sessionStorage.setItem('saju_me', JSON.stringify(me));
+      sessionStorage.setItem('saju_pt', JSON.stringify(pt));
+      sessionStorage.setItem('saju_analysis', JSON.stringify(newAnalysis));
+
+      const serverPayload = {
+        me: buildServerPayload(meRaw, meElements, meFortune, me.isUnknownTime),
+        partner: buildServerPayload(ptRaw, ptElements, ptFortune, pt.isUnknownTime),
+      };
+
+      console.log("🚀 Server Payload:", serverPayload);
+
       await new Promise(resolve => setTimeout(resolve, 3200));
-      setStep(2); 
+      navigate('/result');
 
-    } catch (error) { 
-      console.error("계산 중 에러 발생:", error);
-      alert('입력하신 날짜를 다시 확인해주세요.'); 
-      setStep(1); 
-    } finally { 
-      setIsLoading(false); 
+    } catch (error) {
+      console.error("에러:", error);
+      alert('입력값을 확인해주세요.');
+      navigate('/');
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  // --- UI 렌더링 ---
   return (
-    <div className="min-h-screen bg-[#07060c] flex justify-center font-sans text-[#f0eaf8]">
-      
-      {/* 상단 공통 네비게이션 바 (스크롤 시 자동 숨김) */}
-      <TopBar 
-        isLoggedIn={isLoggedIn} 
-        userName={userName} 
-        onLoginClick={() => {
-          window.scrollTo(0, 0);
-          setStep(99);
-        }} 
-      />
+    <div className="w-full max-w-md relative pb-[70px]">
+    
+      {!shouldHideTopBar && (
+        <TopBar
+          isLoggedIn={isLoggedIn}
+          userName={userName}
+          onLoginClick={() => navigate('/login', { state: { from: location.pathname } })}
+          onLogoutClick={async () => {
+            await supabase.auth.signOut();
+          }}
+        />
+      )}
 
-      {/* 메인 화면 컨테이너 (TopBar 영역 확보를 위해 특정 스텝에서만 상단 패딩 추가) */}
-      <div className={`w-full max-w-md relative ${step === 1 || step === 2 ? 'pt-[70px]' : ''}`}>
-        
-        {step === 0 && <HomeScreen onStart={() => setStep(1)} />}
+      {/* 라우팅 설정 영역 */}
+      <Routes>
 
-        {step === 1 && <SajuInputForm me={me} setMe={setMe} pt={pt} setPt={setPt} onCalculate={handleCalculate} isLoading={isLoading} />}
-        
-        {step === 1.5 && <LoadingScreen />}
-        
-        {step === 2 && analysis && (
-          <SajuResultView 
-            me={me} pt={pt} analysis={analysis} 
-            onReset={() => { window.scrollTo(0,0); setStep(0); }} 
-            isLoggedIn={isLoggedIn}
-            onRequireLogin={() => {
-              window.scrollTo(0, 0); 
-              setStep(99); 
-            }}
+        <Route path="/" element={<HomeScreen onStart={onStart} />} />
+
+        <Route path="/input" element={
+          <SajuInputForm
+            me={me} setMe={setMe}
+            pt={pt} setPt={setPt}
+            onCalculate={handleCalculate}
+            isLoading={isLoading}
           />
-        )}
+        } />
 
-        {step === 99 && <LoginScreen />}
+        <Route path="/loading" element={<LoadingScreen />} />
 
-      </div>
+        <Route path="/result" element={
+          analysis ? (
+            <SajuResultView
+              me={me} pt={pt}
+              analysis={analysis}
+              onReset={handleReset}
+              isLoggedIn={isLoggedIn}
+              // ⭐️ 수정: 잠금 해제(결제)를 위해 로그인하는 것이므로 목적지를 /payment로 변경!
+              onRequireLogin={() => navigate('/login', { state: { from: '/payment' } })}
+            />
+          ) : <Navigate to="/" />
+        } />
 
-      {/* 하단 탭바 (홈 화면과 로그인 화면에서 노출) */}
-      {(step === 0 || step === 99) && <BottomNav activeTab="saju" />}
+        <Route path="/payment" element={
+          isAuthLoading ? (
+            <LoadingScreen /> 
+          ) : (
+            isLoggedIn 
+              ? <PaymentView /> 
+              : <Navigate to="/login" state={{ from: '/payment' }} replace />
+          )
+        } />
 
+        {/* /mypage 경로에서는 마이페이지 노출 */}
+        <Route path="/mypage" element={<MyPageView />} />
+        <Route path="/payment-history" element={<PaymentHistoryView />} />
+        <Route path="/saju-storage" element={<SajuStorageView />} />
+
+        {/* 잘못된 경로는 홈으로 리다이렉트 */}
+        <Route path="/login" element={<LoginScreen />} />
+        
+        <Route path="/auth/callback" element={<AuthCallback />} />
+
+        <Route path="*" element={<Navigate to="/" />} />
+
+      </Routes>
+
+      {/* 하단 탭바: 모든 페이지에서 노출되도록 Routes 밖에 배치 */}
+      <BottomNav />
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+     <div className="min-h-screen bg-[#07060c] flex justify-center font-sans text-[#f0eaf8]">
+        <AppContent />
+      </div>
+    </BrowserRouter>
   );
 }
