@@ -1,13 +1,16 @@
 import { useEffect } from 'react'; 
-import { supabase } from '../lib/supabase'; // supabase 설정 파일 불러오기
-import crystalBall from '../assets/icon-crystal-ball.svg';
+import { useLocation } from 'react-router-dom';
+import { supabase } from '../lib/supabase'; // 본인의 경로에 맞게 수정 필요
+import crystalBall from '../assets/icon-crystal-ball.svg'; // 본인의 경로에 맞게 수정 필요
 
 export default function LoginScreen() {
+  const location = useLocation();
+
   const handleKakaoLogin = async () => {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'kakao',
       options: {
-        redirectTo: 'http://localhost:3000/auth/callback' 
+        redirectTo: 'http://localhost:5173/auth/callback' 
       }
     });
 
@@ -16,10 +19,15 @@ export default function LoginScreen() {
     }
   };
 
-  // 스크롤을 맨 위로 초기화
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, []);
+
+    // ⭐️ 로그인 화면 로드 시: 돌아갈 주소가 state로 전달되었다면 로컬 스토리지에 저장
+    const returnPath = location.state?.from || '/';
+    localStorage.setItem('returnPath', returnPath);
+    console.log('📌 로그인 후 돌아갈 목적지 저장:', returnPath);
+
+  }, [location]);
 
   return (
     <div className="h-[100dvh] bg-[#07060c] flex justify-center font-sans text-[#f0eaf8] relative overflow-x-hidden overflow-y-auto">

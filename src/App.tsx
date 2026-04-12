@@ -1,6 +1,8 @@
-import { useState } from 'react';
-import { BrowserRouter, Routes, Route, useNavigate, Navigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { BrowserRouter, Routes, Route, useNavigate, Navigate, useLocation } from 'react-router-dom';
 import { calculateSaju } from '@fullstackfamily/manseryeok';
+import { supabase } from './lib/supabase';
+import type { Session } from '@supabase/supabase-js'; // 👈 1. Session 타입 불러오기 추가
 
 // Types & Utils
 import type { PersonInput, SajuResult, RelationResult } from './types/saju';
@@ -16,20 +18,55 @@ import TopBar from './components/TopBar';
 import BottomNav from './components/BottomNav';
 import MyPageView from './components/MyPageView';
 import PaymentView from './components/PaymentView';
+import AuthCallback from './components/AuthCallback';
 
 function AppContent() {
   const navigate = useNavigate();
+  const location = useLocation();
 
-  // ✔ 홈 화면에서 `/input` 으로 이동시키는 함수
   const onStart = () => {
     navigate('/input');
   };
 
   const [isLoading, setIsLoading] = useState(false);
 
-  // 로그인 유저 정보
-  const [isLoggedIn] = useState(false);
-  const [userName] = useState("김지은");
+  // 실제 로그인 상태 관리
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userName, setUserName] = useState("사용자");
+
+  // 앱 로드 및 로그인 상태 변경 감지
+  useEffect(() => {
+    // any 대신 Session | null 타입으로 명시
+    const extractNameAndSet = (session: Session | null) => {
+      if (session) {
+        // 카카오에서 넘겨준 닉네임이 있으면 쓰고, 없으면 이메일 아이디 부분, 둘 다 없으면 "사용자"
+        const name = session.user.user_metadata?.name 
+                  || session.user.email?.split('@')[0] 
+                  || "사용자";
+        setUserName(name);
+      } else {
+        setUserName("사용자");
+      }
+    };
+
+    // 1. 처음 켜졌을 때
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      const loggedIn = !!session;
+      setIsLoggedIn(loggedIn);
+      extractNameAndSet(session);
+      console.log("🧐 [초기 세션 확인] 로그인 상태:", loggedIn, session?.user?.email);
+    });
+
+    // 2. 로그인 상태가 바뀔 때
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      const loggedIn = !!session;
+      setIsLoggedIn(loggedIn);
+      extractNameAndSet(session);
+      console.log(`🧐 [상태 변경: ${event}] 로그인 상태:`, loggedIn, session?.user?.email);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   // 입력값 상태
   const [me, setMe] = useState<PersonInput>({
@@ -118,12 +155,11 @@ function AppContent() {
       <TopBar
         isLoggedIn={isLoggedIn}
         userName={userName}
-        onLoginClick={() => navigate('/login')}
+        onLoginClick={() => navigate('/login', { state: { from: location.pathname } })}
       />
 
       <Routes>
 
-        {/* ⭐ 홈 화면 — onStart 전달됨 */}
         <Route path="/" element={<HomeScreen onStart={onStart} />} />
 
         <Route path="/input" element={
@@ -144,14 +180,21 @@ function AppContent() {
               analysis={analysis}
               onReset={() => navigate('/')}
               isLoggedIn={isLoggedIn}
-              onRequireLogin={() => navigate('/login')}
+              onRequireLogin={() => navigate('/login', { state: { from: '/result' } })}
             />
           ) : <Navigate to="/" />
         } />
 
-        <Route path="/payment" element={<PaymentView />} />
+        <Route path="/payment" element={
+          isLoggedIn 
+            ? <PaymentView /> 
+            : <Navigate to="/login" state={{ from: '/payment' }} replace />
+        } />
+        
         <Route path="/mypage" element={<MyPageView />} />
         <Route path="/login" element={<LoginScreen />} />
+        
+        <Route path="/auth/callback" element={<AuthCallback />} />
 
         <Route path="*" element={<Navigate to="/" />} />
 
