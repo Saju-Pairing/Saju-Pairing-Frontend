@@ -131,7 +131,7 @@ export default function SajuResultView({ me, pt, analysis, onReset, isLoggedIn, 
         <div className="bg-[#141120] rounded-[2rem] border border-[rgba(180,140,255,0.11)] shadow-lg overflow-hidden">
           <div className="px-6 py-4 border-b border-[rgba(180,140,255,0.05)] flex items-center gap-2 bg-[#0f0d18]">
             <span className="text-[12px]">👤</span> 
-            <span className="text-[12px] font-bold text-[#7eb8f7]">나 ({me.name || '나'})</span>
+            <span className="text-[#7eb8f7] font-['Noto_Sans_KR'] text-[11px] font-medium leading-normal tracking-[1.5px]">나 ({me.name || '나'})</span>
           </div>
           <div className="p-5">
             <div className="grid grid-cols-4 text-center mb-3 border-b border-[rgba(180,140,255,0.05)] pb-3">
@@ -156,7 +156,7 @@ export default function SajuResultView({ me, pt, analysis, onReset, isLoggedIn, 
         <div className="bg-[#141120] rounded-[2rem] border border-[rgba(180,140,255,0.11)] shadow-lg overflow-hidden">
           <div className="px-6 py-4 border-b border-[rgba(180,140,255,0.05)] flex items-center gap-2 bg-[#0f0d18]">
             <span className="text-[12px]">👤</span> 
-            <span className="text-[12px] font-bold text-[#f0c060]">상대방 ({pt.name || '상대방'})</span>
+            <span className="text-[#c084fc] font-['Noto_Sans_KR'] text-[11px] font-medium leading-normal tracking-[1.5px]">상대방 ({pt.name || '상대방'})</span>
           </div>
           <div className="p-5">
             <div className="grid grid-cols-4 text-center mb-3 border-b border-[rgba(180,140,255,0.05)] pb-3">
@@ -208,13 +208,13 @@ export default function SajuResultView({ me, pt, analysis, onReset, isLoggedIn, 
 
         {/* 오행 구성 비교 */}
         <div className="bg-[#141120] rounded-[2rem] p-6 border border-[rgba(180,140,255,0.11)] shadow-lg mt-8">
-          <div className="text-[13px] font-bold text-[#7eb8f7] mb-6 flex justify-between items-center px-1">
+          <div className="text-[#7eb8f7] font-['Noto_Sans_KR'] text-[11px] font-medium leading-normal tracking-[1px] mb-6 flex justify-between items-center px-1">
             <span>🌿 오행 구성 비교</span>
           </div>
           <div className="grid grid-cols-[28px_1fr_1fr] gap-5 mb-5 text-center">
             <div></div>
-            <div className="text-[11px] text-[#4a4068] font-bold">나</div>
-            <div className="text-[11px] text-[#4a4068] font-bold">상대</div>
+            <div className="text-[#4A4068] text-center font-['Noto_Sans_KR'] text-[9px] font-light leading-normal">나</div>
+            <div className="text-[#4A4068] text-center font-['Noto_Sans_KR'] text-[9px] font-light leading-normal">상대</div>
           </div>
           <div className="space-y-4">
             {['목', '화', '토', '금', '수'].map((el) => {
@@ -223,7 +223,7 @@ export default function SajuResultView({ me, pt, analysis, onReset, isLoggedIn, 
               const ptPct = (analysis.ptSaju.elements[el] / analysis.ptSaju.totalChars) * 100;
               return (
                 <div key={el} className="grid grid-cols-[28px_1fr_1fr] gap-5 items-center">
-                  <div className="text-[16px] font-['Noto_Serif_KR'] font-black text-[#9d8fba] text-left">{hanjaMap[el]}</div>
+                  <div className="text-[#9d8fba] text-center font-['Noto_Sans_KR'] text-[12px] font-light leading-normal">{hanjaMap[el]}</div>
                   <div className="h-2 w-full bg-[#0f0d18] rounded-full overflow-hidden shadow-inner border border-[rgba(180,140,255,0.05)]">
                     <div className="h-full bg-[#7eb8f7] rounded-full transition-all duration-1000" style={{ width: `${mePct}%` }}></div>
                   </div>
@@ -238,9 +238,9 @@ export default function SajuResultView({ me, pt, analysis, onReset, isLoggedIn, 
 
         {/* 궁합 상세 설명 */}
         <div className="bg-[#141120] rounded-[2rem] p-6 border border-[rgba(180,140,255,0.11)] shadow-lg mt-8">
-          <div className="flex items-center gap-2 mb-5">
-            <span className="text-[14px]">⭐</span>
-            <h3 className="text-[13px] font-bold text-[#f0eaf8]">궁합 점수</h3>
+          <div className="text-[#7eb8f7] font-['Noto_Sans_KR'] text-[11px] font-medium leading-normal tracking-[1px] mb-5 flex items-center gap-2 px-1">
+            <span>⭐</span>
+            <h3>궁합 점수</h3>
           </div>
           <div className="flex items-center gap-6">
             <div className="relative w-[84px] h-[84px] flex-shrink-0">
@@ -256,62 +256,77 @@ export default function SajuResultView({ me, pt, analysis, onReset, isLoggedIn, 
                 />
               </svg>
               <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-[24px] font-['Noto_Serif_KR'] font-black text-[#7eb8f7]">
-                  {analysis.score}<span className="text-[12px] font-sans font-normal ml-0.5 text-[#7eb8f7]">점</span>
+                {/* 💡 점수 숫자 폰트 스타일 변경 */}
+                <span className="text-[#7eb8f7] text-center font-['Noto_Serif_KR'] text-[18px] font-bold leading-normal">
+                  {analysis.score}
+                  {/* 💡 '점' 글자 폰트 스타일 변경 */}
+                  <span className="text-[#7eb8f7] font-['Noto_Sans_KR'] text-[9px] font-light leading-normal tracking-[1px] ml-0.5">점</span>
                 </span>
               </div>
             </div>
             <div className="flex-1">
-              <div className="text-[15px] font-bold text-[#f0eaf8] mb-2 leading-snug tracking-tight">{analysis.scoreComment.title}</div>
-              <p className="text-[12px] text-[#9d8fba] leading-relaxed break-keep">{analysis.scoreComment.desc}</p>
+              <div className="text-[#f0eaf8] font-['Noto_Sans_KR'] text-[13px] font-bold leading-normal mb-1.5 break-keep">
+                {analysis.scoreComment.title}
+              </div>
+              <p className="text-[#9d8fba] font-['Noto_Sans_KR'] text-[11.5px] font-light leading-[18.4px] break-keep">
+                {analysis.scoreComment.desc}
+              </p>
             </div>
           </div>
         </div>
-
         {/* 운의 흐름 */}
         <div className="bg-[#141120] rounded-[2rem] p-6 border border-[rgba(180,140,255,0.11)] shadow-lg mb-12">
-          <div className="text-[13px] font-bold text-[#7eb8f7] mb-6 flex items-center gap-2 px-1">
+          <div className="text-[#7eb8f7] font-['Noto_Sans_KR'] text-[11px] font-medium leading-normal tracking-[1px] mb-6 flex items-center gap-2 px-1">
             <span>🌊</span> 현재 운의 흐름
           </div>
           <div className="space-y-6">
             <div>
-              <div className="text-[11px] font-bold text-[#4a4068] mb-3 px-1">나의 운</div>
+              <div className="text-[#4a4068] font-['Noto_Sans_KR'] text-[10px] font-light tracking-[1px] mb-3 px-1">나의 운</div>
               <div className="grid grid-cols-3 gap-3">
-                <div className="bg-[#0f0d18] border border-[rgba(180,140,255,0.08)] rounded-2xl flex flex-col items-center justify-center py-4 shadow-sm">
-                  <span className="text-[10px] text-[#4a4068] font-bold mb-2">대운</span>
-                  <span className="text-[20px] font-['Noto_Serif_KR'] font-black text-[#f0eaf8] tracking-tight">{analysis.meSaju.fortune.daeUnAge}</span>
-                  <span className="text-[12px] text-[#9d8fba] mt-2 font-medium tracking-widest">{analysis.meSaju.fortune.daeUnPillar}</span>
+                
+                <div className="bg-[#141120] border border-[rgba(180,140,255,0.11)] rounded-[11px] flex flex-col items-center justify-center py-4 shadow-sm">
+                  <span className="text-[#4a4068] text-center font-['Noto_Sans_KR'] text-[9px] font-light tracking-[1px] mb-2">대운</span>
+                  <span className="text-[#f0eaf8] text-center font-['Noto_Serif_KR'] text-[18px] font-semibold">{analysis.meSaju.fortune.daeUnAge}</span>
+                  <span className="text-[#9d8fba] text-center font-['Noto_Sans_KR'] text-[10px] font-light mt-2">{analysis.meSaju.fortune.daeUnPillar}</span>
                 </div>
-                <div className="bg-[#0f0d18] border border-[rgba(180,140,255,0.08)] rounded-2xl flex flex-col items-center justify-center py-4 shadow-sm">
-                  <span className="text-[10px] text-[#4a4068] font-bold mb-2">세운</span>
-                  <span className="text-[20px] font-['Noto_Serif_KR'] font-black text-[#f0eaf8] tracking-tight">{analysis.meSaju.fortune.seUnYear}</span>
-                  <span className="text-[12px] text-[#9d8fba] mt-2 font-medium tracking-widest">{analysis.meSaju.fortune.seUnPillar}</span>
+                
+                <div className="bg-[#141120] border border-[rgba(180,140,255,0.11)] rounded-[11px] flex flex-col items-center justify-center py-4 shadow-sm">
+                  <span className="text-[#4a4068] text-center font-['Noto_Sans_KR'] text-[9px] font-light tracking-[1px] mb-2">세운</span>
+                  <span className="text-[#f0eaf8] text-center font-['Noto_Serif_KR'] text-[18px] font-semibold">{analysis.meSaju.fortune.seUnYear}</span>
+                  <span className="text-[#9d8fba] text-center font-['Noto_Sans_KR'] text-[10px] font-light mt-2">{analysis.meSaju.fortune.seUnPillar}</span>
                 </div>
-                <div className="bg-[#0f0d18] border border-[rgba(180,140,255,0.08)] rounded-2xl flex flex-col items-center justify-center py-4 shadow-sm">
-                  <span className="text-[10px] text-[#4a4068] font-bold mb-2">월운</span>
-                  <span className="text-[20px] font-['Noto_Serif_KR'] font-black text-[#f0eaf8] tracking-tight">{analysis.meSaju.fortune.wolUnMonth}</span>
-                  <span className="text-[12px] text-[#9d8fba] mt-2 font-medium tracking-widest">{analysis.meSaju.fortune.wolUnPillar}</span>
+                
+                <div className="bg-[#141120] border border-[rgba(180,140,255,0.11)] rounded-[11px] flex flex-col items-center justify-center py-4 shadow-sm">
+                  <span className="text-[#4a4068] text-center font-['Noto_Sans_KR'] text-[9px] font-light tracking-[1px] mb-2">월운</span>
+                  <span className="text-[#f0eaf8] text-center font-['Noto_Serif_KR'] text-[18px] font-semibold">{analysis.meSaju.fortune.wolUnMonth}</span>
+                  <span className="text-[#9d8fba] text-center font-['Noto_Sans_KR'] text-[10px] font-light mt-2">{analysis.meSaju.fortune.wolUnPillar}</span>
                 </div>
+                
               </div>
             </div>
+            
             <div>
-              <div className="text-[11px] font-bold text-[#4a4068] mb-3 px-1">상대방의 운</div>
+              <div className="text-[#4a4068] font-['Noto_Sans_KR'] text-[10px] font-light tracking-[1px] mb-3 px-1">상대방의 운</div>
               <div className="grid grid-cols-3 gap-3">
-                <div className="bg-[#0f0d18] border border-[rgba(180,140,255,0.08)] rounded-2xl flex flex-col items-center justify-center py-4 shadow-sm">
-                  <span className="text-[10px] text-[#4a4068] font-bold mb-2">대운</span>
-                  <span className="text-[20px] font-['Noto_Serif_KR'] font-black text-[#f0eaf8] tracking-tight">{analysis.ptSaju.fortune.daeUnAge}</span>
-                  <span className="text-[12px] text-[#9d8fba] mt-2 font-medium tracking-widest">{analysis.ptSaju.fortune.daeUnPillar}</span>
+                
+                <div className="bg-[#141120] border border-[rgba(180,140,255,0.11)] rounded-[11px] flex flex-col items-center justify-center py-4 shadow-sm">
+                  <span className="text-[#4a4068] text-center font-['Noto_Sans_KR'] text-[9px] font-light tracking-[1px] mb-2">대운</span>
+                  <span className="text-[#f0eaf8] text-center font-['Noto_Serif_KR'] text-[18px] font-semibold">{analysis.ptSaju.fortune.daeUnAge}</span>
+                  <span className="text-[#9d8fba] text-center font-['Noto_Sans_KR'] text-[10px] font-light mt-2">{analysis.ptSaju.fortune.daeUnPillar}</span>
                 </div>
-                <div className="bg-[#0f0d18] border border-[rgba(180,140,255,0.08)] rounded-2xl flex flex-col items-center justify-center py-4 shadow-sm">
-                  <span className="text-[10px] text-[#4a4068] font-bold mb-2">세운</span>
-                  <span className="text-[20px] font-['Noto_Serif_KR'] font-black text-[#f0eaf8] tracking-tight">{analysis.ptSaju.fortune.seUnYear}</span>
-                  <span className="text-[12px] text-[#9d8fba] mt-2 font-medium tracking-widest">{analysis.ptSaju.fortune.seUnPillar}</span>
+                
+                <div className="bg-[#141120] border border-[rgba(180,140,255,0.11)] rounded-[11px] flex flex-col items-center justify-center py-4 shadow-sm">
+                  <span className="text-[#4a4068] text-center font-['Noto_Sans_KR'] text-[9px] font-light tracking-[1px] mb-2">세운</span>
+                  <span className="text-[#f0eaf8] text-center font-['Noto_Serif_KR'] text-[18px] font-semibold">{analysis.ptSaju.fortune.seUnYear}</span>
+                  <span className="text-[#9d8fba] text-center font-['Noto_Sans_KR'] text-[10px] font-light mt-2">{analysis.ptSaju.fortune.seUnPillar}</span>
                 </div>
-                <div className="bg-[#0f0d18] border border-[rgba(180,140,255,0.08)] rounded-2xl flex flex-col items-center justify-center py-4 shadow-sm">
-                  <span className="text-[10px] text-[#4a4068] font-bold mb-2">월운</span>
-                  <span className="text-[20px] font-['Noto_Serif_KR'] font-black text-[#f0eaf8] tracking-tight">{analysis.ptSaju.fortune.wolUnMonth}</span>
-                  <span className="text-[12px] text-[#9d8fba] mt-2 font-medium tracking-widest">{analysis.ptSaju.fortune.wolUnPillar}</span>
+                
+                <div className="bg-[#141120] border border-[rgba(180,140,255,0.11)] rounded-[11px] flex flex-col items-center justify-center py-4 shadow-sm">
+                  <span className="text-[#4a4068] text-center font-['Noto_Sans_KR'] text-[9px] font-light tracking-[1px] mb-2">월운</span>
+                  <span className="text-[#f0eaf8] text-center font-['Noto_Serif_KR'] text-[18px] font-semibold">{analysis.ptSaju.fortune.wolUnMonth}</span>
+                  <span className="text-[#9d8fba] text-center font-['Noto_Sans_KR'] text-[10px] font-light mt-2">{analysis.ptSaju.fortune.wolUnPillar}</span>
                 </div>
+                
               </div>
             </div>
           </div>
