@@ -144,7 +144,7 @@ export default function MyPageView() {
         </div>
 
         {/* 구분선 */}
-        <div className="rectangle-1091 absolute top-[182px] left-0 w-full h-[8px] bg-[#c084fc1f]"></div>
+        <div className="rectangle-1091 absolute top-[182px] left-1/2 -translate-x-1/2 w-[100vw] h-[8px] bg-[#c084fc1f]"></div>
 
         {/* 메뉴 리스트 */}
         <div className="frame-1707482466 absolute top-[202px] left-[20px] w-[335px] flex flex-col">
