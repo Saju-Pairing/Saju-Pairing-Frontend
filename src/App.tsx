@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
+import { BrowserRouter, Routes, Route, useNavigate, Navigate, useLocation } from 'react-router-dom';
 import { calculateSaju } from '@fullstackfamily/manseryeok';
 import { supabase } from './lib/supabase';
 import type { Session } from '@supabase/supabase-js'; // 👈 1. Session 타입 불러오기 추가
+
 // Types & Utils
 import type { PersonInput, SajuResult, RelationResult } from './types/saju';
-import { getElements, getFortuneFlow, getRelation, getScoreComment } from './utils/sajuEngine';
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { getElements, getFortuneFlow, getRelation, getScoreComment, buildServerPayload } from './utils/sajuEngine';
 
 import SajuInputForm from './components/SajuInputForm';
 import SajuResultView from './components/SajuResultView';
@@ -23,9 +24,11 @@ import AuthCallback from './components/AuthCallback';
 function AppContent() {
   const navigate = useNavigate();
   const location = useLocation();
+
   const onStart = () => {
     navigate('/input');
   };
+
   // 상단바를 숨길 경로 설정
   const hideTopBarPaths = ['/payment-history', '/saju-storage'];
   const shouldHideTopBar = hideTopBarPaths.includes(location.pathname);
@@ -87,7 +90,7 @@ function AppContent() {
     scoreComment: { title: string; desc: string };
   } | null>(null);
 
-  // --- 사주 계산 및 페이지 이동 로직 ---
+  // 계산 로직
   const handleCalculate = async () => {
     try {
       setIsLoading(true);
@@ -140,7 +143,7 @@ function AppContent() {
       console.log("🚀 Server Payload:", serverPayload);
 
       await new Promise(resolve => setTimeout(resolve, 3200));
-      setStep(2);
+      navigate('/result');
 
     } catch (error) {
       console.error("에러:", error);
@@ -153,19 +156,12 @@ function AppContent() {
 
   return (
     <div className="w-full max-w-md relative pb-[70px]">
-
-      <TopBar
-        isLoggedIn={isLoggedIn}
-        userName={userName}
-        onLoginClick={() => navigate('/login', { state: { from: location.pathname } })}
-      />
-    <div className="min-h-screen bg-[#07060c] flex justify-center font-sans text-[#f0eaf8]">
-
+    
       {!shouldHideTopBar && (
         <TopBar
           isLoggedIn={isLoggedIn}
           userName={userName}
-          onLoginClick={() => { window.scrollTo(0, 0); setStep(99); }}
+          onLoginClick={() => navigate('/login', { state: { from: location.pathname } })}
         />
       )}
 
@@ -202,9 +198,6 @@ function AppContent() {
             ? <PaymentView /> 
             : <Navigate to="/login" state={{ from: '/payment' }} replace />
         } />
-        
-        {/* 기본 경로(/)에서는 메인 화면 노출 */}
-        <Route path="/" element={<SajuService />} />
 
         {/* /mypage 경로에서는 마이페이지 노출 */}
         <Route path="/mypage" element={<MyPageView />} />
@@ -229,7 +222,9 @@ function AppContent() {
 export default function App() {
   return (
     <BrowserRouter>
-      <AppContent />
+     <div className="min-h-screen bg-[#07060c] flex justify-center font-sans text-[#f0eaf8]">
+        <AppContent />
+      </div>
     </BrowserRouter>
   );
 }
