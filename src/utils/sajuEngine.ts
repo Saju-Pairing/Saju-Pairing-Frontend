@@ -3,7 +3,7 @@ import type { RawSaju, RelationResult, FortuneFlow } from '../types/saju';
 import { CHAR_INFO, FIVE_ELEMENTS, RELATION_MAP, HANJA_TO_HANGUL } from '../constants/saju';
 
 export const isPair = (arr: string[][], c1: string, c2: string) => arr.some(pair => (pair[0] === c1 && pair[1] === c2) || (pair[0] === c2 && pair[1] === c1));
-export const isSamhap = (b1: string, b2: string) => isPair([['亥','卯'], ['卯','未'], ['亥','미'], ['寅','午'], ['午','戌'], ['寅','戌'], ['巳','酉'], ['酉','丑'], ['巳','丑'], ['申','子'], ['子','辰'], ['申','辰']], b1, b2);
+export const isSamhap = (b1: string, b2: string) => isPair([['亥','卯'], ['卯','未'], ['亥','未'], ['寅','午'], ['午','戌'], ['寅','戌'], ['巳','酉'], ['酉','丑'], ['巳','丑'], ['申','子'], ['子','辰'], ['申','辰']], b1, b2);
 export const isGwimun = (b1: string, b2: string) => isPair([['子','酉'], ['丑','午'], ['寅','未'], ['卯','申'], ['辰','亥'], ['巳','戌']], b1, b2);
 
 export const getSengGeuk = (e1: string, e2: string) => {
@@ -123,7 +123,7 @@ export const getFortuneFlow = (birthYear: number, birthDay: number, gender: 'F'|
   const currentMonth = today.getMonth() + 1;
   const currentDay = today.getDate();
   
-  // ✅ 만세력 라이브러리를 통해 "오늘" 날짜의 사주를 계산하여 세운/월운 간지를 정확하게 뽑아옵니다!
+  // 만세력 라이브러리를 통해 "오늘" 날짜의 사주를 계산하여 세운/월운 간지 계산
   const todaySaju = calculateSaju(currentYear, currentMonth, currentDay);
 
   const isYangYear = ['甲', '丙', '戊', '庚', '壬'].includes(yearHanja.charAt(0));
@@ -141,7 +141,7 @@ export const getFortuneFlow = (birthYear: number, birthDay: number, gender: 'F'|
     daeUnAge: `${startAge}~${startAge + 9}세`, 
     seUnPillar: todaySaju.yearPillarHanja || '??', 
     seUnYear: `${currentYear}년`, 
-    wolUnPillar: todaySaju.monthPillarHanja || '??', // 🚀 이제 정확한 현재 월의 간지가 들어갑니다!
+    wolUnPillar: todaySaju.monthPillarHanja || '??', 
     wolUnMonth: `${currentMonth}월` 
   };
 };
@@ -152,7 +152,7 @@ export const formatPillar = (pillar: string) => {
   return `${hangul}(${pillar})`;
 };
 
-// 🌟 서버 전송용 JSON 빌더 함수
+// 서버 전송용 JSON 빌더 함수
 export const buildServerPayload = (
   rawSaju: RawSaju, 
   elements: { stats: Record<string, number>; total: number }, 
