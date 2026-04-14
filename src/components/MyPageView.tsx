@@ -18,10 +18,14 @@ interface StarStyle {
 }
 
 export default function MyPageView() {
+  const navigate = useNavigate();
 
   const [userEmail, setUserEmail] = useState<string>("로그인 정보 없음");
   const [userName, setUserName] = useState<string>("사용자");
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  
+  // 로그인 안내 팝업을 띄울지 결정하는 상태
+  const [showLoginPopup, setShowLoginPopup] = useState(false);
 
   useEffect(() => {
     const fetchUserInfo = async () => {
@@ -38,28 +42,41 @@ export default function MyPageView() {
     fetchUserInfo();
   }, []);
 
-  // ⭐️ 탈퇴하기 기능 (서버 친구와 연동 필요)
+  // 탈퇴하기 클릭 핸들러
   const handleWithdraw = async () => {
-    // 1. 실수로 누를 수 있으니 재차 확인합니다.
-    const isConfirm = window.confirm("정말로 탈퇴하시겠습니까?\n저장된 모든 사주 정보가 삭제되며 되돌릴 수 없습니다.");
+    // 1. 현재 세션(로그인) 상태를 먼저 확인합니다.
+    const { data: { session } } = await supabase.auth.getSession();
+    
+    // 2. 로그아웃 상태라면 예쁜 팝업창을 띄우고 함수를 멈춥니다!
+    if (!session) {
+      setShowLoginPopup(true);
+      return;
+    }
 
-    if (!isConfirm) return; // '취소'를 누르면 여기서 멈춤
+    // 3. 로그인 상태라면 원래대로 탈퇴 진행 여부를 묻습니다.
+    const isConfirm = window.confirm("정말로 탈퇴하시겠습니까?\n저장된 모든 사주 정보가 삭제되며 되돌릴 수 없습니다.");
+    if (!isConfirm) return;
 
     try {
-      // 🚨 서버 친구가 탈퇴 기능을 만들어주면 이곳의 주석을 풀고 코드를 넣으세요!
-      // 예시: const { error } = await supabase.rpc('delete_user');
-      // if (error) throw error;
+      const { data, error } = await supabase.functions.invoke('delete-account', {
+        method: 'POST',
+      });
 
-      // 2. 현재 기기에서 로그아웃(세션 삭제) 처리합니다.
+      if (error) {
+        console.error("서버 응답 에러:", error);
+        alert(error.message || "탈퇴 처리에 실패했어요.");
+        return; 
+      }
+
+      console.log("탈퇴 성공:", data);
       await supabase.auth.signOut();
-
-      // 3. 안내창을 띄우고 홈 화면으로 쫓아냅니다.
+      
       alert("회원 탈퇴가 완료되었습니다. 이용해 주셔서 감사합니다.");
       navigate('/');
 
-    } catch (error) {
-      console.error("탈퇴 에러:", error);
-      alert("탈퇴 처리 중 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.");
+    } catch (err) {
+      console.error("네트워크 에러:", err);
+      alert("통신 중 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.");
     }
   };
 
@@ -74,26 +91,23 @@ export default function MyPageView() {
       top: `${Math.random() * 100}%`,
     }));
   });
-  const navigate = useNavigate();
 
   // 문의하기 클릭 핸들러
   const handleInquiryClick = () => {
     const email = "2019ootd@gmail.com";
     const subject = encodeURIComponent("[사주페어링] 서비스 문의사항");
-
-    // 메일 앱 호출 (수신자, 제목, 본문 미리 채우기)
     window.location.href = `mailto:${email}?subject=${subject}`;
   };
 
   return (
     <div className="min-h-screen w-full bg-[#0a0a0c] relative overflow-hidden flex flex-col items-center font-sans text-[#f0eaf8]">
 
-      {/* 배경 블러 효과 (유지) */}
+      {/* 배경 블러 효과 */}
       <div className="background-blur absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[200px] h-[200px] rounded-full bg-[#60a5fa] opacity-[0.18] blur-[40px]"></div>
       <div className="background-blur2 absolute -left-[80px] -top-[80px] w-[300px] h-[300px] rounded-full bg-[#c084fc] opacity-10 blur-[40px]"></div>
       <div className="background-blur3 absolute -right-[60px] -bottom-[60px] w-[250px] h-[250px] rounded-full bg-[#f472b6] opacity-[0.18] blur-[40px]"></div>
 
-      {/* 미세 별 입자 컨테이너 (유지) */}
+      {/* 미세 별 입자 컨테이너 */}
       <div className="container absolute inset-0 overflow-hidden pointer-events-none">
         {starStyles.map((star) => (
           <div
@@ -183,6 +197,44 @@ export default function MyPageView() {
         </div>
 
       </div>
+
+      {/* ⭐️ 로그인 필요 팝업 (모달) */}
+      {showLoginPopup && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm px-4 animate-fade-in-up">
+          <div className="bg-[#141120] border border-[rgba(180,140,255,0.15)] rounded-[1.5rem] p-7 w-full max-w-[320px] shadow-2xl flex flex-col items-center text-center">
+            
+            {/* 아이콘 */}
+            <div className="w-14 h-14 rounded-full bg-[rgba(180,140,255,0.1)] flex items-center justify-center text-2xl mb-4 border border-[rgba(180,140,255,0.2)]">
+              🔒
+            </div>
+            
+            <h3 className="text-[17px] font-bold text-[#f0eaf8] mb-2 font-['Noto_Sans_KR']">
+              로그인이 필요해요
+            </h3>
+            
+            <p className="text-[13px] text-[#9d8fba] leading-relaxed mb-8 font-light font-['Noto_Sans_KR'] break-keep">
+              회원 탈퇴를 진행하시려면<br />먼저 카카오 로그인을 해주세요.
+            </p>
+            
+            <div className="flex flex-row w-full gap-3">
+              <button
+                onClick={() => setShowLoginPopup(false)}
+                className="flex-1 py-3.5 bg-[#0f0d18] border border-[rgba(180,140,255,0.15)] text-[#9d8fba] text-[13px] font-medium rounded-xl hover:bg-[rgba(180,140,255,0.05)] transition-colors"
+              >
+                닫기
+              </button>
+              <button
+                onClick={() => navigate('/login', { state: { from: '/mypage' } })}
+                className="flex-1 py-3.5 bg-[linear-gradient(135deg,#C084FC,#F472B6)] text-white text-[13px] font-bold rounded-xl shadow-[0_4px_14px_rgba(192,132,252,0.3)] hover:scale-[1.02] transition-transform"
+              >
+                로그인하기
+              </button>
+            </div>
+            
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
