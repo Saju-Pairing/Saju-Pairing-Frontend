@@ -8,7 +8,6 @@ import type { Session } from '@supabase/supabase-js';
 import type { PersonInput, SajuResult, RelationResult } from './types/saju';
 import { getElements, getFortuneFlow, getRelation, getScoreComment, buildServerPayload } from './utils/sajuEngine';
 
-// Components
 import SajuInputForm from './components/SajuInputForm';
 import SajuResultView from './components/SajuResultView';
 import LoadingScreen from './components/LoadingScreen';
@@ -17,8 +16,11 @@ import HomeScreen from './components/HomeScreen';
 import TopBar from './components/TopBar';
 import BottomNav from './components/BottomNav';
 import MyPageView from './components/MyPageView';
+import PaymentHistoryView from './components/PaymentHistoryView';
+import SajuStorageView from './components/SajuStorageView';
 import PaymentView from './components/PaymentView';
 import AuthCallback from './components/AuthCallback';
+import TermsOfServiceView from './components/TermsOfServiceView';
 
 function AppContent() {
   const navigate = useNavigate();
@@ -27,6 +29,10 @@ function AppContent() {
   const onStart = () => {
     navigate('/input');
   };
+
+  // 상단바를 숨길 경로 설정
+  const hideTopBarPaths = ['/payment-history', '/saju-storage', , '/terms-of-service'];
+  const shouldHideTopBar = hideTopBarPaths.includes(location.pathname);
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -170,16 +176,19 @@ function AppContent() {
 
   return (
     <div className="w-full max-w-md relative pb-[70px]">
+    
+      {!shouldHideTopBar && (
+        <TopBar
+          isLoggedIn={isLoggedIn}
+          userName={userName}
+          onLoginClick={() => navigate('/login', { state: { from: location.pathname } })}
+          onLogoutClick={async () => {
+            await supabase.auth.signOut();
+          }}
+        />
+      )}
 
-      <TopBar
-        isLoggedIn={isLoggedIn}
-        userName={userName}
-        onLoginClick={() => navigate('/login', { state: { from: location.pathname } })}
-        onLogoutClick={async () => {
-          await supabase.auth.signOut();
-        }}
-      />
-
+      {/* 라우팅 설정 영역 */}
       <Routes>
 
         <Route path="/" element={<HomeScreen onStart={onStart} />} />
@@ -217,8 +226,14 @@ function AppContent() {
               : <Navigate to="/login" state={{ from: '/payment' }} replace />
           )
         } />
-        
+
+        {/* /mypage 경로에서는 마이페이지 노출 */}
         <Route path="/mypage" element={<MyPageView />} />
+        <Route path="/payment-history" element={<PaymentHistoryView />} />
+        <Route path="/saju-storage" element={<SajuStorageView />} />
+        <Route path="/terms-of-service" element={<TermsOfServiceView />} />
+
+        {/* 잘못된 경로는 홈으로 리다이렉트 */}
         <Route path="/login" element={<LoginScreen />} />
         
         <Route path="/auth/callback" element={<AuthCallback />} />
@@ -227,6 +242,7 @@ function AppContent() {
 
       </Routes>
 
+      {/* 하단 탭바: 모든 페이지에서 노출되도록 Routes 밖에 배치 */}
       <BottomNav />
     </div>
   );
@@ -235,7 +251,7 @@ function AppContent() {
 export default function App() {
   return (
     <BrowserRouter>
-      <div className="min-h-screen bg-[#07060c] flex justify-center font-sans text-[#f0eaf8]">
+     <div className="min-h-screen bg-[#07060c] flex justify-center font-sans text-[#f0eaf8]">
         <AppContent />
       </div>
     </BrowserRouter>

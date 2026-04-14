@@ -7,8 +7,13 @@ import navRightIcon from '../assets/icon-bottomnav-right.png';
 export default function BottomNav() {
   const navigate = useNavigate();
   const location = useLocation();
-  const isSaju = location.pathname === '/' || location.pathname.includes('saju');
-  const isMyPage = location.pathname === '/mypage';
+
+  // 1. 재회사주 탭: 홈("/") 경로일 때 활성화
+  const isSaju = location.pathname === '/';
+
+  // 2. 마이페이지 탭: 마이페이지, 결제내역, 사주보관 경로일 때 활성화 
+  const myPagePaths = ['/mypage', '/payment-history', '/saju-storage'];
+  const isMyPage = myPagePaths.includes(location.pathname);
 
   return (
     // z-40 레이어 설정 및 뒤쪽 클릭 방지
