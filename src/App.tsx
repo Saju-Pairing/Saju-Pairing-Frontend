@@ -31,7 +31,7 @@ function AppContent() {
   };
 
   // 상단바를 숨길 경로 설정
-  const hideTopBarPaths = ['/payment-history', '/saju-storage', , '/terms-of-service'];
+  const hideTopBarPaths = ['/payment-history', '/saju-storage', '/terms-of-service'];
   const shouldHideTopBar = hideTopBarPaths.includes(location.pathname);
 
   const [isLoading, setIsLoading] = useState(false);
@@ -211,7 +211,7 @@ function AppContent() {
               analysis={analysis}
               onReset={handleReset}
               isLoggedIn={isLoggedIn}
-              // ⭐️ 수정: 잠금 해제(결제)를 위해 로그인하는 것이므로 목적지를 /payment로 변경!
+              // 수정: 잠금 해제(결제)를 위해 로그인하는 것이므로 목적지를 /payment로 변경
               onRequireLogin={() => navigate('/login', { state: { from: '/payment' } })}
             />
           ) : <Navigate to="/" />

@@ -1,7 +1,7 @@
 import { useEffect } from 'react'; 
 import { useLocation } from 'react-router-dom';
-import { supabase } from '../lib/supabase'; // 본인의 경로에 맞게 수정 필요
-import crystalBall from '../assets/icon-crystal-ball.svg'; // 본인의 경로에 맞게 수정 필요
+import { supabase } from '../lib/supabase'; 
+import crystalBall from '../assets/icon-crystal-ball.svg'; 
 
 export default function LoginScreen() {
   const location = useLocation();

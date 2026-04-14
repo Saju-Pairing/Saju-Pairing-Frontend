@@ -12,7 +12,7 @@ interface Props {
   analysis: { meSaju: SajuResult; ptSaju: SajuResult; score: number; relation: RelationResult; scoreComment: { title: string; desc: string } };
   onReset: () => void;
   isLoggedIn: boolean; 
-  onRequireLogin: () => void; 
+  onRequireLogin: () => void; // App.tsx 에러 방지를 위해 타입만 남겨둡니다.
 }
 
 // PremiumCard 컴포넌트
@@ -21,7 +21,7 @@ interface PremiumCardProps {
   category: string;
   title: string;    
   icon: string;
-  onUnlock: () => void; // isUnlocked prop 제거
+  onUnlock: () => void;
   children: React.ReactNode;
 }
 
@@ -35,14 +35,14 @@ const PremiumCard = ({ num, title, icon, onUnlock, children }: PremiumCardProps)
       </div>
     </div>
     <div className="relative">
-      {/* 항상 잠김 상태 디자인 적용 */}
       <div className="p-6 text-[13px] text-[#c0bad0] leading-relaxed space-y-4 blur-[6px] opacity-40 select-none transition-all duration-500">
         {children}
       </div>
       <div className="absolute inset-0 flex flex-col items-center justify-center bg-[linear-gradient(180deg,rgba(20,17,32,0)_0%,rgba(20,17,32,0.96)_40%)] z-10">
         <div className="text-2xl mb-2">🔒</div>
         <div className="text-[11px] text-[#9d8fba] mb-4">결제 후 모든 내용을 확인할 수 있어요</div>
-        <button onClick={onUnlock} className="px-5 py-2.5 bg-[linear-gradient(135deg,#C084FC,#F472B6)] hover:opacity-90 text-white text-[12px] font-bold rounded-full transition-opacity shadow-[0_4px_14px_rgba(192,132,252,0.39)]">
+        {/* ⭐️ 혹시 모를 폼 제출(새로고침) 방지를 위해 type="button" 추가 */}
+        <button type="button" onClick={onUnlock} className="px-5 py-2.5 bg-[linear-gradient(135deg,#C084FC,#F472B6)] hover:opacity-90 text-white text-[12px] font-bold rounded-full transition-opacity shadow-[0_4px_14px_rgba(192,132,252,0.39)]">
           잠금 해제하기
         </button>
       </div>
@@ -50,16 +50,13 @@ const PremiumCard = ({ num, title, icon, onUnlock, children }: PremiumCardProps)
   </div>
 );
 
-export default function SajuResultView({ me, pt, analysis, onReset, isLoggedIn, onRequireLogin }: Props) {
+export default function SajuResultView({ me, pt, analysis, onReset }: Props) {
   const navigate = useNavigate();
 
-  // 잠금 해제 로직 통일 (결제 페이지로 이동)
+  // ⭐️ 가장 핵심적인 수정: 로그인 상태를 따질 필요 없이 무조건 결제창으로 보냅니다!
+  // App.tsx의 라우터가 알아서 가로채서 로그인->결제창으로 완벽하게 안내해 줍니다.
   const handleUnlockClick = () => {
-    if (!isLoggedIn) {
-      onRequireLogin(); // 로그인 안 했으면 로그인 창으로
-    } else {
-      navigate('/payment'); // 로그인 했으면 결제 창으로 이동
-    }
+    navigate('/payment');
   };
 
   // 사주 팔자 렌더링 함수
@@ -184,8 +181,6 @@ export default function SajuResultView({ me, pt, analysis, onReset, isLoggedIn, 
           <div className="bg-[#f472b6]/[0.06] p-5 rounded-[14px] border border-[#f472b6]/20 flex flex-col items-center text-center">
             <div className="text-2xl mb-2">💕</div>
             <h3 className="text-[14px] font-bold text-[#f472b6] mb-2">일지 합</h3>
-            
-            {/* 분석 결과 */}
             <div className="w-full text-[#9D8FBA] font-['Noto_Sans_KR'] text-[10px] font-light leading-[15.5px] break-keep">
               <div className="mb-1">{analysis.relation.hapTitle}</div>
               <div>{analysis.relation.hapDesc}</div>
@@ -196,8 +191,6 @@ export default function SajuResultView({ me, pt, analysis, onReset, isLoggedIn, 
           <div className="bg-[#fb923c]/[0.06] p-5 rounded-[14px] border border-[#fb923c]/20 flex flex-col items-center text-center">
             <div className="text-2xl mb-2">⚡</div>
             <h3 className="text-[14px] font-bold text-[#fb923c] mb-2">일간 상극</h3>
-            
-            {/* 분석 결과 */}
             <div className="w-full text-[#9D8FBA] font-['Noto_Sans_KR'] text-[10px] font-light leading-[15.5px] break-keep">
               <div className="mb-1">{analysis.relation.chungTitle}</div>
               <div>{analysis.relation.chungDesc}</div>
@@ -256,10 +249,8 @@ export default function SajuResultView({ me, pt, analysis, onReset, isLoggedIn, 
                 />
               </svg>
               <div className="absolute inset-0 flex items-center justify-center">
-                {/* 💡 점수 숫자 폰트 스타일 변경 */}
                 <span className="text-[#7eb8f7] text-center font-['Noto_Serif_KR'] text-[18px] font-bold leading-normal">
                   {analysis.score}
-                  {/* 💡 '점' 글자 폰트 스타일 변경 */}
                   <span className="text-[#7eb8f7] font-['Noto_Sans_KR'] text-[9px] font-light leading-normal tracking-[1px] ml-0.5">점</span>
                 </span>
               </div>
@@ -274,6 +265,7 @@ export default function SajuResultView({ me, pt, analysis, onReset, isLoggedIn, 
             </div>
           </div>
         </div>
+
         {/* 운의 흐름 */}
         <div className="bg-[#141120] rounded-[2rem] p-6 border border-[rgba(180,140,255,0.11)] shadow-lg mb-12">
           <div className="text-[#7eb8f7] font-['Noto_Sans_KR'] text-[11px] font-medium leading-normal tracking-[1px] mb-6 flex items-center gap-2 px-1">
@@ -283,50 +275,42 @@ export default function SajuResultView({ me, pt, analysis, onReset, isLoggedIn, 
             <div>
               <div className="text-[#4a4068] font-['Noto_Sans_KR'] text-[10px] font-light tracking-[1px] mb-3 px-1">나의 운</div>
               <div className="grid grid-cols-3 gap-3">
-                
                 <div className="bg-[#141120] border border-[rgba(180,140,255,0.11)] rounded-[11px] flex flex-col items-center justify-center py-4 shadow-sm">
                   <span className="text-[#4a4068] text-center font-['Noto_Sans_KR'] text-[9px] font-light tracking-[1px] mb-2">대운</span>
                   <span className="text-[#f0eaf8] text-center font-['Noto_Serif_KR'] text-[18px] font-semibold">{analysis.meSaju.fortune.daeUnAge}</span>
                   <span className="text-[#9d8fba] text-center font-['Noto_Sans_KR'] text-[10px] font-light mt-2">{analysis.meSaju.fortune.daeUnPillar}</span>
                 </div>
-                
                 <div className="bg-[#141120] border border-[rgba(180,140,255,0.11)] rounded-[11px] flex flex-col items-center justify-center py-4 shadow-sm">
                   <span className="text-[#4a4068] text-center font-['Noto_Sans_KR'] text-[9px] font-light tracking-[1px] mb-2">세운</span>
                   <span className="text-[#f0eaf8] text-center font-['Noto_Serif_KR'] text-[18px] font-semibold">{analysis.meSaju.fortune.seUnYear}</span>
                   <span className="text-[#9d8fba] text-center font-['Noto_Sans_KR'] text-[10px] font-light mt-2">{analysis.meSaju.fortune.seUnPillar}</span>
                 </div>
-                
                 <div className="bg-[#141120] border border-[rgba(180,140,255,0.11)] rounded-[11px] flex flex-col items-center justify-center py-4 shadow-sm">
                   <span className="text-[#4a4068] text-center font-['Noto_Sans_KR'] text-[9px] font-light tracking-[1px] mb-2">월운</span>
                   <span className="text-[#f0eaf8] text-center font-['Noto_Serif_KR'] text-[18px] font-semibold">{analysis.meSaju.fortune.wolUnMonth}</span>
                   <span className="text-[#9d8fba] text-center font-['Noto_Sans_KR'] text-[10px] font-light mt-2">{analysis.meSaju.fortune.wolUnPillar}</span>
                 </div>
-                
               </div>
             </div>
             
             <div>
               <div className="text-[#4a4068] font-['Noto_Sans_KR'] text-[10px] font-light tracking-[1px] mb-3 px-1">상대방의 운</div>
               <div className="grid grid-cols-3 gap-3">
-                
                 <div className="bg-[#141120] border border-[rgba(180,140,255,0.11)] rounded-[11px] flex flex-col items-center justify-center py-4 shadow-sm">
                   <span className="text-[#4a4068] text-center font-['Noto_Sans_KR'] text-[9px] font-light tracking-[1px] mb-2">대운</span>
                   <span className="text-[#f0eaf8] text-center font-['Noto_Serif_KR'] text-[18px] font-semibold">{analysis.ptSaju.fortune.daeUnAge}</span>
                   <span className="text-[#9d8fba] text-center font-['Noto_Sans_KR'] text-[10px] font-light mt-2">{analysis.ptSaju.fortune.daeUnPillar}</span>
                 </div>
-                
                 <div className="bg-[#141120] border border-[rgba(180,140,255,0.11)] rounded-[11px] flex flex-col items-center justify-center py-4 shadow-sm">
                   <span className="text-[#4a4068] text-center font-['Noto_Sans_KR'] text-[9px] font-light tracking-[1px] mb-2">세운</span>
                   <span className="text-[#f0eaf8] text-center font-['Noto_Serif_KR'] text-[18px] font-semibold">{analysis.ptSaju.fortune.seUnYear}</span>
                   <span className="text-[#9d8fba] text-center font-['Noto_Sans_KR'] text-[10px] font-light mt-2">{analysis.ptSaju.fortune.seUnPillar}</span>
                 </div>
-                
                 <div className="bg-[#141120] border border-[rgba(180,140,255,0.11)] rounded-[11px] flex flex-col items-center justify-center py-4 shadow-sm">
                   <span className="text-[#4a4068] text-center font-['Noto_Sans_KR'] text-[9px] font-light tracking-[1px] mb-2">월운</span>
                   <span className="text-[#f0eaf8] text-center font-['Noto_Serif_KR'] text-[18px] font-semibold">{analysis.ptSaju.fortune.wolUnMonth}</span>
                   <span className="text-[#9d8fba] text-center font-['Noto_Sans_KR'] text-[10px] font-light mt-2">{analysis.ptSaju.fortune.wolUnPillar}</span>
                 </div>
-                
               </div>
             </div>
           </div>
@@ -355,7 +339,7 @@ export default function SajuResultView({ me, pt, analysis, onReset, isLoggedIn, 
             <div className="flex items-center gap-2"><span className="text-[#c084fc] text-[10px]">✦</span> 지금 당장의 행동 지침 · 종합 총평</div>
           </div>
           
-          <button onClick={handleUnlockClick} className="w-full py-3.5 bg-[linear-gradient(135deg,#C084FC,#F472B6)] text-white rounded-[1.2rem] shadow-[0_4px_20px_rgba(192,132,252,0.3)] hover:scale-[1.02] transition-transform flex flex-col items-center justify-center gap-0.5">
+          <button type="button" onClick={handleUnlockClick} className="w-full py-3.5 bg-[linear-gradient(135deg,#C084FC,#F472B6)] text-white rounded-[1.2rem] shadow-[0_4px_20px_rgba(192,132,252,0.3)] hover:scale-[1.02] transition-transform flex flex-col items-center justify-center gap-0.5">
             <span className="font-black text-[15px]">지금 바로 분석 보기</span>
             <span className="text-[10px] text-white/90 font-medium">₩990 · 평생 소장</span>
           </button>
@@ -425,14 +409,14 @@ export default function SajuResultView({ me, pt, analysis, onReset, isLoggedIn, 
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-[linear-gradient(180deg,rgba(7,6,12,0)_0%,rgba(7,6,12,0.98)_60%)] z-10">
             <div className="text-3xl mb-3 text-[#f0c060]">🔒</div>
             <div className="text-[12px] text-[#9d8fba] mb-5">결제 후 종합 총평을 확인하세요</div>
-            <button onClick={handleUnlockClick} className="px-6 py-3.5 bg-[linear-gradient(135deg,#C084FC,#F472B6)] hover:scale-[1.02] text-white text-[13px] font-bold rounded-[1rem] transition-transform shadow-[0_4px_14px_rgba(192,132,252,0.3)] flex flex-col items-center gap-0.5">
+            <button type="button" onClick={handleUnlockClick} className="px-6 py-3.5 bg-[linear-gradient(135deg,#C084FC,#F472B6)] hover:scale-[1.02] text-white text-[13px] font-bold rounded-[1rem] transition-transform shadow-[0_4px_14px_rgba(192,132,252,0.3)] flex flex-col items-center gap-0.5">
               <span>잠금 해제하고 전체 보기</span>
             </button>
           </div>
         </div>
 
         {/* 하단 다시하기 버튼 */}
-        <button onClick={onReset} className="block w-full mt-10 mb-6 text-[12px] font-bold text-[#4a4068] py-4 hover:text-[#9d8fba] transition-colors">
+        <button type="button" onClick={onReset} className="block w-full mt-10 mb-6 text-[12px] font-bold text-[#4a4068] py-4 hover:text-[#9d8fba] transition-colors">
           처음으로 돌아가기
         </button>
 
