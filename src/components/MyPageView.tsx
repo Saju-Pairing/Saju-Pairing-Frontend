@@ -88,12 +88,12 @@ export default function MyPageView() {
   return (
     <div className="min-h-screen w-full bg-[#0a0a0c] relative overflow-hidden flex flex-col items-center font-sans text-[#f0eaf8]">
 
-      {/* 배경 블러 효과 */}
+      {/* 배경 블러 효과 (유지) */}
       <div className="background-blur absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[200px] h-[200px] rounded-full bg-[#60a5fa] opacity-[0.18] blur-[40px]"></div>
       <div className="background-blur2 absolute -left-[80px] -top-[80px] w-[300px] h-[300px] rounded-full bg-[#c084fc] opacity-10 blur-[40px]"></div>
       <div className="background-blur3 absolute -right-[60px] -bottom-[60px] w-[250px] h-[250px] rounded-full bg-[#f472b6] opacity-[0.18] blur-[40px]"></div>
 
-      {/* 미세 별 입자 컨테이너 */}
+      {/* 미세 별 입자 컨테이너 (유지) */}
       <div className="container absolute inset-0 overflow-hidden pointer-events-none">
         {starStyles.map((star) => (
           <div
@@ -110,100 +110,78 @@ export default function MyPageView() {
         ))}
       </div>
 
-      <div className="w-full max-w-[375px] flex flex-col relative z-10 px-[20px]">
+      <div className="w-full max-w-[375px] min-h-screen flex flex-col justify-between relative z-10 px-[20px]">
 
-        {/* 상단 프로필 영역 */}
-        <div className="frame-1707482110 absolute top-[114px] left-1/2 -translate-x-1/2 w-[335px] flex flex-row items-center gap-[20px]">
-          <div className="group-36333 relative w-[40px] h-[40px] flex-shrink-0 overflow-hidden rounded-full">
-            <div className="absolute inset-0 rounded-full border border-[#f472b6] opacity-20 z-10 pointer-events-none"></div>
-
-            {avatarUrl ? (
-              <img src={avatarUrl} alt="프로필" className="w-full h-full object-cover" />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#c084fc4d] to-[#f472b626]">
-                <span className="text-[20px]">🔮</span>
-              </div>
-            )}
-          </div>
-
-          <div className="frame-1707481497 flex flex-col gap-[4px] justify-center flex-shrink-0">
-            <div className="div7 text-white text-[14px] font-normal font-['Noto_Sans_KR']">
-              {userName}님, 반가워요!
+        {/* --- 상단 및 메뉴 영역 --- */}
+        <div className="relative w-full h-[450px]">
+          {/* 상단 프로필 영역 */}
+          <div className="frame-1707482110 absolute top-[114px] left-1/2 -translate-x-1/2 w-[335px] flex flex-row items-center gap-[20px]">
+            <div className="group-36333 relative w-[40px] h-[40px] flex-shrink-0 overflow-hidden rounded-full">
+              <div className="absolute inset-0 rounded-full border border-[#f472b6] opacity-20 z-10 pointer-events-none"></div>
+              {avatarUrl ? (
+                <img src={avatarUrl} alt="프로필" className="w-full h-full object-cover" />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#c084fc4d] to-[#f472b626]">
+                  <span className="text-[20px]">🔮</span>
+                </div>
+              )}
             </div>
-            <div className="frame-1707482109 flex flex-row gap-[4px] items-center">
-              <img
-                src={kakaoLogo}
-                alt="카카오"
-                className="h-[16px] w-auto object-contain"
-              />
-              <div className="sajuparing-kko-com text-[#9d8fba] text-[14px] font-normal leading-[133.4%] tracking-[0.0252em]">
-                {userEmail}
+
+            <div className="frame-1707481497 flex flex-col gap-[4px] justify-center flex-shrink-0">
+              <div className="div7 text-white text-[14px] font-normal font-['Noto_Sans_KR']">
+                {userName}님, 반가워요!
+              </div>
+              <div className="frame-1707482109 flex flex-row gap-[4px] items-center">
+                <img src={kakaoLogo} alt="카카오" className="h-[16px] w-auto object-contain" />
+                <div className="sajuparing-kko-com text-[#9d8fba] text-[14px] font-normal leading-[133.4%] tracking-[0.0252em]">
+                  {userEmail}
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* 구분선 */}
-        <div className="rectangle-1091 absolute top-[182px] left-1/2 -translate-x-1/2 w-[100vw] h-[8px] bg-[#c084fc1f]"></div>
+          {/* 구분선 */}
+          <div className="rectangle-1091 absolute top-[182px] left-1/2 -translate-x-1/2 w-[100vw] h-[8px] bg-[#c084fc1f]"></div>
 
-        {/* 메뉴 리스트 */}
-        <div className="frame-1707482466 absolute top-[202px] left-[20px] w-[335px] flex flex-col">
-
-          {/* 메뉴 아이템: 결제내역 */}
-          <div
-            onClick={() => navigate('/payment-history')}
-            className="background-border border-b border-[#c084fc33] p-[16px_14px] flex flex-row items-center gap-[12px] self-stretch">
-            <img
-              src={payIcon}
-              alt="결제내역"
-              className="h-[24px] w-auto object-contain"
-            />
-            <div className="div8 text-white text-[13px] font-light font-['Noto_Sans_KR'] flex items-center justify-center">
-              결제내역
+          {/* 메뉴 리스트 */}
+          <div className="frame-1707482466 absolute top-[202px] left-0 w-full flex flex-col">
+            <div
+              onClick={() => navigate('/payment-history')}
+              className="background-border border-b border-[#c084fc33] p-[16px_14px] flex flex-row items-center gap-[12px] cursor-pointer">
+              <img src={payIcon} alt="결제내역" className="h-[24px] w-auto object-contain" />
+              <div className="div8 text-white text-[13px] font-light font-['Noto_Sans_KR']">결제내역</div>
             </div>
-          </div>
 
-          {/* 메뉴 아이템: 사주보관 */}
-          <div
-            onClick={() => navigate('/saju-storage')}
-            className="background-border border-b border-[#c084fc33] p-[16px_14px] flex flex-row items-center gap-[12px] self-stretch">
-            <img
-              src={storageIcon}
-              alt="사주보관"
-              className="h-[24px] w-auto object-contain"
-            />
-            <div className="div8 text-white text-[13px] font-light font-['Noto_Sans_KR'] flex items-center justify-center">
-              사주보관
+            <div
+              onClick={() => navigate('/saju-storage')}
+              className="background-border border-b border-[#c084fc33] p-[16px_14px] flex flex-row items-center gap-[12px] cursor-pointer">
+              <img src={storageIcon} alt="사주보관" className="h-[24px] w-auto object-contain" />
+              <div className="div8 text-white text-[13px] font-light font-['Noto_Sans_KR']">사주보관</div>
             </div>
-          </div>
 
-          {/* 메뉴 아이템: 문의하기 */}
-          <div
-            onClick={() => handleInquiryClick()}
-            className="background-border p-[16px_14px] flex flex-row items-center gap-[12px] self-stretch">
-            <img
-              src={mailIcon}
-              alt="문의하기"
-              className="h-[24px] w-auto object-contain"
-            />
-            <div className="div8 text-white text-[13px] font-light font-['Noto_Sans_KR'] flex items-center justify-center">
-              문의하기
+            <div
+              onClick={() => handleInquiryClick()}
+              className="background-border p-[16px_14px] flex flex-row items-center gap-[12px] cursor-pointer">
+              <img src={mailIcon} alt="문의하기" className="h-[24px] w-auto object-contain" />
+              <div className="div8 text-white text-[13px] font-light font-['Noto_Sans_KR']">문의하기</div>
             </div>
           </div>
         </div>
 
         {/* 하단 링크 영역 */}
-        <div className="absolute bottom-[110px] left-0 w-full flex flex-row justify-center items-center gap-[40px] z-10">
-          <button className="text-[#9d8fba] text-[13px] font-light opacity-80 hover:opacity-100 transition-opacity">
+        <div className="pb-[60px] w-full flex flex-row justify-center items-center gap-[40px] z-10">
+          <button
+            onClick={() => navigate('/terms-of-service')}
+            className="text-[#9d8fba] text-[13px] font-light opacity-80 hover:opacity-100 transition-opacity">
             개인정보 및 이용약관
           </button>
           <button
-            onClick={handleWithdraw} // 탈퇴 함수 연결
-            className="text-[#9d8fba] text-[13px] font-light opacity-80 hover:opacity-100 transition-opacity"
-          >
+            onClick={handleWithdraw}
+            className="text-[#9d8fba] text-[13px] font-light opacity-80 hover:opacity-100 transition-opacity">
             탈퇴하기
           </button>
         </div>
+
       </div>
     </div>
   );
