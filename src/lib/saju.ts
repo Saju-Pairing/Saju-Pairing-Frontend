@@ -1,5 +1,5 @@
 import { calculateSaju, calculateSajuSimple } from '@fullstackfamily/manseryeok'
-import type { BirthTime, SajuPillar } from '@/types'
+import type { BirthTime, SajuPillar, FreeResult } from '../types/saju'
 
 const ILGAN_MAP: Record<string, string> = {
   갑: '목(木) 기운 — 성장과 전진을 추구하며 직선적이고 이상이 높아요',
@@ -17,24 +17,24 @@ const ILGAN_MAP: Record<string, string> = {
 const DHS_STRONG = ['자', '오', '묘', '유']
 const DHS_WEAK = ['인', '사', '신', '해']
 
-const HAP_PAIRS = [['자','축'],['인','해'],['묘','술'],['진','유'],['사','신'],['오','미']]
-const CHUNG_PAIRS = [['자','오'],['축','미'],['인','신'],['묘','유'],['진','술'],['사','해']]
+const HAP_PAIRS = [['자', '축'], ['인', '해'], ['묘', '술'], ['진', '유'], ['사', '신'], ['오', '미']]
+const CHUNG_PAIRS = [['자', '오'], ['축', '미'], ['인', '신'], ['묘', '유'], ['진', '술'], ['사', '해']]
 
 export function calcPersonality(pillar: SajuPillar): string {
-  const ch = pillar.day.eumyang[0] ?? ''
+  const ch = pillar.day?.eumyang[0] ?? ''
   return ILGAN_MAP[ch] ?? ch + ' 일간'
 }
 
 export function calcDohasal(pillar: SajuPillar): string {
-  const b = pillar.day.eumyang[1] ?? ''
+  const b = pillar.day?.eumyang[1] ?? ''
   if (DHS_STRONG.includes(b)) return '강함'
   if (DHS_WEAK.includes(b)) return '약함'
   return '없음'
 }
 
 export function calcRelation(me: SajuPillar, partner: SajuPillar): string {
-  const m = me.day.eumyang[1] ?? ''
-  const p = partner.day.eumyang[1] ?? ''
+  const m = me.day?.eumyang[1] ?? ''
+  const p = partner.day?.eumyang[1] ?? ''
   if (HAP_PAIRS.some(pair => pair.includes(m) && pair.includes(p) && m !== p))
     return '서로 끌어당기는 합(合)의 에너지'
   if (CHUNG_PAIRS.some(pair => pair.includes(m) && pair.includes(p) && m !== p))
@@ -45,7 +45,7 @@ export function calcRelation(me: SajuPillar, partner: SajuPillar): string {
 export function calcFreeResult(
   meSaju: SajuPillar,
   partnerSaju: SajuPillar,
-): import('@/types').FreeResult {
+): FreeResult {
   const relation = calcRelation(meSaju, partnerSaju)
   const dohasal = calcDohasal(partnerSaju)
 
@@ -62,7 +62,7 @@ export function calcFreeResult(
 
   const compatibilityLabel =
     compatibility >= 75 ? '좋은 궁합' :
-    compatibility >= 55 ? '보통 궁합' : '어려운 궁합'
+      compatibility >= 55 ? '보통 궁합' : '어려운 궁합'
 
   const hamDesc = isHap
     ? '두 사람의 일주가 합(合)의 관계로, 서로 끌어당기는 강한 인연의 기운이 있어요.'
@@ -75,8 +75,8 @@ export function calcFreeResult(
   const ohScore = dohasal === '강함' ? 85 : dohasal === '약함' ? 50 : 10
   const ohLabel =
     dohasal === '강함' ? '도화살 강함 — 매력이 넘치는 상대예요' :
-    dohasal === '약함' ? '도화살 약함 — 은은한 매력이 있어요' :
-    '도화살 없음'
+      dohasal === '약함' ? '도화살 약함 — 은은한 매력이 있어요' :
+        '도화살 없음'
 
   const summary =
     `두 분의 사주를 바탕으로 기본 궁합을 분석했어요. ` +
@@ -104,9 +104,9 @@ export function calcFreeResult(
 
 export function pillarToStr(p: SajuPillar): string {
   return [
-    '년주(' + p.year.eumyang + ')',
-    '월주(' + p.month.eumyang + ')',
-    '일주(' + p.day.eumyang + ')',
+    '년주(' + p.year?.eumyang + ')',
+    '월주(' + p.month?.eumyang + ')',
+    '일주(' + p.day?.eumyang + ')',
     p.hour ? '시주(' + p.hour.eumyang + ')' : '',
   ].filter(Boolean).join(' ')
 }
@@ -163,9 +163,9 @@ export function calcSajuPillar(birth: string, time: BirthTime): SajuPillar {
       hour:
         hour !== undefined && result.hourPillar
           ? {
-              hanja: result.hourPillarHanja ?? result.hourPillar,
-              eumyang: result.hourPillar,
-            }
+            hanja: result.hourPillarHanja ?? result.hourPillar,
+            eumyang: result.hourPillar,
+          }
           : null,
     }
   } catch {

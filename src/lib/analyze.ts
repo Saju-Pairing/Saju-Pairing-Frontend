@@ -1,4 +1,4 @@
-import type { PaidResult, SajuFormData, SajuPillar } from '@/types'
+import type { PaidResult, SajuFormData, SajuPillar } from '../types/saju'
 import { calcSajuPillar, calcPersonality, calcDohasal, calcRelation, calcFreeResult, pillarToStr } from './saju'
 import { supabase } from './supabase'
 
@@ -94,7 +94,7 @@ export async function analyzePaid(
   meSaju: SajuPillar,
   partnerSaju: SajuPillar,
   paymentId?: string,
-  freeResult?: import('@/types').FreeResult,
+  freeResult?: object,
 ): Promise<PaidResult> {
   const { systemPrompt, userPrompt } = buildPaidPrompts(formData, meSaju, partnerSaju)
 
