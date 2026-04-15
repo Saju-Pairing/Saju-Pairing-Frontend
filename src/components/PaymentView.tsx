@@ -69,7 +69,7 @@ export default function PaymentView() {
 
       const result = await analyzePaid(formData, meSaju, partnerSaju, payResult.paymentId);
       sessionStorage.setItem('saju_paid_result', JSON.stringify(result));
-      navigate('/result');
+      navigate('/result', { state: { paidResult: result } });
 
     } catch (e: any) {
       console.error(e);

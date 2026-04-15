@@ -71,6 +71,12 @@ function AppContent() {
     return () => subscription.unsubscribe();
   }, []);
 
+  useEffect(() => {
+    if (location.state?.paidResult) {
+      setPaidResult(location.state.paidResult);
+    }
+  }, [location.state]);
+
   // 입력값과 분석 결과를 초기화할 때, sessionStorage에 저장된 게 있으면 가져오도록 설정
   const [me, setMe] = useState<PersonInput>(() => {
     const saved = sessionStorage.getItem('saju_me');
