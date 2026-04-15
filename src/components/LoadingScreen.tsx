@@ -10,6 +10,11 @@ export default function LoadingScreen() {
     "심층 리포트 작성 중"
   ];
 
+  // 처음 화면에 뜰 때 스크롤을 맨 위로 초기화
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   useEffect(() => {
     // 0.8초마다 다음 단계로 진행
     const timer = setInterval(() => {

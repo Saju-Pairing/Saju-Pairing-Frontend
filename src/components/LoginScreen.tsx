@@ -1,14 +1,33 @@
-import crystalBall from '../assets/icon-crystal-ball.svg';
+import { useEffect } from 'react'; 
+import { useLocation } from 'react-router-dom';
+import { supabase } from '../lib/supabase'; // 본인의 경로에 맞게 수정 필요
+import crystalBall from '../assets/icon-crystal-ball.svg'; // 본인의 경로에 맞게 수정 필요
 
 export default function LoginScreen() {
-  const REST_API_KEY = import.meta.env.VITE_KAKAO_REST_API_KEY; 
-  const REDIRECT_URI = import.meta.env.VITE_REDIRECT_URI; 
-  
-  const KAKAO_AUTH_URL = `https://kauth.kakao.com/oauth/authorize?client_id=${REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code`;
+  const location = useLocation();
 
-  const handleKakaoLogin = () => {
-    window.location.href = KAKAO_AUTH_URL;
+  const handleKakaoLogin = async () => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'kakao',
+      options: {
+        redirectTo: 'http://localhost:5173/auth/callback' 
+      }
+    });
+
+    if (error) {
+      console.error('카카오 로그인 에러:', error.message);
+    }
   };
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+
+    // ⭐️ 넘어온 state.from이 있을 때만 로컬스토리지에 저장 (없으면 냅두기)
+    if (location.state?.from) {
+      localStorage.setItem('returnPath', location.state.from);
+      console.log('📌 로그인 후 돌아갈 목적지 저장:', location.state.from);
+    }
+  }, [location]);
 
   return (
     <div className="h-[100dvh] bg-[#07060c] flex justify-center font-sans text-[#f0eaf8] relative overflow-x-hidden overflow-y-auto">
@@ -30,7 +49,7 @@ export default function LoginScreen() {
       {/* --- 메인 콘텐츠 영역 --- */}
       <div className="w-full max-w-md flex flex-col relative z-10 animate-fade-in-up h-full">
 
-        {/* 💡 핵심 변경점: 전체를 화면 중앙에 정렬 */}
+        {/* 전체를 화면 중앙에 정렬 */}
         <div className="flex-1 flex flex-col items-center justify-center w-full pb-[84px]">
           
           {/* 1. 상단 일러스트 (아래 텍스트와 28px 간격) */}
