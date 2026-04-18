@@ -366,13 +366,13 @@ export default function HomeScreen({ onStart }: Props) {
               대표자명: 김순천<br/>
               상호명: 모두모두상점<br/>
               사업자번호: 799-25-01441<br/>
-              통신판매번호: 
+              통신판매번호: 2023-경남김해-0823
             </div>
             <div className="text-[#9d8fba] text-[10px] leading-[1.8] font-light mb-6">
               <strong className="font-bold text-[#b0a8c4]">고객센터</strong><br/>
               이메일: 2019ootd@gmail.com<br/>
               사업자주소: 서울특별시 영등포구 국회대로 632, 11층 5호<br/>
-              유선번호: 000-0000-0000<br/>
+              유선번호: 070-8098-9363<br/>
               전화상담은 제공하지 않습니다.<br/>
               설정 내 문의하기를 통해 문의해주세요.
             </div>
