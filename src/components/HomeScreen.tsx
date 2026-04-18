@@ -41,7 +41,7 @@ const LandingCard = ({ num, category, icon, title, visibleContent, blurredConten
         </div>
       )}
       
-      {/* 💡 자물쇠 없이 블러 처리만 적용된 문단들 */}
+      {/* 💡 자물쇠 없이 텍스트 자체만 블러 처리 적용 */}
       {blurredContent && (
         <div className="text-[#C0BAD0] font-['Noto_Sans_KR'] text-[13.5px] font-light leading-[27.68px] break-keep space-y-4 blur-[6px] opacity-40 select-none pointer-events-none">
           {blurredContent}
@@ -86,7 +86,7 @@ export default function HomeScreen({ onStart }: Props) {
 
           <div className="text-center">
             <h1 className="text-[26px] font-['Noto_Serif_KR'] font-bold leading-snug tracking-tight mb-4">
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#f472b6] to-[#c084fc]">다시 시작하고 싶은</span><br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#c084fc] to-[#f472b6]">다시 시작하고 싶은</span><br />
               <span className="text-[#f0eaf8]">당신을 위해</span>
             </h1>
             <p className="text-[#9d8fba] text-[12px] font-light leading-[1.8] break-keep">
@@ -114,7 +114,10 @@ export default function HomeScreen({ onStart }: Props) {
             <div className="px-5 py-1.5 rounded-full border border-[rgba(180,140,255,0.2)] text-[#c084fc] text-[10px] font-bold tracking-[2px] mb-5 bg-[#141120] shadow-[0_0_10px_rgba(192,132,252,0.1)]">
               Part 1. 속마음
             </div>
-            <h2 className="text-[22px] font-['Noto_Serif_KR'] font-bold text-[#f0eaf8] mb-3 text-center">상대방의 감춰진 진심</h2>
+            {/* 💡 요청하신 대표 텍스트 1 그라데이션 및 CSS 적용 */}
+            <h2 className="text-center font-['Noto_Serif_KR'] text-[24px] font-bold leading-[34.8px] tracking-[-0.5px] text-transparent bg-clip-text bg-gradient-to-r from-[#c084fc] to-[#f472b6] mb-3">
+              상대방의 감춰진 진심
+            </h2>
             <p className="text-[#9d8fba] text-[12px] mb-8 text-center break-keep font-light leading-[1.6]">
               단순한 그리움인지, 아니면 정리가 끝난 냉정함인지<br/>사주로 읽어내는 상대의 현재 심리
             </p>
@@ -157,7 +160,10 @@ export default function HomeScreen({ onStart }: Props) {
             <div className="px-5 py-1.5 rounded-full border border-[#f472b6]/30 text-[#f472b6] text-[10px] font-bold tracking-[2px] mb-5 bg-[#141120] shadow-[0_0_10px_rgba(244,114,182,0.1)]">
               Part 2. 타이밍
             </div>
-            <h2 className="text-[22px] font-['Noto_Serif_KR'] font-bold text-[#f0eaf8] mb-3 text-center">운명의 골든타임</h2>
+            {/* 💡 요청하신 대표 텍스트 2 그라데이션 및 CSS 적용 */}
+            <h2 className="text-center font-['Noto_Serif_KR'] text-[24px] font-bold leading-[34.8px] tracking-[-0.5px] text-transparent bg-clip-text bg-gradient-to-r from-[#c084fc] to-[#f472b6] mb-3">
+              운명의 골든타임
+            </h2>
             <p className="text-[#9d8fba] text-[12px] mb-8 text-center break-keep font-light leading-[1.6]">
               연락하기 가장 좋은 시기와<br/>안좋은 시기를 파악하여 제공
             </p>
@@ -205,13 +211,10 @@ export default function HomeScreen({ onStart }: Props) {
                       </div>
                     </div>
 
-                    {/* 💡 텍스트 영역 스타일 수정 */}
                     <div className="flex flex-col gap-1">
-                      {/* 현재 재회 가능성 타이틀 */}
                       <div className="text-[#4A4068] font-['Noto_Sans_KR'] text-[9px] font-light tracking-[1px] leading-normal">
                         현재 재회 가능성
                       </div>
-                      {/* 교차 구간 설명 텍스트 */}
                       <div className="text-[#F0EAF8] font-['Noto_Sans_KR'] text-[12px] font-light leading-[19.2px] break-keep">
                         두 사람의 기운이 올해 안으로<br />
                         다시 교차하는 구간이 있어요.
@@ -240,6 +243,7 @@ export default function HomeScreen({ onStart }: Props) {
                 </>
               }
             />
+
             <LandingCard 
               num="04" 
               category="재회 최적 타이밍" 
@@ -247,7 +251,6 @@ export default function HomeScreen({ onStart }: Props) {
               title="언제 연락하는 게 가장 좋을까요"
               visibleContent={
                 <>
-                  {/* 💡 한 줄에 5개씩, 중앙 정렬이 되도록 grid 적용 */}
                   <div className="grid grid-cols-5 gap-2 mb-6 justify-items-center">
                     <span className="inline-flex h-[33px] w-full items-center justify-center rounded-[30px] border border-[#c084fc]/[0.23] text-[#c084fc] text-[11px] font-bold tracking-wide">4월 ✓</span>
                     <span className="inline-flex h-[33px] w-full items-center justify-center rounded-[30px] border border-[#3a4460]/40 bg-[#3a4460]/30 text-[#9d8fba] text-[11px] tracking-wide">5월 ⚠️</span>
@@ -255,12 +258,10 @@ export default function HomeScreen({ onStart }: Props) {
                     <span className="inline-flex h-[33px] w-full items-center justify-center rounded-[30px] border border-[#f472b6]/[0.23] bg-[#f472b6]/[0.09] text-[#f472b6] text-[11px] font-bold tracking-wide">7월 🔥</span>
                     <span className="inline-flex h-[33px] w-full items-center justify-center rounded-[30px] border border-[#3a4460]/40 bg-[#3a4460]/30 text-[#9d8fba] text-[11px] tracking-wide">8월 ⚠️</span>
                     
-                    {/* 두 번째 줄 */}
                     <span className="inline-flex h-[33px] w-full items-center justify-center rounded-[30px] border border-[#c084fc]/[0.23] text-[#c084fc] text-[11px] font-bold tracking-wide">9월 ✓</span>
                     <span className="inline-flex h-[33px] w-full items-center justify-center rounded-[30px] border border-[#c084fc]/[0.23] text-[#c084fc] text-[11px] font-bold tracking-wide">10월 ✓</span>
                     <span className="inline-flex h-[33px] w-full items-center justify-center rounded-[30px] border border-[#c084fc]/[0.23] text-[#c084fc] text-[11px] font-bold tracking-wide">11월 ✓</span>
                     <span className="inline-flex h-[33px] w-full items-center justify-center rounded-[30px] border border-[#c084fc]/[0.23] text-[#c084fc] text-[11px] font-bold tracking-wide">12월 ✓</span>
-                    {/* 5개 정렬을 위해 빈 공간 유지하거나 다른 태그 추가 가능 */}
                     <div className="w-full"></div> 
                   </div>
                   
@@ -283,7 +284,10 @@ export default function HomeScreen({ onStart }: Props) {
             <div className="px-5 py-1.5 rounded-full border border-[rgba(180,140,255,0.2)] text-[#7eb8f7] text-[10px] font-bold tracking-[2px] mb-5 bg-[#141120] shadow-[0_0_10px_rgba(126,184,247,0.1)]">
               Part 3. 솔루션
             </div>
-            <h2 className="text-[22px] font-['Noto_Serif_KR'] font-bold text-[#f0eaf8] mb-3 text-center">재회 시그널 대처법</h2>
+            {/* 💡 요청하신 대표 텍스트 3 그라데이션 및 CSS 적용 */}
+            <h2 className="text-center font-['Noto_Serif_KR'] text-[24px] font-bold leading-[34.8px] tracking-[-0.5px] text-transparent bg-clip-text bg-gradient-to-r from-[#c084fc] to-[#f472b6] mb-3">
+              재회 시그널 대처법
+            </h2>
             <p className="text-[#9d8fba] text-[12px] mb-8 text-center break-keep font-light leading-[1.6]">
               연락하기 가장 좋은 시기와<br/>안좋은 시기를 파악하여 제공
             </p>
@@ -293,8 +297,14 @@ export default function HomeScreen({ onStart }: Props) {
               category="효과적인 접근법" 
               icon="💌" 
               title="어떻게 다가가야 마음이 열릴까요"
+              visibleContent={
+                <p>상대방은 감정적인 호소나 눈물보다 일상적이고 자연스러운 연결에 마음이 열리는 타입이에요. 이 사람은 원래 공간을 중요하게 여기는 성향이라, "보고싶다", "잊을 수가 없다"는 직접적인 감정 표현은 오히려 부담으로 느껴질 수 있어요.</p>
+              }
               blurredContent={
-                <p>상대방은 감정적인 호소나 눈물보다 일상적이고 자연스러운 연결에 마음이 열리는 타입이에요.</p>
+                <>
+                  <p>첫 연락은 가볍고 짧게 하는 게 좋아요. 함께 봤던 영화가 재개봉했다거나, 자주 가던 카페가 생각났다거나, 공통의 추억을 건드리는 소재가 가장 자연스럽게 대화의 문을 열어요.</p>
+                  <p>가장 중요한 건 답장을 기다리는 여유예요. 이 사람은 자기 속도로 생각하고 반응하는 타입이에요. 여유를 보여주는 것 자체가 매력으로 작용해요. "나 아직 여기 있어, 근데 조급하지는 않아"라는 태도가 이 사람 마음을 가장 크게 움직일 거예요.</p>
+                </>
               }
             />
 
@@ -303,8 +313,14 @@ export default function HomeScreen({ onStart }: Props) {
               category="재회 후 지속 가능성" 
               icon="🌱" 
               title="다시 만나도 오래 갈 수 있을까요"
+              visibleContent={
+                <p>두 사람 사이에 흐르는 기본 기운을 보면, 이건 단순히 스쳐가는 인연이 아니에요. 서로에게 의미있는 영향을 주는 구조로 연결되어 있어요. 재회를 하게 된다면, 초반 3~6개월은 이전과 다른 안정감이 있을 거예요.</p>
+              }
               blurredContent={
-                <p>두 사람 사이에 흐르는 기본 기운을 보면, 이건 단순히 스쳐가는 인연이 아니에요. 서로에게 의미있는 영향을 주는 구조로 연결되어 있어요.</p>
+                <>
+                  <p>그런데 1년 내외가 지나면, 당신의 확인 욕구와 상대방의 공간 필요 — 이게 다시 고개를 들 수 있어요. 이건 두 사람이 나쁜 게 아니라, 서로 부딪히고 긴장하는 관계(상극)에서 오는 구조적인 문제예요.</p>
+                  <p>재회 전에 이 패턴에 대해 충분히 이야기를 나눠두는 것이 정말 중요해요. 재회 자체보다 "이번엔 어떻게 다르게 할 것인가"를 먼저 합의하는 것, 그게 이 관계를 오래 가게 만드는 가장 큰 열쇠예요.</p>
+                </>
               }
             />
 
@@ -313,20 +329,33 @@ export default function HomeScreen({ onStart }: Props) {
               category="지금 당장의 행동 지침" 
               icon="⚡" 
               title="해야 할 것과 절대 하면 안 될 것"
+              visibleContent={
+                <p>지금 당신의 기운은 먼저 움직이는 게 유리한 시기예요. 기다리기만 하면 기회가 지나갈 수 있어요. 단, 조급하게 굴면 역효과가 나요. 적극적이지만 여유 있는 태도가 핵심이에요.</p>
+              }
               blurredContent={
                 <div className="grid grid-cols-1 gap-3">
                   <div className="bg-[#0f0d18] p-4 rounded-xl border border-[rgba(180,140,255,0.08)]">
-                    <div className="text-[10px] text-[#c084fc] font-bold mb-2">✦ 지금 해야 할 것</div>
+                    <div className="text-[#C084FC] font-['Noto_Sans_KR'] text-[10px] font-bold tracking-[1.5px] mb-2">
+                      ✦ 지금 해야 할 것
+                    </div>
                     <ul className="text-[11.5px] space-y-1.5 text-[#b0a8c4] list-none leading-relaxed">
                       <li>✓ 자연스러운 안부 연락 (짧고 가볍게)</li>
+                      <li>✓ 공통의 추억을 소재로 한 대화 시도</li>
                       <li>✓ 답장을 기다리는 여유 갖기</li>
+                      <li>✓ 나 자신을 가꾸고 성장하는 모습 보여주기</li>
+                      <li>✓ 4월~7월 사이에 집중적으로 행동하기</li>
                     </ul>
                   </div>
                   <div className="bg-[#0f0d18] p-4 rounded-xl border border-[#f472b6]/20">
-                    <div className="text-[10px] text-[#f472b6] font-bold mb-2">✦ 절대 하면 안 될 것</div>
+                    <div className="text-[#F472B6] font-['Noto_Sans_KR'] text-[10px] font-bold tracking-[1.5px] mb-2">
+                      ✦ 절대 하면 안 될 것
+                    </div>
                     <ul className="text-[11.5px] space-y-1.5 text-[#b0a8c4] list-none leading-relaxed">
                       <li>✗ 재회를 강요하거나 결론 재촉하기</li>
+                      <li>✗ 과거의 잘못을 끄집어내며 따지기</li>
                       <li>✗ 읽씹에 연속 메시지 보내기</li>
+                      <li>✗ 술 마신 상태에서 감정적 연락하기</li>
+                      <li>✗ SNS로 현재 상태를 과시하며 어필하기</li>
                     </ul>
                   </div>
                 </div>
@@ -334,10 +363,9 @@ export default function HomeScreen({ onStart }: Props) {
             />
           </div>
 
-          {/* 종합 총평 배너 */}
-          <div className="w-full bg-[linear-gradient(135deg,rgba(192,132,252,0.06),rgba(244,114,182,0.04))] rounded-[2rem] p-8 border border-[rgba(180,140,255,0.15)] text-center relative overflow-hidden mb-12 shadow-lg">
-            <div className="blur-[6px] opacity-40 select-none pointer-events-none">
-              <div className="text-[#f0c060] text-2xl mb-3">✦</div>
+          {/* 종합 총평 배너 (이미지에 맞게 다른 카드들과 통일된 디자인으로 수정) */}
+          <div className="w-full bg-[#141120] rounded-[1.5rem] border border-[rgba(180,140,255,0.11)] p-8 text-center relative overflow-hidden mb-12 shadow-lg">
+            <div className="blur-[6px] opacity-40 select-none pointer-events-none flex flex-col items-center">
               <div className="text-[#f0eaf8] font-black mb-4 font-['Noto_Serif_KR'] text-[18px]">종합 총평</div>
               <p className="text-[#C0BAD0] font-['Noto_Sans_KR'] text-[13.5px] font-light leading-[27.68px] mb-6 break-keep">
                 두 사람의 관계는 단순히 감정적인 미련으로만 이어진 인연이 아니에요. 가장 중요한 건 7월 이전, 4~7월 사이에 자연스럽고 가볍게 접근하는 거예요.
