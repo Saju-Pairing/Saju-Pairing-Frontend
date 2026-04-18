@@ -13,7 +13,10 @@
     "@fullstackfamily/manseryeok": "^1.0.7",
     "@hookform/resolvers": "^5.2.2",
     "@portone/browser-sdk": "^0.1.3",
-    "@supabase/supabase-js": "^2.103.0",
+    "@supabase/supabase-js": "^2.103.1",
+    "clsx": "^2.1.1",
+    "html2canvas": "^1.4.1",
+    "jspdf": "^4.2.1",
     "lucide-react": "^1.7.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
@@ -21,6 +24,7 @@
     "react-mobile-picker": "^1.2.0",
     "react-router": "^7.13.2",
     "react-router-dom": "^7.14.0",
+    "tailwind-merge": "^3.5.0",
     "zod": "^4.3.6"
   },
   "devDependencies": {

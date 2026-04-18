@@ -3,15 +3,15 @@ import type { RawSaju, RelationResult, FortuneFlow } from '../types/saju';
 import { CHAR_INFO, FIVE_ELEMENTS, RELATION_MAP, HANJA_TO_HANGUL } from '../constants/saju';
 
 export const isPair = (arr: string[][], c1: string, c2: string) => arr.some(pair => (pair[0] === c1 && pair[1] === c2) || (pair[0] === c2 && pair[1] === c1));
-export const isSamhap = (b1: string, b2: string) => isPair([['亥','卯'], ['卯','未'], ['亥','未'], ['寅','午'], ['午','戌'], ['寅','戌'], ['巳','酉'], ['酉','丑'], ['巳','丑'], ['申','子'], ['子','辰'], ['申','辰']], b1, b2);
-export const isGwimun = (b1: string, b2: string) => isPair([['子','酉'], ['丑','午'], ['寅','未'], ['卯','申'], ['辰','亥'], ['巳','戌']], b1, b2);
+export const isSamhap = (b1: string, b2: string) => isPair([['亥', '卯'], ['卯', '未'], ['亥', '未'], ['寅', '午'], ['午', '戌'], ['寅', '戌'], ['巳', '酉'], ['酉', '丑'], ['巳', '丑'], ['申', '子'], ['子', '辰'], ['申', '辰']], b1, b2);
+export const isGwimun = (b1: string, b2: string) => isPair([['子', '酉'], ['丑', '午'], ['寅', '未'], ['卯', '申'], ['辰', '亥'], ['巳', '戌']], b1, b2);
 
 export const getSengGeuk = (e1: string, e2: string) => {
   if (e1 === e2) return 'SAME';
-  if ((e1==='목'&&e2==='화') || (e1==='화'&&e2==='토') || (e1==='토'&&e2==='금') || (e1==='금'&&e2==='수') || (e1==='수'&&e2==='목')) return 'SENG_1_TO_2'; 
-  if ((e2==='목'&&e1==='화') || (e2==='화'&&e1==='토') || (e2==='토'&&e1==='금') || (e2==='금'&&e1==='수') || (e2==='수'&&e1==='목')) return 'SENG_2_TO_1'; 
-  if ((e1==='목'&&e2==='토') || (e1==='토'&&e2==='수') || (e1==='수'&&e2==='화') || (e1==='화'&&e2==='금') || (e1==='금'&&e2==='목')) return 'GEUK_1_TO_2'; 
-  return 'GEUK_2_TO_1'; 
+  if ((e1 === '목' && e2 === '화') || (e1 === '화' && e2 === '토') || (e1 === '토' && e2 === '금') || (e1 === '금' && e2 === '수') || (e1 === '수' && e2 === '목')) return 'SENG_1_TO_2';
+  if ((e2 === '목' && e1 === '화') || (e2 === '화' && e1 === '토') || (e2 === '토' && e1 === '금') || (e2 === '금' && e1 === '수') || (e2 === '수' && e1 === '목')) return 'SENG_2_TO_1';
+  if ((e1 === '목' && e2 === '토') || (e1 === '토' && e2 === '수') || (e1 === '수' && e2 === '화') || (e1 === '화' && e2 === '금') || (e1 === '금' && e2 === '목')) return 'GEUK_1_TO_2';
+  return 'GEUK_2_TO_1';
 };
 
 export const getSipseong = (dayMaster: string | null | undefined, target: string | null | undefined) => {
@@ -39,7 +39,7 @@ export const getRelation = (meStr: string, ptStr: string): RelationResult => {
   const isStemChung = isPair(RELATION_MAP.STEM_CHUNG, meStem, ptStem);
   const isBranchChung = isPair(RELATION_MAP.BRANCH_CHUNG, meBranch, ptBranch);
   const isBranchWonjin = isPair(RELATION_MAP.BRANCH_WONJIN, meBranch, ptBranch);
-  
+
   const samhap = isSamhap(meBranch, ptBranch);
   const gwimun = isGwimun(meBranch, ptBranch);
   const sengGeuk = getSengGeuk(CHAR_INFO[meStem]?.e || '', CHAR_INFO[ptStem]?.e || '');
@@ -64,21 +64,21 @@ export const getRelation = (meStr: string, ptStr: string): RelationResult => {
   finalScore = Math.max(20, Math.min(100, finalScore));
 
   let hapTitle = '서로 알아가는 단계'; let hapDesc = '서서히 맞춰가며 정이 드는 평온한 관계';
-  if (isStemHap && isBranchHap) { hapTitle = '천지합 (천생연분)'; hapDesc = '정신과 육체가 완벽히 끌리는 운명적 합'; } 
+  if (isStemHap && isBranchHap) { hapTitle = '천지합 (천생연분)'; hapDesc = '정신과 육체가 완벽히 끌리는 운명적 합'; }
   else if (isBranchHap) { hapTitle = '지지육합 (본능적 끌림)'; hapDesc = '이성적인 판단보다 본능적으로 끌리는 속궁합'; }
   else if (samhap) { hapTitle = '삼합/반합 (강력한 시너지)'; hapDesc = '함께 있을 때 능력과 매력이 폭발하는 소울메이트'; }
-  else if (isStemHap) { hapTitle = '천간합 (정신적 교감)'; hapDesc = '대화가 잘 통하고 가치관이 찰떡같이 맞는 관계'; } 
+  else if (isStemHap) { hapTitle = '천간합 (정신적 교감)'; hapDesc = '대화가 잘 통하고 가치관이 찰떡같이 맞는 관계'; }
   else if (sengGeuk === 'SENG_1_TO_2') { hapTitle = '수호천사 (내가 퍼주는 사랑)'; hapDesc = '내가 무의식적으로 상대방을 챙기고 양보하게 됨'; }
   else if (sengGeuk === 'SENG_2_TO_1') { hapTitle = '안식처 (내가 받는 사랑)'; hapDesc = '상대방이 나를 귀여워하고 다정하게 품어주는 관계'; }
   else if (sengGeuk === 'SAME') { hapTitle = '비견겁재 (친구 같은 연인)'; hapDesc = '서로 코드가 잘 맞고 편안한 동지애가 넘침'; }
 
   let chungTitle = '큰 마찰 없음'; let chungDesc = '성향 차이만 잘 극복하면 안정적인 관계 유지 가능';
-  if (isStemChung && isBranchChung) { chungTitle = '천지충 (강한 마찰)'; chungDesc = '가치관과 현실 모두 부딪히기 쉬워 깊은 배려 필요'; } 
+  if (isStemChung && isBranchChung) { chungTitle = '천지충 (강한 마찰)'; chungDesc = '가치관과 현실 모두 부딪히기 쉬워 깊은 배려 필요'; }
   else if (isBranchWonjin && gwimun) { chungTitle = '원진·귀문 (애증의 굴레)'; chungDesc = '미치도록 끌리지만 사소한 일로 극도로 예민해지는 인연'; }
   else if (isBranchWonjin) { chungTitle = '원진살 (애증과 미련)'; chungDesc = '미워하면서도 왠지 모르게 쉽게 끊어내지 못하는 알쏭달쏭한 인연'; }
   else if (gwimun) { chungTitle = '귀문관살 (집착과 예민함)'; chungDesc = '묘하게 빠져들지만 한 번 싸우면 걷잡을 수 없는 감정선'; }
-  else if (isBranchChung) { chungTitle = '지지충 (현실적 갈등)'; chungDesc = '환경이나 현실적인 문제로 인한 잦은 스트레스 주의'; } 
-  else if (isStemChung) { chungTitle = '천간충 (의견 대립)'; chungDesc = '자존심 싸움이나 생각의 차이로 잦은 말다툼 주의'; } 
+  else if (isBranchChung) { chungTitle = '지지충 (현실적 갈등)'; chungDesc = '환경이나 현실적인 문제로 인한 잦은 스트레스 주의'; }
+  else if (isStemChung) { chungTitle = '천간충 (의견 대립)'; chungDesc = '자존심 싸움이나 생각의 차이로 잦은 말다툼 주의'; }
   else if (sengGeuk === 'GEUK_1_TO_2') { chungTitle = '주도권 쟁탈 (내가 리드)'; chungDesc = '무의식적으로 내가 상대를 통제하거나 이기려 할 수 있음'; }
   else if (sengGeuk === 'GEUK_2_TO_1') { chungTitle = '주도권 쟁탈 (상대가 리드)'; chungDesc = '상대방의 강한 페이스에 내가 휘말리거나 져주게 되는 관계'; }
 
@@ -108,41 +108,41 @@ export const getScoreComment = (score: number, relation: RelationResult, meEleme
 export const getElements = (saju: RawSaju, isUnknown: boolean) => {
   const stats = { 목: 0, 화: 0, 토: 0, 금: 0, 수: 0 };
   const chars = [
-    saju.yearPillarHanja?.charAt(0), saju.yearPillarHanja?.charAt(1), 
-    saju.monthPillarHanja?.charAt(0), saju.monthPillarHanja?.charAt(1), 
-    saju.dayPillarHanja?.charAt(0), saju.dayPillarHanja?.charAt(1), 
+    saju.yearPillarHanja?.charAt(0), saju.yearPillarHanja?.charAt(1),
+    saju.monthPillarHanja?.charAt(0), saju.monthPillarHanja?.charAt(1),
+    saju.dayPillarHanja?.charAt(0), saju.dayPillarHanja?.charAt(1),
     ...(isUnknown ? [] : [saju.hourPillarHanja?.charAt(0), saju.hourPillarHanja?.charAt(1)])
   ].filter(Boolean) as string[];
   chars.forEach(c => { if (CHAR_INFO[c]) stats[CHAR_INFO[c].e as keyof typeof stats]++; });
   return { stats, total: chars.length };
 };
 
-export const getFortuneFlow = (birthYear: number, birthDay: number, gender: 'F'|'M', yearHanja: string, monthHanja: string): FortuneFlow => {
-  const today = new Date(); 
-  const currentYear = today.getFullYear(); 
+export const getFortuneFlow = (birthYear: number, birthDay: number, gender: 'F' | 'M', yearHanja: string, monthHanja: string): FortuneFlow => {
+  const today = new Date();
+  const currentYear = today.getFullYear();
   const currentMonth = today.getMonth() + 1;
   const currentDay = today.getDate();
-  
+
   // 만세력 라이브러리를 통해 "오늘" 날짜의 사주를 계산하여 세운/월운 간지 계산
   const todaySaju = calculateSaju(currentYear, currentMonth, currentDay);
 
   const isYangYear = ['甲', '丙', '戊', '庚', '壬'].includes(yearHanja.charAt(0));
   const isForward = (gender === 'M' && isYangYear) || (gender === 'F' && !isYangYear);
   const monthIdx = SIXTY_PILLARS.findIndex(p => p.combined.hanja === monthHanja);
-  const daeunNum = (birthDay % 9) + 1; 
+  const daeunNum = (birthDay % 9) + 1;
   const step = Math.floor((currentYear - birthYear + 1 < daeunNum ? 0 : (currentYear - birthYear + 1 - daeunNum) / 10) + 1);
   let currentDaeunIdx = (monthIdx + ((isForward ? 1 : -1) * step)) % 60;
   if (currentDaeunIdx < 0) currentDaeunIdx += 60;
-  
+
   const startAge = daeunNum + (step - 1) * 10;
-  
-  return { 
-    daeUnPillar: SIXTY_PILLARS[currentDaeunIdx]?.combined.hanja || '??', 
-    daeUnAge: `${startAge}~${startAge + 9}세`, 
-    seUnPillar: todaySaju.yearPillarHanja || '??', 
-    seUnYear: `${currentYear}년`, 
-    wolUnPillar: todaySaju.monthPillarHanja || '??', 
-    wolUnMonth: `${currentMonth}월` 
+
+  return {
+    daeUnPillar: SIXTY_PILLARS[currentDaeunIdx]?.combined.hanja || '??',
+    daeUnAge: `${startAge}~${startAge + 9}세`,
+    seUnPillar: todaySaju.yearPillarHanja || '??',
+    seUnYear: `${currentYear}년`,
+    wolUnPillar: todaySaju.monthPillarHanja || '??',
+    wolUnMonth: `${currentMonth}월`
   };
 };
 
@@ -152,43 +152,58 @@ export const formatPillar = (pillar: string) => {
   return `${hangul}(${pillar})`;
 };
 
+// analyze-saju API에 맞는 사주 구조 생성
+export const buildAnalyzePayload = (rawSaju: RawSaju, isUnknown: boolean) => {
+  const toHanjaEumyang = (hanja: string | null | undefined) => {
+    if (!hanja || hanja === '??') return null;
+    const eumyang = (HANJA_TO_HANGUL[hanja.charAt(0)] || '') + (HANJA_TO_HANGUL[hanja.charAt(1)] || '');
+    return { hanja, eumyang };
+  };
+  return {
+    year: toHanjaEumyang(rawSaju.yearPillarHanja),
+    month: toHanjaEumyang(rawSaju.monthPillarHanja),
+    day: toHanjaEumyang(rawSaju.dayPillarHanja),
+    hour: isUnknown ? null : toHanjaEumyang(rawSaju.hourPillarHanja),
+  };
+};
+
 // 서버 전송용 JSON 빌더 함수
 export const buildServerPayload = (
-  rawSaju: RawSaju, 
-  elements: { stats: Record<string, number>; total: number }, 
-  fortune: FortuneFlow, 
+  rawSaju: RawSaju,
+  elements: { stats: Record<string, number>; total: number },
+  fortune: FortuneFlow,
   isUnknown: boolean
 ) => {
   const dm = rawSaju.dayPillarHanja?.charAt(0) || '甲';
   const split = (str: string | null | undefined) => (!str || str === '??') ? { 천간: "?", 지지: "?" } : { 천간: str.charAt(0), 지지: str.charAt(1) };
-  
+
   return {
-    원국: { 
-      년주: split(rawSaju.yearPillarHanja), 
-      월주: split(rawSaju.monthPillarHanja), 
-      일주: split(rawSaju.dayPillarHanja), 
-      시주: isUnknown ? { 천간: "?", 지지: "?" } : split(rawSaju.hourPillarHanja) 
+    원국: {
+      년주: split(rawSaju.yearPillarHanja),
+      월주: split(rawSaju.monthPillarHanja),
+      일주: split(rawSaju.dayPillarHanja),
+      시주: isUnknown ? { 천간: "?", 지지: "?" } : split(rawSaju.hourPillarHanja)
     },
     오행통계: elements.stats,
-    현재대운: { 
-      천간: fortune.daeUnPillar.charAt(0), 
-      지지: fortune.daeUnPillar.charAt(1), 
-      시작나이: Number(fortune.daeUnAge.match(/(\d+)~/)?.[1] || 0), 
-      끝나이: Number(fortune.daeUnAge.match(/~(\d+)세/)?.[1] || 0) 
+    현재대운: {
+      천간: fortune.daeUnPillar.charAt(0),
+      지지: fortune.daeUnPillar.charAt(1),
+      시작나이: Number(fortune.daeUnAge.match(/(\d+)~/)?.[1] || 0),
+      끝나이: Number(fortune.daeUnAge.match(/~(\d+)세/)?.[1] || 0)
     },
-    현재세운: { 
-      천간: fortune.seUnPillar.charAt(0), 
-      지지: fortune.seUnPillar.charAt(1), 
-      년도: Number(fortune.seUnYear.replace(/[^0-9]/g, '')) 
+    현재세운: {
+      천간: fortune.seUnPillar.charAt(0),
+      지지: fortune.seUnPillar.charAt(1),
+      년도: Number(fortune.seUnYear.replace(/[^0-9]/g, ''))
     },
-    현재월운: { 
-      천간: fortune.wolUnPillar.charAt(0), 
-      지지: fortune.wolUnPillar.charAt(1), 
-      월: Number(fortune.wolUnMonth.replace(/[^0-9]/g, '')) 
+    현재월운: {
+      천간: fortune.wolUnPillar.charAt(0),
+      지지: fortune.wolUnPillar.charAt(1),
+      월: Number(fortune.wolUnMonth.replace(/[^0-9]/g, ''))
     },
-    십성: { 
-      대운십성: getSipseong(dm, fortune.daeUnPillar.charAt(0)), 
-      세운십성: getSipseong(dm, fortune.seUnPillar.charAt(0)) 
+    십성: {
+      대운십성: getSipseong(dm, fortune.daeUnPillar.charAt(0)),
+      세운십성: getSipseong(dm, fortune.seUnPillar.charAt(0))
     }
   };
 };
