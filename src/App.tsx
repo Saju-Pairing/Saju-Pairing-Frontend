@@ -9,11 +9,11 @@ import type { PersonInput, SajuResult, RelationResult } from './types/saju';
 import { getElements, getFortuneFlow, getRelation, getScoreComment, buildServerPayload } from './utils/sajuEngine';
 import type { PaidResult } from './types/saju';
 
-import SajuInputForm from './components/SajuInputForm';
+import SajuInputForm from './components/SajuInputView';
 import SajuResultView from './components/SajuResultView';
-import LoadingScreen from './components/LoadingScreen';
-import LoginScreen from './components/LoginScreen';
-import HomeScreen from './components/HomeScreen';
+import LoadingScreen from './components/LoadingView';
+import LoginScreen from './components/LoginView';
+import HomeScreen from './components/HomeView';
 import TopBar from './components/TopBar';
 import BottomNav from './components/BottomNav';
 import MyPageView from './components/MyPageView';
