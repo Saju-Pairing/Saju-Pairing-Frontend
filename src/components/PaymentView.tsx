@@ -200,6 +200,7 @@ export default function PaymentView() {
               결제 즉시 분석 결과가 잠금 해제됩니다.
             </span>
             <button
+              onClick={() => navigate('/terms-of-service')}
               style={{
                 ...footerTextStyle,
                 textDecoration: 'underline',
