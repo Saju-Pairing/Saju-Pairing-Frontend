@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'; 
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { requestPayment, type PayMethod } from '../lib/portone';
 import { verifyPayment } from '../lib/payment';
@@ -12,11 +12,6 @@ import kakaoLogo from '../assets/images/logo_kakaopay.png';
 export default function PaymentView() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-
-  // 화면 진입 시 무조건 스크롤 맨 위로 이동
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
 
   const handlePayment = async (payMethod: PayMethod) => {
     if (loading) return;
@@ -205,6 +200,7 @@ export default function PaymentView() {
               결제 즉시 분석 결과가 잠금 해제됩니다.
             </span>
             <button
+              onClick={() => navigate('/terms-of-service')}
               style={{
                 ...footerTextStyle,
                 textDecoration: 'underline',
@@ -232,7 +228,7 @@ export default function PaymentView() {
               <div className="flex flex-col gap-[2px]">
                 <span style={{ ...footerTextStyle, fontSize: '10px' }}>이메일: 2019ootd@gmail.com</span>
                 <span style={{ ...footerTextStyle, fontSize: '10px', color: '#4A4068' }}>사업자주소: 서울특별시 영등포구 국회대로 632, 11층 5호</span>
-                <span style={{ ...footerTextStyle, fontSize: '10px', color: '#4A4068' }}>유선번호: 000-0000-0000</span>
+                <span style={{ ...footerTextStyle, fontSize: '10px', color: '#4A4068' }}>유선번호: 070-8098-9363</span>
                 <span style={{ ...footerTextStyle, fontSize: '10px', color: '#4A4068' }}>전화상담은 제공하지 않습니다.</span>
                 <span style={{ ...footerTextStyle, fontSize: '10px', color: '#4A4068' }}>설정 내 문의하기를 통해 문의해주세요.</span>
               </div>
