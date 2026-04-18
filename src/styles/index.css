@@ -1,0 +1,142 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@700;900&family=Noto+Sans+KR:wght@300;400;700&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ══════════════════════════════════════
+    기본 리셋 & 공통 스타일
+   ══════════════════════════════════════ */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Noto Sans KR', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, Helvetica, Arial, sans-serif;
+  background-color: #07060c; 
+  color: #f0eaf8;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+input, select, textarea, button {
+  font-family: inherit;
+  font-size: 16px;
+}
+
+#root {
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* ══════════════════════════════════════
+    로딩 화면 (LoadingScreen) 스타일
+   ══════════════════════════════════════ */
+.loading-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 85vh;
+  text-align: center;
+}
+
+/* 중앙 수정구슬(Orb) 구역 */
+.load-orb-wrap {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  margin-bottom: 40px;
+}
+
+.load-orb-out {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(192,132,252,0.3) 0%, rgba(192,132,252,0) 70%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: float 3s ease-in-out infinite;
+}
+
+.load-orb-in {
+  font-size: 50px;
+  filter: drop-shadow(0 0 20px rgba(192,132,252,0.8));
+  animation: pulse 2s infinite;
+}
+
+/* 로딩 텍스트 */
+.load-title {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.4;
+  margin-bottom: 12px;
+}
+
+.load-sub {
+  color: #9d8fba;
+  font-size: 14px;
+  margin-bottom: 40px;
+}
+
+/* 단계별 체크리스트 */
+.steps {
+  width: 220px;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+  color: #4a4068; 
+  transition: all 0.5s ease;
+}
+
+.sdot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #4a4068;
+  transition: all 0.5s ease;
+}
+
+/* 활성화 상태 (done) */
+.step.done {
+  color: #c084fc;
+}
+
+.step.done .sdot {
+  background: #c084fc;
+  box-shadow: 0 0 10px #c084fc;
+}
+
+/* ══════════════════════════════════════
+    애니메이션 키프레임 모음
+   ══════════════════════════════════════ */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-15px); }
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.1); opacity: 1; }
+  100% { transform: scale(1); opacity: 0.8; }
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-15px); }
+}
+
+.animate-bounce {
+  animation: bounce 2s ease-in-out infinite;
+}
