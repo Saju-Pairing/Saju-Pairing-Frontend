@@ -22,6 +22,7 @@ import SajuStorageView from './components/SajuStorageView';
 import PaymentView from './components/PaymentView';
 import AuthCallback from './components/AuthCallback';
 import TermsOfServiceView from './components/TermsOfServiceView';
+import ScrollToTop from "./components/ScrollToTop";
 
 function AppContent() {
   const navigate = useNavigate();
@@ -276,6 +277,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <div className="min-h-screen bg-[#07060c] flex justify-center font-sans text-[#f0eaf8]">
+        <ScrollToTop />
         <AppContent />
       </div>
     </BrowserRouter>

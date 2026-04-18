@@ -13,11 +13,6 @@ export default function PaymentView() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
-  // 화면 진입 시 무조건 스크롤 맨 위로 이동
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
-
   const handlePayment = async (payMethod: PayMethod) => {
     if (loading) return;
 
