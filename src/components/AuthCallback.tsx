@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '../lib/supabase'; // 본인의 경로에 맞게 수정 필요
+import { supabase } from '../lib/supabase'; 
 
 export default function AuthCallback() {
   const navigate = useNavigate();
@@ -8,19 +8,19 @@ export default function AuthCallback() {
   const hasNavigated = useRef(false);
 
   useEffect(() => {
-    // 화면이 켜지자마자 로컬 스토리지에서 주소를 한 번만 딱 꺼내서 변수에 안전하게 보관합니다.
+    // 화면이 켜지자마자 로컬 스토리지에서 주소를 한 번만 딱 꺼내서 변수에 안전하게 보관
     const returnPath = localStorage.getItem('returnPath') || '/';
 
     // 성공 시 실행할 공통 함수
     const handleSuccess = () => {
-      // 이미 이동 처리를 했다면 무시합니다.
+      // 이미 이동 처리를 했다면 무시
       if (hasNavigated.current) return; 
       
       hasNavigated.current = true; // 이동했다고 스위치 켜기
       console.log("로그인 성공! 돌아갈 곳:", returnPath);
       
       localStorage.removeItem('returnPath'); // 메모지 삭제
-      navigate(returnPath, { replace: true }); // 진짜 목적지로 이동!
+      navigate(returnPath, { replace: true }); // 진짜 목적지로 이동
     };
 
     // 1. 이벤트 감지 로직

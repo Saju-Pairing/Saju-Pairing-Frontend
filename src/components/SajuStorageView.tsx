@@ -39,37 +39,37 @@ export default function SajuStorageView() {
     ];
 
     return (
-        <div className="app-wrapper mx-auto">
-            <div className="div w-[375px] h-[812px] bg-[#07060c] relative overflow-hidden">
+        <div className="min-h-screen w-full bg-[#0a0a0c] relative overflow-hidden flex flex-col items-center font-sans text-[#f0eaf8]">
 
-                {/* 배경 디자인 (동일 유지) */}
-                <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[200px] h-[200px] rounded-full bg-[#60a5fa] opacity-[0.12] blur-[40px]"></div>
-                <div className="absolute -left-[80px] -top-[40px] w-[250px] h-[250px] rounded-full bg-[#c084fc] opacity-[0.08] blur-[40px]"></div>
-                <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                    {stars.map((s) => (
-                        <div key={s} className="absolute bg-white rounded-full" style={{ width: '1px', height: '1px', opacity: Math.random() * 0.1, left: `${Math.random() * 100}%`, top: `${Math.random() * 100}%` }} />
-                    ))}
+            {/* 배경 디자인 (동일 유지) */}
+            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[200px] h-[200px] rounded-full bg-[#60a5fa] opacity-[0.12] blur-[40px]"></div>
+            <div className="absolute -left-[80px] -top-[40px] w-[250px] h-[250px] rounded-full bg-[#c084fc] opacity-[0.08] blur-[40px]"></div>
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                {stars.map((s) => (
+                    <div key={s} className="absolute bg-white rounded-full" style={{ width: '1px', height: '1px', opacity: Math.random() * 0.1, left: `${Math.random() * 100}%`, top: `${Math.random() * 100}%` }} />
+                ))}
+            </div>
+
+            {/* 상단 헤더 영역 (frame-1707482468) */}
+            <header className="w-full px-[20px] py-[15px] mt-[44px] flex flex-row items-center justify-between z-20 shrink-0">
+                <button
+                    onClick={() => navigate(-1)}
+                    className="arrows-chevron-left w-[24px] h-[24px] flex items-center justify-center cursor-pointer"
+                >
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M15 18L9 12L15 6" stroke="#f0eaf8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                </button>
+                <div className="div3 text-[#c084fc] text-[14px] font-normal font-['Noto_Sans_KR'] leading-[20px]">
+                    사주보관
                 </div>
+                <div className="w-[24px]"></div> {/* 좌측 버튼과의 균형을 위한 빈 공간 */}
+            </header>
 
-                {/* 상단 헤더 영역 (frame-1707482468) */}
-                <header className="absolute top-[44px] left-1/2 -translate-x-1/2 w-[375px] px-[20px] py-[15px] flex flex-row items-center justify-between z-20">
-                    <button
-                        onClick={() => navigate(-1)}
-                        className="arrows-chevron-left w-[24px] h-[24px] flex items-center justify-center cursor-pointer"
-                    >
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M15 18L9 12L15 6" stroke="#f0eaf8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
-                    </button>
-                    <div className="div3 text-[#c084fc] text-[14px] font-normal font-['Noto_Sans_KR'] leading-[20px]">
-                        사주보관
-                    </div>
-                    <div className="w-[24px]"></div> {/* 좌측 버튼과의 균형을 위한 빈 공간 */}
-                </header>
-
+            <div className="w-full max-w-[375px] min-h-screen relative z-10">
 
                 {/* 보관함 요약 (frame-1707482464) */}
-                <div className="absolute top-[118px] left-1/2 -translate-x-1/2 w-[335px] bg-[rgba(192,132,252,0.07)] rounded-[12px] border border-[rgba(192,132,252,0.22)] p-[16px_24px] flex flex-row justify-center items-center gap-[8px] z-10">
+                <div className="absolute top-[20px] left-1/2 -translate-x-1/2 w-[335px] bg-[rgba(192,132,252,0.07)] rounded-[12px] border border-[rgba(192,132,252,0.22)] p-[16px_24px] flex flex-row justify-center items-center gap-[8px] z-10">
                     <div className="flex flex-col items-center justify-center gap-[8px] flex-shrink-0 relative">
 
                         {/* 메인 문구 */}
@@ -89,12 +89,12 @@ export default function SajuStorageView() {
                 </div>
 
                 {/* 리스트 타이틀 (div10) */}
-                <div className="absolute top-[209px] left-[20px] text-[#9d8fba] text-[13px] font-light">
+                <div className="absolute top-[120px] left-[20px] text-[#9d8fba] text-[13px] font-light">
                     내 결과
                 </div>
 
                 {/* 사주 리스트 컨테이너 */}
-                <div className="absolute top-[236px] left-[20px] w-[335px] flex flex-col gap-[20px] z-10 overflow-y-auto max-h-[480px] pb-10 scrollbar-hide">
+                <div className="absolute top-[150px] left-[20px] w-[335px] flex flex-col gap-[20px] z-10 overflow-y-auto max-h-[480px] pb-10 scrollbar-hide">
                     {sajuRecords.map((record) => (
                         <div
                             key={record.id}

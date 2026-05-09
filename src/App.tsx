@@ -9,11 +9,11 @@ import type { PersonInput, SajuResult, RelationResult } from './types/saju';
 import { getElements, getFortuneFlow, getRelation, getScoreComment, buildServerPayload } from './utils/sajuEngine';
 import type { PaidResult } from './types/saju';
 
-import SajuInputForm from './components/SajuInputForm';
+import SajuInputForm from './components/SajuInputView';
 import SajuResultView from './components/SajuResultView';
-import LoadingScreen from './components/LoadingScreen';
-import LoginScreen from './components/LoginScreen';
-import HomeScreen from './components/HomeScreen';
+import LoadingScreen from './components/LoadingView';
+import LoginScreen from './components/LoginView';
+import HomeScreen from './components/HomeView';
 import TopBar from './components/TopBar';
 import BottomNav from './components/BottomNav';
 import MyPageView from './components/MyPageView';
@@ -21,6 +21,8 @@ import PaymentHistoryView from './components/PaymentHistoryView';
 import SajuStorageView from './components/SajuStorageView';
 import PaymentView from './components/PaymentView';
 import AuthCallback from './components/AuthCallback';
+import TermsOfServiceView from './components/TermsOfServiceView';
+import ScrollToTop from "./components/ScrollToTop";
 
 function AppContent() {
   const navigate = useNavigate();
@@ -31,7 +33,7 @@ function AppContent() {
   };
 
   // 상단바를 숨길 경로 설정
-  const hideTopBarPaths = ['/payment-history', '/saju-storage'];
+  const hideTopBarPaths = ['/payment-history', '/saju-storage', '/terms-of-service'];
   const shouldHideTopBar = hideTopBarPaths.includes(location.pathname);
 
   const [isLoading, setIsLoading] = useState(false);
@@ -233,7 +235,7 @@ function AppContent() {
               analysis={analysis}
               onReset={handleReset}
               isLoggedIn={isLoggedIn}
-              // ⭐️ 수정: 잠금 해제(결제)를 위해 로그인하는 것이므로 목적지를 /payment로 변경!
+              // 수정: 잠금 해제(결제)를 위해 로그인하는 것이므로 목적지를 /payment로 변경
               onRequireLogin={() => navigate('/login', { state: { from: '/payment' } })}
               paidResult={paidResult}
             />
@@ -254,6 +256,7 @@ function AppContent() {
         <Route path="/mypage" element={<MyPageView />} />
         <Route path="/payment-history" element={<PaymentHistoryView />} />
         <Route path="/saju-storage" element={<SajuStorageView />} />
+        <Route path="/terms-of-service" element={<TermsOfServiceView />} />
 
         {/* 잘못된 경로는 홈으로 리다이렉트 */}
         <Route path="/login" element={<LoginScreen />} />
@@ -274,6 +277,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <div className="min-h-screen bg-[#07060c] flex justify-center font-sans text-[#f0eaf8]">
+        <ScrollToTop />
         <AppContent />
       </div>
     </BrowserRouter>
