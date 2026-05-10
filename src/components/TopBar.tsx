@@ -4,9 +4,10 @@ interface Props {
   isLoggedIn: boolean;
   userName?: string;
   onLoginClick: () => void;
+  onLogoutClick?: () => void; // 👈 로그아웃 클릭 함수 추가
 }
 
-export default function TopBar({ isLoggedIn, userName, onLoginClick }: Props) {
+export default function TopBar({ isLoggedIn, onLoginClick, onLogoutClick }: Props) {
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
 
@@ -38,7 +39,7 @@ export default function TopBar({ isLoggedIn, userName, onLoginClick }: Props) {
       <div className="w-full h-[54px] bg-[#07060c]/80 backdrop-blur-md border-b border-[rgba(180,140,255,0.08)] flex items-center">
         <div className="max-w-md w-full mx-auto flex items-center justify-between px-6">
           
-          {/* (Noto Serif KR, 14px, SemiBold, Line-height 18.9px) */}
+          {/* 로고 영역 */}
           <div className="cursor-pointer font-['Noto_Serif_KR'] text-[14px] font-semibold leading-[18.9px] tracking-tight">
             <span className="text-[#f0eaf8]">사주</span>
             <span className="text-[#c084fc]">페어링</span>
@@ -46,9 +47,22 @@ export default function TopBar({ isLoggedIn, userName, onLoginClick }: Props) {
           
           {/* 로그인 여부에 따라 UI 변경 */}
           {isLoggedIn ? (
-            <div className="text-[13px] font-bold text-[#f472b6]">
-              {userName || '사용자'}님
-            </div>
+            <button 
+              onClick={onLogoutClick}
+              className="
+                flex flex-col justify-center items-center
+                px-3 py-1
+                text-[12.5px] font-light leading-[19.38px]
+                font-['Noto_Sans_KR'] 
+                text-[#9d8fba] text-center
+                bg-[#141120] border border-[rgba(180,140,255,0.15)]
+                rounded-full 
+                hover:bg-[rgba(180,140,255,0.1)] 
+                transition-colors
+              "
+            >
+              로그아웃
+            </button>
           ) : (
             <button 
               onClick={onLoginClick}

@@ -1,14 +1,38 @@
-import React from 'react';
-import taijiIcon from '../assets/icon-taiji.svg';
+import { useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { supabase } from '../lib/supabase';
+import crystalBall from '../assets/icon-crystal-ball.svg';
 
-interface Props {
-  onStart: () => void;
-}
+export default function LoginScreen() {
+  const location = useLocation();
+  const navigate = useNavigate();
 
-export default function HomeScreen({ onStart }: Props) {
+  const handleKakaoLogin = async () => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'kakao',
+      options: {
+        redirectTo: 'http://localhost:5173/auth/callback'
+      }
+    });
+
+    if (error) {
+      console.error('카카오 로그인 에러:', error.message);
+    }
+  };
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+
+    // ⭐️ 넘어온 state.from이 있을 때만 로컬스토리지에 저장 (없으면 냅두기)
+    if (location.state?.from) {
+      localStorage.setItem('returnPath', location.state.from);
+      console.log('📌 로그인 후 돌아갈 목적지 저장:', location.state.from);
+    }
+  }, [location]);
+
   return (
     <div className="h-[100dvh] bg-[#07060c] flex justify-center font-sans text-[#f0eaf8] relative overflow-x-hidden overflow-y-auto">
-      
+
       {/* --- 배경 애니메이션 요소 --- */}
       <div className="fixed top-[-10%] left-[-10%] w-[60vw] max-w-[400px] h-[60vw] max-h-[400px] bg-[#c084fc] rounded-full blur-[120px] opacity-15 pointer-events-none"></div>
       <div className="fixed bottom-[10%] right-[-10%] w-[50vw] max-w-[300px] h-[50vw] max-h-[300px] bg-[#f472b6] rounded-full blur-[130px] opacity-10 pointer-events-none"></div>
@@ -26,18 +50,17 @@ export default function HomeScreen({ onStart }: Props) {
       {/* --- 메인 콘텐츠 영역 --- */}
       <div className="w-full max-w-md flex flex-col relative z-10 animate-fade-in-up h-full">
 
+        {/* 전체를 화면 중앙에 정렬 */}
         <div className="flex-1 flex flex-col items-center justify-center w-full pb-[84px]">
-          
+
           {/* 1. 상단 일러스트 (아래 텍스트와 28px 간격) */}
           <div className="relative w-[100px] h-[100px] flex items-center justify-center mb-[28px]">
             <div className="absolute w-[100px] h-[100px] rounded-full border border-[rgba(180,140,255,0.15)] animate-[spin_12s_linear_infinite]">
               <div className="absolute top-[-3px] left-1/2 -translate-x-1/2 w-[6px] h-[6px] rounded-full bg-[#c084fc] shadow-[0_0_10px_#c084fc]"></div>
             </div>
             <div className="absolute w-[72px] h-[72px] rounded-full border border-[rgba(180,140,255,0.25)]"></div>
-            <div className="absolute w-[62px] h-[62px] rounded-full bg-gradient-to-b from-[#1d162d] to-[#0a0812] shadow-[0_0_50px_rgba(192,132,252,0.2)] flex items-center justify-center">
-              <img src={taijiIcon} alt="" width={38} height={38} 
-                className="drop-shadow-[0_0_8px_rgba(192,132,252,0.8)]" 
-              />
+            <div className="absolute w-[62px] h-[62px] rounded-full bg-gradient-to-b from-[#1d162d] to-[#0a0812] shadow-[0_0_50px_rgba(192,132,252,0.3)] flex items-center justify-center">
+              <img src={crystalBall} alt="" className="w-[38px] h-[38px] drop-shadow-[0_0_15px_rgba(192,132,252,0.8)]" />
             </div>
           </div>
 
@@ -53,15 +76,27 @@ export default function HomeScreen({ onStart }: Props) {
             </p>
           </div>
 
-          {/* 3. 하단 버튼 (위 텍스트와 28px 간격) */}
-          <div className="w-full px-[20px] mt-[28px]">
-            <button 
-              onClick={onStart}
-              className="w-full h-[52px] flex items-center justify-center gap-2 bg-gradient-to-r from-[#C084FC] to-[#F472B6] text-white font-bold rounded-[1rem] transition-transform hover:scale-[1.02] shadow-[0_4px_20px_rgba(192,132,252,0.3)]"
+          {/* 3. 하단 카카오 버튼 영역 (위 텍스트와 28px 간격) */}
+          <div className="w-full px-[20px] mt-[28px] relative flex flex-col items-center">
+            <button
+              onClick={handleKakaoLogin}
+              className="w-full h-[52px] flex items-center justify-center gap-2.5 bg-[#FEE500] hover:bg-[#e6cf00] text-[#000000] font-black rounded-[1rem] transition-transform hover:scale-[1.02] shadow-[0_4px_14px_rgba(254,229,0,0.15)]"
             >
-              <span className="text-[13px]">✦</span>
-              <span className="text-[15px]">재회사주 보러 가기</span>
+              <span className="text-lg">💬</span>
+              <span className="text-[15px]">카카오로 5초만에 시작</span>
             </button>
+
+            {/* 약관 안내 텍스트 */}
+            <div className="absolute top-[calc(100%+16px)] text-[11px] text-[#4a4068] w-full text-center">
+              <span className="font-light">로그인 시 </span>
+              <button
+                onClick={() => navigate('/terms-of-service')}
+                className="font-light underline text-[11px] decoration-[#4a4068] hover:text-[#9d8fba] transition-colors cursor-pointer"
+              >
+                개인정보처리방침 및 이용약관
+              </button>
+              <span className="font-light"> 에 동의합니다</span>
+            </div>
           </div>
 
         </div>

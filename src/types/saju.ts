@@ -1,5 +1,5 @@
 // 사용자 입력 정보
-export interface PersonInput { 
+export interface PersonInput {
   name?: string;            // 이름 (선택)
   gender: 'F' | 'M';        // 성별 (여성 F, 남성 M)
   date: string;             // 생년월일 (YYYY-MM-DD)
@@ -8,7 +8,7 @@ export interface PersonInput {
 }
 
 // 대운·세운·월운 흐름 정보
-export interface FortuneFlow { 
+export interface FortuneFlow {
   daeUnPillar: string;      // 대운 기둥(천간·지지)
   daeUnAge: string;         // 대운 시작 나이
   seUnPillar: string;       // 세운(해운) 기둥
@@ -18,7 +18,7 @@ export interface FortuneFlow {
 }
 
 // 사주 팔자 분석 결과
-export interface SajuResult { 
+export interface SajuResult {
   year: string;                         // 연주(년 기둥)
   month: string;                        // 월주(달 기둥)
   day: string;                          // 일주(날 기둥)
@@ -43,4 +43,72 @@ export interface RelationResult {
   chungTitle: string;     // 충(相沖)의 대표 요약 제목
   chungDesc: string;     // 충 내용 상세 설명
   finalScore: number;     // 최종 궁합 점수
+}
+
+// 유료 결과 
+export interface PaidResult {
+  reunionProbability: number
+  reunionLabel: string
+  reunionDesc: string
+  goodMonths: string[]
+  badMonths: string[]
+  neutralMonths: string[]
+  bestMonth: string
+  doList: string[]
+  dontList: string[]
+  dohasal: string
+  sections: {
+    속마음: string
+    재회가능성설명: string
+    이별이유: string
+    타이밍설명: string
+    접근법: string
+    새인연: string
+    지속가능성: string
+    행동지침설명: string
+    총평: string
+  }
+  verdict: string
+  verdictScore: number
+}
+
+export interface SajuPillar {
+  year: { hanja: string; eumyang: string } | null
+  month: { hanja: string; eumyang: string } | null
+  day: { hanja: string; eumyang: string } | null
+  hour: { hanja: string; eumyang: string } | null
+}
+
+export interface SajuFormData {
+  me: {
+    name?: string
+    birth: string
+    gender: string
+    time?: string
+  }
+  partner: {
+    name?: string
+    birth: string
+    gender: string
+    time?: string
+  }
+  breakupDuration: string
+  breakupReason: string
+}
+
+export type BirthTime = string | undefined
+
+export interface FreeResult {
+  meSaju: object
+  partnerSaju: object
+  compatibility: number
+  compatibilityLabel: string
+  hamScore: number
+  chungScore: number
+  hamDesc: string
+  chungDesc: string
+  ohScore: number
+  ohLabel: string
+  summary: string
+  upsellHook: string
 }
