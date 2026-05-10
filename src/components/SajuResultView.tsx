@@ -6,7 +6,7 @@ import { getSipseong } from '../utils/sajuEngine';
 import crystalBall from '../assets/icon-crystal-ball.svg';
 import heartIcon from '../assets/icon-heart.svg';
 import type { PaidResult } from '../types/saju';
-import { saveAsPdf } from '../utils/pdf';
+import { saveAsPdf } from '../lib/pdf';
 
 import download from '../assets/images/download.png';
 import link from '../assets/images/link.png';
