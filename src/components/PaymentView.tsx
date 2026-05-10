@@ -8,12 +8,33 @@ import { buildAnalyzePayload } from '../utils/sajuEngine';
 
 import naverLogo from '../assets/images/logo_naverpay.png';
 import kakaoLogo from '../assets/images/logo_kakaopay.png';
+import { MOCK_PAID_RESULT } from '../mocks/sajuMock';
 
 export default function PaymentView() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
+  // ⭐️ [테스트용] 페이지 진입하자마자 바로 유료 결과 페이지로 연결 
+  useEffect(() => {
+    const isTestMode = true;
+
+    if (isTestMode) {
+      console.log("테스트 모드: 페이지 진입 즉시 결과로 이동합니다.");
+
+      // 1. 목데이터 저장
+      sessionStorage.setItem('saju_paid_result', JSON.stringify(MOCK_PAID_RESULT));
+
+      // 2. 0.5초 뒤 이동
+      const timer = setTimeout(() => {
+        navigate('/result', { state: { paidResult: MOCK_PAID_RESULT } });
+      }, 500);
+
+      return () => clearTimeout(timer);
+    }
+  }, [navigate]);
+
   const handlePayment = async (payMethod: PayMethod) => {
+
     if (loading) return;
 
     try {
