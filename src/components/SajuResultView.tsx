@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { PersonInput, SajuResult, RelationResult } from '../types/saju';
-import { HANJA_TO_HANGUL } from '../constants/saju';
+import { HANJA_TO_HANGUL } from '../constants/sajuData';
 import { getSipseong } from '../utils/sajuEngine';
 import crystalBall from '../assets/icon-crystal-ball.svg';
 import heartIcon from '../assets/icon-heart.svg';
