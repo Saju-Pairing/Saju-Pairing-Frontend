@@ -171,6 +171,8 @@ function AppContent() {
       sessionStorage.setItem('saju_pt', JSON.stringify(pt));
       sessionStorage.setItem('saju_analysis', JSON.stringify(newAnalysis));
 
+      sessionStorage.setItem('saju_free_result', JSON.stringify(newAnalysis));
+
       // rawSaju 데이터 sessionStorage에 저장 (AnalyzeLoadingScreen에서 사용)
       sessionStorage.setItem('saju_raw_me', JSON.stringify({
         rawSaju: meRaw, isUnknown: me.isUnknownTime
