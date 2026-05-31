@@ -6,12 +6,13 @@ import crystalBall from '../assets/icon-crystal-ball.svg';
 export default function LoginScreen() {
   const location = useLocation();
   const navigate = useNavigate();
+  const origin = window.location.origin;
 
   const handleKakaoLogin = async () => {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'kakao',
       options: {
-        redirectTo: 'http://localhost:5173/auth/callback'
+        redirectTo: `${origin}/auth/callback`
       }
     });
 

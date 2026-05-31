@@ -6,6 +6,10 @@ import { getSipseong } from '../utils/sajuEngine';
 import crystalBall from '../assets/icon-crystal-ball.svg';
 import heartIcon from '../assets/icon-heart.svg';
 import type { PaidResult } from '../types/saju';
+import { saveAsPdf } from '../lib/pdf';
+
+import download from '../assets/images/download.png';
+import link from '../assets/images/link.png';
 
 interface Props {
   me: PersonInput;
@@ -54,6 +58,13 @@ const PremiumCard = ({ num, title, icon, onUnlock, children }: PremiumCardProps)
 
 export default function SajuResultView({ me, pt, analysis, onReset, isLoggedIn, onRequireLogin, paidResult }: Props) {
   const navigate = useNavigate();
+  const pdfRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    if (paidResult) {
+      sessionStorage.removeItem('saju_paid_result');
+    }
+  }, [paidResult]);
 
   // ⭐️ 가장 핵심적인 수정: 로그인 상태를 따질 필요 없이 무조건 결제창으로 보냅니다!
   // App.tsx의 라우터가 알아서 가로채서 로그인->결제창으로 완벽하게 안내해 줍니다.
@@ -76,7 +87,7 @@ export default function SajuResultView({ me, pt, analysis, onReset, isLoggedIn, 
     const sipseongColor = isDayPillar ? 'text-[#c084fc]' : 'text-[#4a4068]';
     const hangulColor = isDayPillar ? 'text-[#f472b6]' : 'text-[#4a4068]';
     const hanjaStyle = isDayPillar
-      ? "text-[28px] font-['Noto_Serif_KR'] font-black text-transparent bg-clip-text bg-gradient-to-b from-[#c084fc] to-[#f472b6]"
+      ? "text-[28px] font-['Noto_Serif_KR'] font-black text-transparent bg-clip-text bg-gradient-to-b from-[#c084fc] to-[#f472b6] [.is-pdf-capturing_&]:text-[#f472b6] [.is-pdf-capturing_&]:bg-none"
       : "text-[28px] font-['Noto_Serif_KR'] font-black text-[#f0eaf8]";
 
     return (
@@ -88,12 +99,25 @@ export default function SajuResultView({ me, pt, analysis, onReset, isLoggedIn, 
     );
   };
 
-  return (
-    <div className="min-h-screen relative overflow-x-hidden font-sans text-[#f0eaf8] bg-[#07060c] pb-20 pt-[70px] animate-fade-in-up">
+  // 문의하기 클릭 핸들러
+  const handleInquiryClick = () => {
+    const email = "2019ootd@gmail.com";
+    const subject = encodeURIComponent("[사주페어링] 서비스 문의사항");
+    window.location.href = `mailto:${email}?subject=${subject}`;
+  };
 
+  // pdf 저장 클릭 핸들러 
+  const handleDownloadPdf = () => {
+    if (pdfRef.current) {
+      saveAsPdf(pdfRef.current, '사주페어링_결과.pdf');
+    }
+  };
+
+  return (
+    <div ref={pdfRef} className="min-h-screen relative overflow-x-hidden font-sans text-[#f0eaf8] bg-[#07060c] pb-20 pt-[70px] animate-fade-in-up [&.is-pdf-capturing]:animate-none">
       {/* 몽환적 배경 */}
-      <div className="fixed top-[-10%] left-[-10%] w-[50vw] h-[50vw] bg-[#c084fc] rounded-full blur-[120px] opacity-10 -z-10 mix-blend-screen pointer-events-none"></div>
-      <div className="fixed bottom-[-10%] right-[-10%] w-[60vw] h-[60vw] bg-[#f472b6] rounded-full blur-[140px] opacity-10 -z-10 mix-blend-screen pointer-events-none"></div>
+      <div data-html2canvas-ignore="true" className="fixed top-[-10%] left-[-10%] w-[50vw] h-[50vw] bg-[#c084fc] rounded-full blur-[120px] opacity-10 -z-10 mix-blend-screen pointer-events-none"></div>
+      <div data-html2canvas-ignore="true" className="fixed bottom-[-10%] right-[-10%] w-[60vw] h-[60vw] bg-[#f472b6] rounded-full blur-[140px] opacity-10 -z-10 mix-blend-screen pointer-events-none"></div>
 
       <div className="max-w-md mx-auto p-5 space-y-6">
 
@@ -363,7 +387,7 @@ export default function SajuResultView({ me, pt, analysis, onReset, isLoggedIn, 
                 <div className="w-10 h-10 rounded-full flex items-center justify-center text-lg bg-[#0f0d18] border border-[rgba(180,140,255,0.11)]">👁️</div>
                 <div>
                   <div className="text-[10px] text-[#c084fc] font-bold mb-0.5">02</div>
-                  <div className="text-sm font-bold text-[#f0eaf8]">혹시 다른 사람이 생겼을까요?</div>
+                  <div className="text-sm font-bold text-[#f0eaf8]">상대방에게 새로운 사람이 생겼을까요</div>
                 </div>
               </div>
               <div className="p-6 text-[13px] text-[#c0bad0] leading-relaxed space-y-4">
@@ -377,15 +401,36 @@ export default function SajuResultView({ me, pt, analysis, onReset, isLoggedIn, 
                 <div className="w-10 h-10 rounded-full flex items-center justify-center text-lg bg-[#0f0d18] border border-[rgba(180,140,255,0.11)]">✨</div>
                 <div>
                   <div className="text-[10px] text-[#c084fc] font-bold mb-0.5">03</div>
-                  <div className="text-sm font-bold text-[#f0eaf8]">우리가 다시 만날 확률은?</div>
+                  <div className="text-sm font-bold text-[#f0eaf8]">두 사람이 다시 만날 확률은 얼마나 될까요</div>
                 </div>
               </div>
               <div className="p-6 text-[13px] text-[#c0bad0] leading-relaxed space-y-4">
-                {/* 재회 확률 위젯 */}
-                <div className="flex items-center gap-4 bg-[#0f0d18] p-4 rounded-2xl mb-4 border border-[rgba(180,140,255,0.08)]">
-                  <div className="text-3xl font-black text-[#c084fc]">{paidResult.reunionProbability}%</div>
-                  <div className="text-[11px] text-[#9d8fba]">{paidResult.reunionDesc}</div>
+
+                {/* 원형 프로그래스바 위젯 */}
+                <div className="flex items-center gap-6 bg-[#0f0d18] p-5 rounded-2xl mb-4 border border-[rgba(180,140,255,0.08)]">
+                  <div className="relative w-[74px] h-[74px] flex-shrink-0">
+                    <svg className="w-full h-full transform -rotate-90" viewBox="0 0 84 84">
+                      <circle cx="42" cy="42" r="36" stroke="rgba(192, 132, 252, 0.15)" strokeWidth="8" fill="none" />
+                      <circle
+                        cx="42" cy="42" r="36" stroke="#c084fc" strokeWidth="8" fill="none" strokeLinecap="round"
+                        style={{
+                          strokeDasharray: 226.2,
+                          strokeDashoffset: 226.2 - (paidResult.reunionProbability / 100) * 226.2,
+                          transition: 'stroke-dashoffset 1.5s ease-out'
+                        }}
+                      />
+                    </svg>
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <span className="text-[#c084fc] text-center font-['Noto_Serif_KR'] text-[16px] font-bold">
+                        {paidResult.reunionProbability}%
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex-1 text-[11.5px] text-[#9d8fba] leading-[1.6] break-keep font-medium">
+                    {paidResult.reunionDesc}
+                  </div>
                 </div>
+
                 <p>{paidResult.sections.재회가능성설명}</p>
               </div>
             </div>
@@ -396,7 +441,7 @@ export default function SajuResultView({ me, pt, analysis, onReset, isLoggedIn, 
                 <div className="w-10 h-10 rounded-full flex items-center justify-center text-lg bg-[#0f0d18] border border-[rgba(180,140,255,0.11)]">📅</div>
                 <div>
                   <div className="text-[10px] text-[#c084fc] font-bold mb-0.5">04</div>
-                  <div className="text-sm font-bold text-[#f0eaf8]">언제 연락하는 것이 가장 좋을까요?</div>
+                  <div className="text-sm font-bold text-[#f0eaf8]">언제 연락하는 게 가장 좋을까요</div>
                 </div>
               </div>
               <div className="p-6 text-[13px] text-[#c0bad0] leading-relaxed space-y-4">
@@ -426,7 +471,7 @@ export default function SajuResultView({ me, pt, analysis, onReset, isLoggedIn, 
                 <div className="w-10 h-10 rounded-full flex items-center justify-center text-lg bg-[#0f0d18] border border-[rgba(180,140,255,0.11)]">💌</div>
                 <div>
                   <div className="text-[10px] text-[#c084fc] font-bold mb-0.5">05</div>
-                  <div className="text-sm font-bold text-[#f0eaf8]">어떻게 다가가야 마음이 열릴까요?</div>
+                  <div className="text-sm font-bold text-[#f0eaf8]">어떻게 다가가야 마음이 열릴까요</div>
                 </div>
               </div>
               <div className="p-6 text-[13px] text-[#c0bad0] leading-relaxed space-y-4">
@@ -440,7 +485,7 @@ export default function SajuResultView({ me, pt, analysis, onReset, isLoggedIn, 
                 <div className="w-10 h-10 rounded-full flex items-center justify-center text-lg bg-[#0f0d18] border border-[rgba(180,140,255,0.11)]">🌱</div>
                 <div>
                   <div className="text-[10px] text-[#c084fc] font-bold mb-0.5">06</div>
-                  <div className="text-sm font-bold text-[#f0eaf8]">다시 만나도 오래 갈 수 있을까요?</div>
+                  <div className="text-sm font-bold text-[#f0eaf8]">다시 만나도 오래 갈 수 있을까요</div>
                 </div>
               </div>
               <div className="p-6 text-[13px] text-[#c0bad0] leading-relaxed space-y-4">
@@ -454,13 +499,13 @@ export default function SajuResultView({ me, pt, analysis, onReset, isLoggedIn, 
                 <div className="w-10 h-10 rounded-full flex items-center justify-center text-lg bg-[#0f0d18] border border-[rgba(180,140,255,0.11)]">⚡</div>
                 <div>
                   <div className="text-[10px] text-[#c084fc] font-bold mb-0.5">07</div>
-                  <div className="text-sm font-bold text-[#f0eaf8]">지금 당장 내가 해야 할 행동</div>
+                  <div className="text-sm font-bold text-[#f0eaf8]">해야 할 것과 절대 하면 안 될 것</div>
                 </div>
               </div>
               <div className="p-6 text-[13px] text-[#c0bad0] leading-relaxed space-y-4">
                 <p>{paidResult.sections.행동지침설명}</p>
                 <div className="grid grid-cols-1 gap-3 mt-2">
-                  <div className="bg-[#0f0d18] p-4 rounded-xl border border-[rgba(180,140,255,0.08)]">
+                  <div className="bg-[#0f0d18] p-4 rounded-xl border border-[#c084fc]/20">
                     <div className="text-[10px] text-[#c084fc] font-bold mb-2">✦ 지금 해야 할 것</div>
                     <ul className="text-[11px] space-y-1.5 text-[#b0a8c4]">
                       {paidResult.doList.map((item, i) => (
@@ -491,9 +536,72 @@ export default function SajuResultView({ me, pt, analysis, onReset, isLoggedIn, 
               <p className="text-[12.5px] text-[#c0bad0] leading-relaxed mb-6 text-left break-keep">
                 {paidResult.sections.총평}
               </p>
-              <div className="bg-gradient-to-r from-[#c084fc] to-[#f472b6] text-white font-bold text-[12px] py-2.5 px-5 rounded-full inline-block shadow-sm">
-                {paidResult.verdict}
+              <div
+                className="inline-flex items-center gap-2 py-3 px-8 rounded-full font-normal text-[13px] text-[#ffffff] shadow-sm transition-all"
+                style={{
+                  backgroundColor: 'rgba(192, 132, 252, 0.14)',
+                  border: '1px solid rgba(192, 132, 252, 0.18)',
+                }}
+              >
+                <span>{paidResult.verdict}</span>
               </div>
+            </div>
+
+            {/* 공유 및 안내 섹션 */}
+            <div data-html2canvas-ignore="true" className="mt-20 space-y-8 px-2 pt-8 border-t border-[rgba(180,140,255,0.1)]">
+
+              {/* 1. 상단 버튼 그룹 (PDF저장 / 링크 공유) */}
+              <div className="grid grid-cols-2 gap-5 px-2 max-w-[300px] mx-auto">
+                <button onClick={handleDownloadPdf} className="flex items-center justify-center gap-2 py-4 bg-gradient-to-r from-[#c084fc] to-[#f472b6] text-white rounded-[1.2rem] shadow-[0_4px_15px_rgba(192,132,252,0.3)] active:scale-[0.98] transition-transform">
+                  <img
+                    src={download}
+                    alt="pdf저장"
+                    className="h-[17px] w-auto object-contain"
+                  />
+                  <span className="text-[14px] font-bold">PDF 저장</span>
+                </button>
+                <button className="flex items-center justify-center gap-2 py-4 bg-gradient-to-r from-[#c084fc] to-[#f472b6] text-white rounded-[1.2rem] shadow-[0_4px_15px_rgba(192,132,252,0.3)] active:scale-[0.98] transition-transform">
+                  <img
+                    src={link}
+                    alt="링크공유"
+                    className="h-[17px] w-auto object-contain"
+                  />
+                  <span className="text-[14px] font-bold">링크 공유</span>
+                </button>
+              </div>
+
+              {/* 2. 공유 안내 문구 */}
+              <div className="text-center space-y-1.5">
+                <p className="text-[12px] text-[#9d8fba] font-light">
+                  링크 공유는 <span className="font-bold text-[#9d8fba]">7일 후 만료</span>되요.
+                </p>
+                <p className="text-[12px] text-[#9d8fba] font-light">
+                  영구 소장은 <span className="font-bold text-[#9d8fba]">PDF저장을 이용</span>해주세요.
+                </p>
+              </div>
+
+              {/* 3. 이용 문의하기 버튼 */}
+              <button
+                onClick={() => handleInquiryClick()}
+                className="w-full max-w-[300px] mx-auto block py-4 rounded-[1.2rem] font-bold text-[14px] text-[#c084fc] transition-all active:scale-[0.98]"
+                style={{
+                  backgroundColor: 'rgba(192, 132, 252, 0.08)',
+                  border: '1px solid rgba(192, 132, 252, 0.18)',
+                }}
+              >
+                이용 문의하기
+              </button>
+
+              {/* 4. 최종 안내 문구 */}
+              <div className="text-center space-y-1.5 opacity-60">
+                <p className="text-[12px] text-[#9d8fba] font-light">
+                  결과 페이지가 뜨지 않는다면, <span className="font-bold text-[#9d8fba]">새로고침</span>을 해주세요.
+                </p>
+                <p className="text-[12px] text-[#9d8fba] font-light">
+                  결과는 <span className="font-bold text-[#9d8fba]">마이페이지</span>에서 다시 볼 수 있어요.
+                </p>
+              </div>
+
             </div>
 
           </div>
@@ -594,7 +702,7 @@ export default function SajuResultView({ me, pt, analysis, onReset, isLoggedIn, 
         )}
 
         {/* 하단 다시하기 버튼 */}
-        <button type="button" onClick={onReset} className="block w-full mt-10 mb-6 text-[12px] font-bold text-[#4a4068] py-4 hover:text-[#9d8fba] transition-colors">
+        <button data-html2canvas-ignore="true" type="button" onClick={onReset} className="block w-full mt-10 mb-6 text-[12px] font-bold text-[#4a4068] py-4 hover:text-[#9d8fba] transition-colors">
           처음으로 돌아가기
         </button>
 
