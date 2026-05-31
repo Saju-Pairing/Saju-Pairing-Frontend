@@ -79,6 +79,13 @@ function AppContent() {
     }
   }, [location.state]);
 
+  // 사용자가 결과창을 벗어나 홈(/)이나 입력창(/input)으로 가면 유료 상태 메모리를 완전히 비웁니다.
+  useEffect(() => {
+    if (['/', '/input'].includes(location.pathname)) {
+      setPaidResult(null);
+    }
+  }, [location.pathname]);
+
   // 입력값과 분석 결과를 초기화할 때, sessionStorage에 저장된 게 있으면 가져오도록 설정
   const [me, setMe] = useState<PersonInput>(() => {
     const saved = sessionStorage.getItem('saju_me');
@@ -113,6 +120,11 @@ function AppContent() {
     sessionStorage.removeItem('saju_pt');
     sessionStorage.removeItem('saju_analysis');
     sessionStorage.removeItem('saju_paid_result');
+
+    sessionStorage.removeItem('saju_free_result');
+    sessionStorage.removeItem('saju_raw_me');
+    sessionStorage.removeItem('saju_raw_pt');
+
     setPaidResult(null);
     setAnalysis(null);
     navigate('/');

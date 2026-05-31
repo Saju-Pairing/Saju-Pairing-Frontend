@@ -60,6 +60,12 @@ export default function SajuResultView({ me, pt, analysis, onReset, isLoggedIn, 
   const navigate = useNavigate();
   const pdfRef = React.useRef<HTMLDivElement>(null);
 
+  React.useEffect(() => {
+    if (paidResult) {
+      sessionStorage.removeItem('saju_paid_result');
+    }
+  }, [paidResult]);
+
   // ⭐️ 가장 핵심적인 수정: 로그인 상태를 따질 필요 없이 무조건 결제창으로 보냅니다!
   // App.tsx의 라우터가 알아서 가로채서 로그인->결제창으로 완벽하게 안내해 줍니다.
   const handleUnlockClick = () => {
