@@ -87,7 +87,7 @@ export default function SajuResultView({ me, pt, analysis, onReset, isLoggedIn, 
     const sipseongColor = isDayPillar ? 'text-[#c084fc]' : 'text-[#4a4068]';
     const hangulColor = isDayPillar ? 'text-[#f472b6]' : 'text-[#4a4068]';
     const hanjaStyle = isDayPillar
-      ? "text-[28px] font-['Noto_Serif_KR'] font-black text-transparent bg-clip-text bg-gradient-to-b from-[#c084fc] to-[#f472b6]"
+      ? "text-[28px] font-['Noto_Serif_KR'] font-black text-transparent bg-clip-text bg-gradient-to-b from-[#c084fc] to-[#f472b6] [.is-pdf-capturing_&]:text-[#f472b6] [.is-pdf-capturing_&]:bg-none"
       : "text-[28px] font-['Noto_Serif_KR'] font-black text-[#f0eaf8]";
 
     return (
@@ -114,8 +114,7 @@ export default function SajuResultView({ me, pt, analysis, onReset, isLoggedIn, 
   };
 
   return (
-    <div ref={pdfRef} className="min-h-screen relative overflow-x-hidden font-sans text-[#f0eaf8] bg-[#07060c] pb-20 pt-[70px] animate-fade-in-up">
-
+    <div ref={pdfRef} className="min-h-screen relative overflow-x-hidden font-sans text-[#f0eaf8] bg-[#07060c] pb-20 pt-[70px] animate-fade-in-up [&.is-pdf-capturing]:animate-none">
       {/* 몽환적 배경 */}
       <div data-html2canvas-ignore="true" className="fixed top-[-10%] left-[-10%] w-[50vw] h-[50vw] bg-[#c084fc] rounded-full blur-[120px] opacity-10 -z-10 mix-blend-screen pointer-events-none"></div>
       <div data-html2canvas-ignore="true" className="fixed bottom-[-10%] right-[-10%] w-[60vw] h-[60vw] bg-[#f472b6] rounded-full blur-[140px] opacity-10 -z-10 mix-blend-screen pointer-events-none"></div>
@@ -549,7 +548,7 @@ export default function SajuResultView({ me, pt, analysis, onReset, isLoggedIn, 
             </div>
 
             {/* 공유 및 안내 섹션 */}
-            <div className="mt-20 space-y-8 px-2 pt-8 border-t border-[rgba(180,140,255,0.1)]">
+            <div data-html2canvas-ignore="true" className="mt-20 space-y-8 px-2 pt-8 border-t border-[rgba(180,140,255,0.1)]">
 
               {/* 1. 상단 버튼 그룹 (PDF저장 / 링크 공유) */}
               <div className="grid grid-cols-2 gap-5 px-2 max-w-[300px] mx-auto">
@@ -703,7 +702,7 @@ export default function SajuResultView({ me, pt, analysis, onReset, isLoggedIn, 
         )}
 
         {/* 하단 다시하기 버튼 */}
-        <button type="button" onClick={onReset} className="block w-full mt-10 mb-6 text-[12px] font-bold text-[#4a4068] py-4 hover:text-[#9d8fba] transition-colors">
+        <button data-html2canvas-ignore="true" type="button" onClick={onReset} className="block w-full mt-10 mb-6 text-[12px] font-bold text-[#4a4068] py-4 hover:text-[#9d8fba] transition-colors">
           처음으로 돌아가기
         </button>
 
