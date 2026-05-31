@@ -14,7 +14,7 @@ export default function PaymentView() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
-  // ⭐️ [테스트용] 페이지 진입하자마자 바로 유료 결과 페이지로 연결 
+  /* ⭐️ [테스트용] 페이지 진입하자마자 바로 유료 결과 페이지로 연결 
   useEffect(() => {
     const isTestMode = true;
 
@@ -32,6 +32,7 @@ export default function PaymentView() {
       return () => clearTimeout(timer);
     }
   }, [navigate]);
+  */
 
   if (loading) {
     return (
