@@ -1,5 +1,11 @@
 import { calculateSaju, calculateSajuSimple } from '@fullstackfamily/manseryeok'
-import type { BirthTime, SajuPillar, FreeResult } from '../types/saju'
+import type { SajuPillar, FreeResult } from '../types/saju'
+
+const HAP_PAIRS = [['자', '축'], ['인', '해'], ['묘', '술'], ['진', '유'], ['사', '신'], ['오', '미']]
+const CHUNG_PAIRS = [['자', '오'], ['축', '미'], ['인', '신'], ['묘', '유'], ['진', '술'], ['사', '해']]
+
+const DHS_STRONG = ['자', '오', '묘', '유']
+const DHS_WEAK = ['인', '사', '신', '해']
 
 const ILGAN_MAP: Record<string, string> = {
   갑: '목(木) 기운 — 성장과 전진을 추구하며 직선적이고 이상이 높아요',
@@ -11,14 +17,8 @@ const ILGAN_MAP: Record<string, string> = {
   경: '금(金) 기운 — 원칙적이고 냉철하며 자존심이 강해요',
   신: '금(金) 기운 — 섬세하고 완벽주의적이며 감각이 예민해요',
   임: '수(水) 기운 — 지혜롭고 적응력이 강하며 감성이 풍부해요',
-  계: '수(水) 기운 — 내성적이고 깊이 생각하며 감정 기복이 있어요',
+  계: '수(Water) 기운 — 내성적이고 깊이 생각하며 감정 기복이 있어요',
 }
-
-const DHS_STRONG = ['자', '오', '묘', '유']
-const DHS_WEAK = ['인', '사', '신', '해']
-
-const HAP_PAIRS = [['자', '축'], ['인', '해'], ['묘', '술'], ['진', '유'], ['사', '신'], ['오', '미']]
-const CHUNG_PAIRS = [['자', '오'], ['축', '미'], ['인', '신'], ['묘', '유'], ['진', '술'], ['사', '해']]
 
 export function calcPersonality(pillar: SajuPillar): string {
   const ch = pillar.day?.eumyang[0] ?? ''
@@ -55,7 +55,6 @@ export function calcFreeResult(
   const hamScore = isHap ? 80 : isChung ? 20 : 50
   const chungScore = isChung ? 75 : isHap ? 15 : 40
 
-  // 궁합 점수: 합/충/도화살 기반 계산
   let compatibility = isHap ? 78 : isChung ? 42 : 60
   if (dohasal === '강함') compatibility = Math.min(compatibility + 8, 99)
   if (dohasal === '약함') compatibility = Math.min(compatibility + 3, 99)
@@ -111,34 +110,26 @@ export function pillarToStr(p: SajuPillar): string {
   ].filter(Boolean).join(' ')
 }
 
-// 시시(時時) 한국어 → 시간 매핑
-const BIRTH_TIME_TO_HOUR: Record<string, number> = {
-  자시: 0,
-  축시: 2,
-  인시: 4,
-  묘시: 6,
-  진시: 8,
-  사시: 10,
-  오시: 12,
-  미시: 14,
-  신시: 16,
-  유시: 18,
-  술시: 20,
-  해시: 22,
+// HH:MM 문자열을 시간(숫자)으로 파싱
+function parseTimeInput(timeStr: string): number | undefined {
+  if (!timeStr || !timeStr.trim()) return undefined;
+  const parts = timeStr.split(':');
+  const h = parseInt(parts[0], 10);
+  if (isNaN(h) || h < 0 || h > 23) return undefined;
+  return h;
 }
 
-export function calcSajuPillar(birth: string, time: BirthTime): SajuPillar {
+export function calcSajuPillar(birth: string, time: string | undefined, isUnknownTime: boolean): SajuPillar {
   const d = new Date(birth)
   const year = d.getFullYear()
   const month = d.getMonth() + 1
   const day = d.getDate()
 
-  const hour = time ? BIRTH_TIME_TO_HOUR[time] : undefined
+  const hour = isUnknownTime ? undefined : parseTimeInput(time ?? '');
 
   try {
     let result
     if (hour !== undefined) {
-      // 서울 기준(경도 127) 진태양시 적용
       result = calculateSaju(year, month, day, hour, 0, {
         longitude: 127,
         applyTimeCorrection: true,
@@ -169,7 +160,6 @@ export function calcSajuPillar(birth: string, time: BirthTime): SajuPillar {
           : null,
     }
   } catch {
-    // 범위 밖 날짜 등 오류 시 fallback
     return {
       year: { hanja: '?', eumyang: '?' },
       month: { hanja: '?', eumyang: '?' },
