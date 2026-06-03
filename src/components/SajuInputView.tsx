@@ -88,28 +88,34 @@ const TimeField = ({ value, unknown, onChangeValue, onChangeUnknown, error }: Ti
 
   return (
     <div>
-      <div className="flex items-center gap-1.5 mb-1.5 relative w-max">
+      {/* 🌟 부모 컨테이너의 mb-1.5 블록 레이아웃을 그대로 유지하여 다른 입력창과 간격을 완전히 일치시킵니다. */}
+      <div className="flex items-center gap-1.5 mb-1.5 select-none">
         <span className="text-[#9D8FBA] font-['Noto_Sans_KR'] text-[11px] font-light leading-normal tracking-[0.3px]">
           태어난 시간
         </span>
+        
+        {/* 🌟 레이아웃 틀어짐을 방지하기 위해 전체 transform을 제거하고 relative 속성만 남깁니다. */}
         <div
-          className="cursor-pointer flex items-center justify-center"
+          className="relative cursor-pointer flex items-center justify-center"
           onMouseEnter={() => setShowTooltip(true)}
           onMouseLeave={() => setShowTooltip(false)}
           onClick={() => setShowTooltip(!showTooltip)}
         >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(157,143,186,0.5)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          {/* 🌟 SVG 자체에 미세 상단 마진(mt-[1px])을 주어, 라벨 박스 크기는 유지한 채 아이콘 그림만 아래로 살짝 내립니다. */}
+          <svg className="block mt-[1.5px]" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(157,143,186,0.5)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
           </svg>
-        </div>
-        {showTooltip && (
-          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2.5 w-max bg-[#635b75] rounded-[10px] px-5 py-3 shadow-lg z-50">
-            <div className="text-[#d6bdfa] text-[13px] font-light font-['Noto_Sans_KR'] text-center leading-[1.6] tracking-wide">
-              실제 태양위치에 맞게<br />시간이 30분 자동 보정됩니다
+
+          {/* 툴팁 위치는 원상 복구하여 완벽한 중앙에 고정합니다. */}
+          {showTooltip && (
+            <div className="absolute bottom-[calc(100%+8px)] left-1/2 -translate-x-1/2 w-max bg-[#635b75] rounded-[10px] px-5 py-3 shadow-lg z-50 pointer-events-none">
+              <div className="text-[#d6bdfa] text-[13px] font-light font-['Noto_Sans_KR'] text-center leading-[1.6] tracking-wide whitespace-nowrap">
+                실제 태양위치에 맞게<br />시간이 30분 자동 보정됩니다
+              </div>
+              <div className="absolute top-full left-1/2 -translate-x-1/2 border-[6px] border-transparent border-t-[#635b75]"></div>
             </div>
-            <div className="absolute top-full left-1/2 -translate-x-1/2 border-[8px] border-transparent border-t-[#635b75]"></div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
       <input
@@ -161,7 +167,6 @@ export default function SajuInputForm({ me, setMe, pt, setPt, onCalculate, isLoa
   const [ptTimeInput, setPtTimeInput] = useState("");
   const [ptTimeUnknown, setPtTimeUnknown] = useState(false);
 
-  // 에러 상태
   const [meDateError, setMeDateError] = useState("");
   const [meTimeError, setMeTimeError] = useState("");
   const [ptDateError, setPtDateError] = useState("");
@@ -179,9 +184,20 @@ export default function SajuInputForm({ me, setMe, pt, setPt, onCalculate, isLoa
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  // 🌟 [검증 조건 수정] 이름 필수 입력 보장 및 추가정보 입력 유무 상관없이 통과하도록 변경
+  const isFormValid =
+    !!me.name?.trim() &&
+    !!pt.name?.trim() &&
+    !!meDateInput && !validateDate(meDateInput) &&
+    !!ptDateInput && !validateDate(ptDateInput) &&
+    (meTimeUnknown || (!!meTimeInput && !validateTime(meTimeInput))) &&
+    (ptTimeUnknown || (!!ptTimeInput && !validateTime(ptTimeInput))) &&
+    !!me.gender &&
+    !!pt.gender;
+
   const handleCalculate = () => {
     const meDateErr = meDateInput ? validateDate(meDateInput) : '생년월일을 입력해주세요';
-    const ptDateErr = ptDateInput ? validateDate(ptDateInput) : '생년월일을 입력해주세요';
+    const ptDateErr = ptDateInput ? validateDate(ptDateInput) : '생년월일을 Instruments를 입력해주세요';
     const meTimeErr = (!meTimeUnknown && meTimeInput) ? validateTime(meTimeInput) : '';
     const ptTimeErr = (!ptTimeUnknown && ptTimeInput) ? validateTime(ptTimeInput) : '';
 
@@ -198,12 +214,10 @@ export default function SajuInputForm({ me, setMe, pt, setPt, onCalculate, isLoa
   return (
     <div className="min-h-screen relative overflow-x-hidden font-sans text-[#f0eaf8] p-5 pb-12 pt-[70px] bg-[#07060c]">
 
-      {/* 배경 블러 */}
       <div className="fixed top-[-10%] left-[-10%] w-[50vw] h-[50vw] bg-[#c084fc] rounded-full blur-[120px] opacity-10 -z-10 mix-blend-screen pointer-events-none"></div>
       <div className="fixed bottom-[-10%] right-[-10%] w-[60vw] h-[60vw] bg-[#f472b6] rounded-full blur-[140px] opacity-10 -z-10 mix-blend-screen pointer-events-none"></div>
       <div className="fixed top-[30%] left-1/2 -translate-x-1/2 w-[200px] h-[200px] bg-[#60a5fa] rounded-full blur-[40px] opacity-[0.18] -z-10 pointer-events-none"></div>
 
-      {/* 헤더 */}
       <header className="text-center mb-8 animate-fade-in-up">
         <div className="inline-block px-5 py-1.5 rounded-full bg-[#141120] border border-[rgba(192,132,252,0.5)] text-[#C084FC] text-[10px] font-light tracking-[2.5px] mb-6 font-['Noto_Sans_KR']">
           ✦ 재회 사주 ✦
@@ -386,6 +400,7 @@ export default function SajuInputForm({ me, setMe, pt, setPt, onCalculate, isLoa
                   className="w-full bg-[#141120] border border-[rgba(180,140,255,0.11)] rounded-xl p-3.5 pr-10 text-left text-[14px] text-[#f0eaf8] focus:outline-none h-[48px] flex items-center"
                 >
                   <span className={breakupDur ? 'text-[#f0eaf8]' : 'text-[#4a4068]'}>
+                    {/* 🌟 기존 드롭다운 텍스트 노출 로직으로 완전 복구 */}
                     {breakupDur || '선택 안 함'}
                   </span>
                 </button>
@@ -425,8 +440,8 @@ export default function SajuInputForm({ me, setMe, pt, setPt, onCalculate, isLoa
         <button
           type="button"
           onClick={handleCalculate}
-          disabled={isLoading}
-          className="w-full h-[54px] bg-[linear-gradient(99.16deg,#C084FC_0%,#F472B6_100%)] text-white font-bold text-[16px] rounded-[14px] shadow-[0px_8px_32px_0px_rgba(192,132,252,0.3)] hover:opacity-90 active:scale-[0.98] transition-all disabled:opacity-50"
+          disabled={isLoading || !isFormValid}
+          className="w-full h-[54px] bg-[linear-gradient(99.16deg,#C084FC_0%,#F472B6_100%)] text-white font-bold text-[16px] rounded-[14px] shadow-[0px_8px_32px_0px_rgba(192,132,252,0.3)] hover:opacity-90 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isLoading ? '✦ 사주 분석 중...' : '✦  지금 바로 분석하기'}
         </button>
