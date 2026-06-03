@@ -17,8 +17,9 @@ interface Props {
 }
 
 const labelStyle = "text-[#9D8FBA] font-['Noto_Sans_KR'] text-[11px] font-light leading-normal tracking-[0.3px] mb-1.5 block";
-
 const inputStyle = "w-full bg-[#141120] border border-[rgba(180,140,255,0.11)] rounded-xl p-3.5 text-[14px] text-[#f0eaf8] placeholder-[#4a4068] focus:outline-none focus:border-[rgba(180,140,255,0.4)] transition-colors";
+const inputErrorStyle = "w-full bg-[#141120] border border-[rgba(255,100,100,0.5)] rounded-xl p-3.5 text-[14px] text-[#f0eaf8] placeholder-[#4a4068] focus:outline-none focus:border-[rgba(255,100,100,0.7)] transition-colors";
+const errorMsgStyle = "text-[#ff6b6b] text-[11px] mt-1.5 font-['Noto_Sans_KR'] font-light";
 
 function formatDateInput(value: string): string {
   const digits = value.replace(/\D/g, '').slice(0, 8);
@@ -41,14 +42,48 @@ function formatTimeInput(value: string): string {
   return digits;
 }
 
+function validateDate(display: string): string {
+  const digits = display.replace(/\D/g, '');
+  if (digits.length === 0) return '';
+  if (digits.length < 8) return '날짜를 끝까지 입력해주세요';
+
+  const year = parseInt(digits.slice(0, 4));
+  const month = parseInt(digits.slice(4, 6));
+  const day = parseInt(digits.slice(6, 8));
+
+  const currentYear = new Date().getFullYear();
+  if (year < 1900 || year > currentYear) return `연도는 1900~${currentYear} 사이로 입력해주세요`;
+  if (month < 1 || month > 12) return '월은 01~12 사이로 입력해주세요';
+
+  const daysInMonth = new Date(year, month, 0).getDate();
+  if (day < 1 || day > daysInMonth) return `${month}월은 ${daysInMonth}일까지 있어요`;
+
+  return '';
+}
+
+function validateTime(value: string): string {
+  const digits = value.replace(/\D/g, '');
+  if (digits.length === 0) return '';
+  if (digits.length < 4) return '시간을 끝까지 입력해주세요';
+
+  const hour = parseInt(digits.slice(0, 2));
+  const minute = parseInt(digits.slice(2, 4));
+
+  if (hour > 23) return '시간은 00~23 사이로 입력해주세요';
+  if (minute > 59) return '분은 00~59 사이로 입력해주세요';
+
+  return '';
+}
+
 interface TimeFieldProps {
   value: string;
   unknown: boolean;
   onChangeValue: (val: string) => void;
   onChangeUnknown: (val: boolean) => void;
+  error?: string;
 }
 
-const TimeField = ({ value, unknown, onChangeValue, onChangeUnknown }: TimeFieldProps) => {
+const TimeField = ({ value, unknown, onChangeValue, onChangeUnknown, error }: TimeFieldProps) => {
   const [showTooltip, setShowTooltip] = useState(false);
 
   return (
@@ -57,8 +92,7 @@ const TimeField = ({ value, unknown, onChangeValue, onChangeUnknown }: TimeField
         <span className="text-[#9D8FBA] font-['Noto_Sans_KR'] text-[11px] font-light leading-normal tracking-[0.3px]">
           태어난 시간
         </span>
-        
-        <div 
+        <div
           className="cursor-pointer flex items-center justify-center"
           onMouseEnter={() => setShowTooltip(true)}
           onMouseLeave={() => setShowTooltip(false)}
@@ -68,7 +102,6 @@ const TimeField = ({ value, unknown, onChangeValue, onChangeUnknown }: TimeField
             <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
           </svg>
         </div>
-
         {showTooltip && (
           <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2.5 w-max bg-[#635b75] rounded-[10px] px-5 py-3 shadow-lg z-50">
             <div className="text-[#d6bdfa] text-[13px] font-light font-['Noto_Sans_KR'] text-center leading-[1.6] tracking-wide">
@@ -86,8 +119,10 @@ const TimeField = ({ value, unknown, onChangeValue, onChangeUnknown }: TimeField
         value={value}
         disabled={unknown}
         onChange={e => onChangeValue(formatTimeInput(e.target.value))}
-        className={`${inputStyle} disabled:opacity-40`}
+        className={`${error ? inputErrorStyle : inputStyle} disabled:opacity-40`}
       />
+      {error && <p className={errorMsgStyle}>⚠ {error}</p>}
+
       <label className="flex items-center gap-2 mt-2.5 cursor-pointer select-none">
         <div
           onClick={() => onChangeUnknown(!unknown)}
@@ -126,6 +161,12 @@ export default function SajuInputForm({ me, setMe, pt, setPt, onCalculate, isLoa
   const [ptTimeInput, setPtTimeInput] = useState("");
   const [ptTimeUnknown, setPtTimeUnknown] = useState(false);
 
+  // 에러 상태
+  const [meDateError, setMeDateError] = useState("");
+  const [meTimeError, setMeTimeError] = useState("");
+  const [ptDateError, setPtDateError] = useState("");
+  const [ptTimeError, setPtTimeError] = useState("");
+
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -137,6 +178,22 @@ export default function SajuInputForm({ me, setMe, pt, setPt, onCalculate, isLoa
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  const handleCalculate = () => {
+    const meDateErr = meDateInput ? validateDate(meDateInput) : '생년월일을 입력해주세요';
+    const ptDateErr = ptDateInput ? validateDate(ptDateInput) : '생년월일을 입력해주세요';
+    const meTimeErr = (!meTimeUnknown && meTimeInput) ? validateTime(meTimeInput) : '';
+    const ptTimeErr = (!ptTimeUnknown && ptTimeInput) ? validateTime(ptTimeInput) : '';
+
+    setMeDateError(meDateErr);
+    setPtDateError(ptDateErr);
+    setMeTimeError(meTimeErr);
+    setPtTimeError(ptTimeErr);
+
+    if (meDateErr || ptDateErr || meTimeErr || ptTimeErr) return;
+
+    onCalculate();
+  };
 
   return (
     <div className="min-h-screen relative overflow-x-hidden font-sans text-[#f0eaf8] p-5 pb-12 pt-[70px] bg-[#07060c]">
@@ -170,7 +227,6 @@ export default function SajuInputForm({ me, setMe, pt, setPt, onCalculate, isLoa
           </div>
 
           <div className="space-y-4">
-            {/* 이름 */}
             <div>
               <label className={labelStyle}>이름</label>
               <input
@@ -183,7 +239,6 @@ export default function SajuInputForm({ me, setMe, pt, setPt, onCalculate, isLoa
               />
             </div>
 
-            {/* 생년월일 */}
             <div>
               <label className={labelStyle}>생년월일</label>
               <input
@@ -194,23 +249,27 @@ export default function SajuInputForm({ me, setMe, pt, setPt, onCalculate, isLoa
                 onChange={e => {
                   const formatted = formatDateInput(e.target.value);
                   setMeDateInput(formatted);
+                  setMeDateError(validateDate(formatted));
                   const iso = dateDisplayToISO(formatted);
                   if (iso) setMe({ ...me, date: iso });
                 }}
-                className={inputStyle}
+                className={meDateError ? inputErrorStyle : inputStyle}
               />
+              {meDateError && <p className={errorMsgStyle}>⚠ {meDateError}</p>}
             </div>
 
-            {/* 태어난 시간 */}
             <TimeField
               value={meTimeInput}
               unknown={meTimeUnknown}
+              error={meTimeError}
               onChangeValue={val => {
                 setMeTimeInput(val);
+                setMeTimeError(validateTime(val));
                 setMe({ ...me, time: val, isUnknownTime: false });
               }}
               onChangeUnknown={val => {
                 setMeTimeUnknown(val);
+                setMeTimeError('');
                 if (val) {
                   setMeTimeInput('');
                   setMe({ ...me, time: '', isUnknownTime: true });
@@ -220,22 +279,15 @@ export default function SajuInputForm({ me, setMe, pt, setPt, onCalculate, isLoa
               }}
             />
 
-            {/* 성별 */}
             <div>
               <label className={labelStyle}>성별</label>
               <div className="grid grid-cols-2 gap-2">
-                <button
-                  type="button"
-                  onClick={() => setMe({ ...me, gender: 'F' })}
-                  className={`py-3 rounded-xl text-[14px] transition-all ${me.gender === 'F' ? 'bg-[rgba(192,132,252,0.08)] border border-[rgba(192,132,252,0.5)] text-[#c084fc]' : 'bg-[#141120] border border-[rgba(180,140,255,0.11)] text-[#9d8fba]'}`}
-                >
+                <button type="button" onClick={() => setMe({ ...me, gender: 'F' })}
+                  className={`py-3 rounded-xl text-[14px] transition-all ${me.gender === 'F' ? 'bg-[rgba(192,132,252,0.08)] border border-[rgba(192,132,252,0.5)] text-[#c084fc]' : 'bg-[#141120] border border-[rgba(180,140,255,0.11)] text-[#9d8fba]'}`}>
                   여성
                 </button>
-                <button
-                  type="button"
-                  onClick={() => setMe({ ...me, gender: 'M' })}
-                  className={`py-3 rounded-xl text-[14px] transition-all ${me.gender === 'M' ? 'bg-[rgba(192,132,252,0.08)] border border-[rgba(192,132,252,0.5)] text-[#c084fc]' : 'bg-[#141120] border border-[rgba(180,140,255,0.11)] text-[#9d8fba]'}`}
-                >
+                <button type="button" onClick={() => setMe({ ...me, gender: 'M' })}
+                  className={`py-3 rounded-xl text-[14px] transition-all ${me.gender === 'M' ? 'bg-[rgba(192,132,252,0.08)] border border-[rgba(192,132,252,0.5)] text-[#c084fc]' : 'bg-[#141120] border border-[rgba(180,140,255,0.11)] text-[#9d8fba]'}`}>
                   남성
                 </button>
               </div>
@@ -251,7 +303,6 @@ export default function SajuInputForm({ me, setMe, pt, setPt, onCalculate, isLoa
           </div>
 
           <div className="space-y-4">
-            {/* 이름 */}
             <div>
               <label className={labelStyle}>이름</label>
               <input
@@ -264,7 +315,6 @@ export default function SajuInputForm({ me, setMe, pt, setPt, onCalculate, isLoa
               />
             </div>
 
-            {/* 생년월일 */}
             <div>
               <label className={labelStyle}>생년월일</label>
               <input
@@ -275,23 +325,27 @@ export default function SajuInputForm({ me, setMe, pt, setPt, onCalculate, isLoa
                 onChange={e => {
                   const formatted = formatDateInput(e.target.value);
                   setPtDateInput(formatted);
+                  setPtDateError(validateDate(formatted));
                   const iso = dateDisplayToISO(formatted);
                   if (iso) setPt({ ...pt, date: iso });
                 }}
-                className={inputStyle}
+                className={ptDateError ? inputErrorStyle : inputStyle}
               />
+              {ptDateError && <p className={errorMsgStyle}>⚠ {ptDateError}</p>}
             </div>
 
-            {/* 태어난 시간 */}
             <TimeField
               value={ptTimeInput}
               unknown={ptTimeUnknown}
+              error={ptTimeError}
               onChangeValue={val => {
                 setPtTimeInput(val);
+                setPtTimeError(validateTime(val));
                 setPt({ ...pt, time: val, isUnknownTime: false });
               }}
               onChangeUnknown={val => {
                 setPtTimeUnknown(val);
+                setPtTimeError('');
                 if (val) {
                   setPtTimeInput('');
                   setPt({ ...pt, time: '', isUnknownTime: true });
@@ -301,22 +355,15 @@ export default function SajuInputForm({ me, setMe, pt, setPt, onCalculate, isLoa
               }}
             />
 
-            {/* 성별 */}
             <div>
               <label className={labelStyle}>성별</label>
               <div className="grid grid-cols-2 gap-2">
-                <button
-                  type="button"
-                  onClick={() => setPt({ ...pt, gender: 'F' })}
-                  className={`py-3 rounded-xl text-[14px] transition-all ${pt.gender === 'F' ? 'bg-[rgba(192,132,252,0.08)] border border-[rgba(192,132,252,0.5)] text-[#c084fc]' : 'bg-[#141120] border border-[rgba(180,140,255,0.11)] text-[#9d8fba]'}`}
-                >
+                <button type="button" onClick={() => setPt({ ...pt, gender: 'F' })}
+                  className={`py-3 rounded-xl text-[14px] transition-all ${pt.gender === 'F' ? 'bg-[rgba(192,132,252,0.08)] border border-[rgba(192,132,252,0.5)] text-[#c084fc]' : 'bg-[#141120] border border-[rgba(180,140,255,0.11)] text-[#9d8fba]'}`}>
                   여성
                 </button>
-                <button
-                  type="button"
-                  onClick={() => setPt({ ...pt, gender: 'M' })}
-                  className={`py-3 rounded-xl text-[14px] transition-all ${pt.gender === 'M' ? 'bg-[rgba(192,132,252,0.08)] border border-[rgba(192,132,252,0.5)] text-[#c084fc]' : 'bg-[#141120] border border-[rgba(180,140,255,0.11)] text-[#9d8fba]'}`}
-                >
+                <button type="button" onClick={() => setPt({ ...pt, gender: 'M' })}
+                  className={`py-3 rounded-xl text-[14px] transition-all ${pt.gender === 'M' ? 'bg-[rgba(192,132,252,0.08)] border border-[rgba(192,132,252,0.5)] text-[#c084fc]' : 'bg-[#141120] border border-[rgba(180,140,255,0.11)] text-[#9d8fba]'}`}>
                   남성
                 </button>
               </div>
@@ -329,9 +376,7 @@ export default function SajuInputForm({ me, setMe, pt, setPt, onCalculate, isLoa
           <div className="text-[#c084fc] font-['Noto_Sans_KR'] text-[12px] font-light tracking-[2px] mb-3">
             ✦ 추가정보(선택・더 정확한 분석)
           </div>
-
           <div className="space-y-3" ref={dropdownRef}>
-            {/* 헤어진 기간 */}
             <div>
               <label className={labelStyle}>헤어진 지 얼마나 됐나요?</label>
               <div className="relative">
@@ -362,12 +407,11 @@ export default function SajuInputForm({ me, setMe, pt, setPt, onCalculate, isLoa
               </div>
             </div>
 
-            {/* 이별 이유 */}
             <div>
               <label className={labelStyle}>이별한 이유</label>
               <input
                 type="text"
-                maxLength={30}
+                maxLength={20}
                 placeholder="예) 자주 싸워서, 연락이 줄어서"
                 value={breakupReason}
                 onChange={e => setBreakupReason(e.target.value)}
@@ -380,7 +424,7 @@ export default function SajuInputForm({ me, setMe, pt, setPt, onCalculate, isLoa
         {/* 분석하기 버튼 */}
         <button
           type="button"
-          onClick={onCalculate}
+          onClick={handleCalculate}
           disabled={isLoading}
           className="w-full h-[54px] bg-[linear-gradient(99.16deg,#C084FC_0%,#F472B6_100%)] text-white font-bold text-[16px] rounded-[14px] shadow-[0px_8px_32px_0px_rgba(192,132,252,0.3)] hover:opacity-90 active:scale-[0.98] transition-all disabled:opacity-50"
         >
