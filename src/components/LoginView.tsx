@@ -9,6 +9,9 @@ export default function LoginScreen() {
   const origin = window.location.origin;
 
   const handleKakaoLogin = async () => {
+    // 환경 변수에서 베이스 URL을 가져오거나, 없으면 현재 호스트 주소를 사용
+    const siteUrl = import.meta.env.VITE_SITE_URL || window.location.origin;
+
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'kakao',
       options: {
