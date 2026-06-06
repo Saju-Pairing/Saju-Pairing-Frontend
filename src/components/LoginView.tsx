@@ -6,6 +6,7 @@ import crystalBall from '../assets/icon-crystal-ball.svg';
 export default function LoginScreen() {
   const location = useLocation();
   const navigate = useNavigate();
+  const origin = window.location.origin;
 
   const handleKakaoLogin = async () => {
     // 환경 변수에서 베이스 URL을 가져오거나, 없으면 현재 호스트 주소를 사용
@@ -14,8 +15,7 @@ export default function LoginScreen() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'kakao',
       options: {
-        // 자동으로 '도메인/auth/callback' 주소를 생성
-        redirectTo: `${siteUrl}/auth/callback`
+        redirectTo: `${origin}/auth/callback`
       }
     });
 

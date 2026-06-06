@@ -63,7 +63,7 @@ function AppContent() {
     });
 
     // 2. 로그인 상태가 바뀔 때
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
       const loggedIn = !!session;
       setIsLoggedIn(loggedIn);
       extractNameAndSet(session);
@@ -78,6 +78,13 @@ function AppContent() {
       setPaidResult(location.state.paidResult);
     }
   }, [location.state]);
+
+  // 사용자가 결과창을 벗어나 홈(/)이나 입력창(/input)으로 가면 유료 상태 메모리를 완전히 비웁니다.
+  useEffect(() => {
+    if (['/', '/input'].includes(location.pathname)) {
+      setPaidResult(null);
+    }
+  }, [location.pathname]);
 
   // 입력값과 분석 결과를 초기화할 때, sessionStorage에 저장된 게 있으면 가져오도록 설정
   const [me, setMe] = useState<PersonInput>(() => {
@@ -113,6 +120,11 @@ function AppContent() {
     sessionStorage.removeItem('saju_pt');
     sessionStorage.removeItem('saju_analysis');
     sessionStorage.removeItem('saju_paid_result');
+
+    sessionStorage.removeItem('saju_free_result');
+    sessionStorage.removeItem('saju_raw_me');
+    sessionStorage.removeItem('saju_raw_pt');
+
     setPaidResult(null);
     setAnalysis(null);
     navigate('/');
@@ -170,6 +182,8 @@ function AppContent() {
       sessionStorage.setItem('saju_me', JSON.stringify(me));
       sessionStorage.setItem('saju_pt', JSON.stringify(pt));
       sessionStorage.setItem('saju_analysis', JSON.stringify(newAnalysis));
+
+      sessionStorage.setItem('saju_free_result', JSON.stringify(newAnalysis));
 
       // rawSaju 데이터 sessionStorage에 저장 (AnalyzeLoadingScreen에서 사용)
       sessionStorage.setItem('saju_raw_me', JSON.stringify({
@@ -234,9 +248,6 @@ function AppContent() {
               me={me} pt={pt}
               analysis={analysis}
               onReset={handleReset}
-              isLoggedIn={isLoggedIn}
-              // 수정: 잠금 해제(결제)를 위해 로그인하는 것이므로 목적지를 /payment로 변경
-              onRequireLogin={() => navigate('/login', { state: { from: '/payment' } })}
               paidResult={paidResult}
             />
           ) : <Navigate to="/" />

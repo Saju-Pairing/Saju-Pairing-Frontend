@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { requestPayment, type PayMethod } from '../lib/portone';
 import { verifyPayment } from '../lib/payment';
@@ -8,21 +8,53 @@ import { buildAnalyzePayload } from '../utils/sajuEngine';
 
 import naverLogo from '../assets/images/logo_naverpay.png';
 import kakaoLogo from '../assets/images/logo_kakaopay.png';
+// import { MOCK_PAID_RESULT } from '../mocks/sajuMock';
 
 export default function PaymentView() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
+  /* ⭐️ [테스트용] 페이지 진입하자마자 바로 유료 결과 페이지로 연결 
+  useEffect(() => {
+    const isTestMode = true;
+
+    if (isTestMode) {
+      console.log("테스트 모드: 페이지 진입 즉시 결과로 이동합니다.");
+
+      // 1. 목데이터 저장
+      sessionStorage.setItem('saju_paid_result', JSON.stringify(MOCK_PAID_RESULT));
+
+      // 2. 0.5초 뒤 이동
+      const timer = setTimeout(() => {
+        navigate('/result', { state: { paidResult: MOCK_PAID_RESULT } });
+      }, 500);
+
+      return () => clearTimeout(timer);
+    }
+  }, [navigate]);
+  */
+
+  if (loading) {
+    return (
+      <div className="min-h-screen w-full bg-[#07060c] flex flex-col items-center justify-center text-[#f0eaf8]">
+        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#c084fc] mb-4"></div>
+        <p className="text-[14px] font-light text-[#9d8fba] animate-pulse">
+          두 사람의 운명을 심층 분석하고 있습니다...
+        </p>
+      </div>
+    );
+  }
+
   const handlePayment = async (payMethod: PayMethod) => {
+
     if (loading) return;
 
     try {
-      setLoading(true);
-
       // 1. 로그인 체크
       const session = await getSession();
       if (!session) {
         alert("카카오 로그인이 필요합니다.");
+        setLoading(false);
         await signInWithKakao();
         return;
       }
@@ -40,6 +72,8 @@ export default function PaymentView() {
         return;
       }
 
+      setLoading(true);
+
       // 4. 서버 결제 검증 (lib/payment.ts -> Supabase Edge Function)
       const { success, error } = await verifyPayment(payResult.paymentId, orderId);
 
@@ -50,12 +84,14 @@ export default function PaymentView() {
       }
 
       // 5. 성공 시 다음 단계 이동
-      alert("결제가 완료되었습니다! 분석 중입니다...");
-
       const rawMe = JSON.parse(sessionStorage.getItem('saju_raw_me') || '{}');
       const rawPt = JSON.parse(sessionStorage.getItem('saju_raw_pt') || '{}');
       const me = JSON.parse(sessionStorage.getItem('saju_me') || '{}');
       const pt = JSON.parse(sessionStorage.getItem('saju_pt') || '{}');
+
+      // ⭐️ 1. 세션 스토리지에서 무료 결과 객체를 가져옵니다.
+      const freeResultRaw = sessionStorage.getItem('saju_free_result');
+      const freeResult = freeResultRaw ? JSON.parse(freeResultRaw) : { compatibility: 0, score: 0 };
 
       const meSaju = buildAnalyzePayload(rawMe.rawSaju, rawMe.isUnknown);
       const partnerSaju = buildAnalyzePayload(rawPt.rawSaju, rawPt.isUnknown);
@@ -63,11 +99,23 @@ export default function PaymentView() {
       const formData = {
         me: { name: me.name, birth: me.date, gender: me.gender, time: me.time },
         partner: { name: pt.name, birth: pt.date, gender: pt.gender, time: pt.time },
-        breakupDuration: '',
-        breakupReason: '',
+        breakupDuration: me.breakupDuration || pt.breakupDuration || sessionStorage.getItem('saju_breakup_duration') || '미입력',
+        breakupReason: me.breakupReason || pt.breakupReason || sessionStorage.getItem('saju_breakup_reason') || '미입력',
       };
 
-      const result = await analyzePaid(formData, meSaju, partnerSaju, payResult.paymentId);
+      // ⭐️ 2. 서버 명세대로 5개의 인자를 완벽하게 채워서 호출합니다!
+      const result = await analyzePaid(
+        formData,
+        meSaju,
+        partnerSaju,
+        payResult.paymentId,
+        freeResult // 👈 여기에 무료 결과를 매개변수로 던져줍니다.
+      );
+
+      if (!result) {
+        throw new Error("서버에서 분석 결과를 생성하는 데 실패했습니다.");
+      }
+
       sessionStorage.setItem('saju_paid_result', JSON.stringify(result));
       navigate('/result', { state: { paidResult: result } });
 

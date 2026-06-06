@@ -14,13 +14,16 @@ body {
   margin: 0;
   font-family: 'Noto Sans KR', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
     Roboto, Helvetica, Arial, sans-serif;
-  background-color: #07060c; 
+  background-color: #07060c;
   color: #f0eaf8;
   min-height: 100vh;
   overflow-x: hidden;
 }
 
-input, select, textarea, button {
+input,
+select,
+textarea,
+button {
   font-family: inherit;
   font-size: 16px;
 }
@@ -54,7 +57,7 @@ input, select, textarea, button {
   width: 100%;
   height: 100%;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(192,132,252,0.3) 0%, rgba(192,132,252,0) 70%);
+  background: radial-gradient(circle, rgba(192, 132, 252, 0.3) 0%, rgba(192, 132, 252, 0) 70%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -63,7 +66,7 @@ input, select, textarea, button {
 
 .load-orb-in {
   font-size: 50px;
-  filter: drop-shadow(0 0 20px rgba(192,132,252,0.8));
+  filter: drop-shadow(0 0 20px rgba(192, 132, 252, 0.8));
   animation: pulse 2s infinite;
 }
 
@@ -96,7 +99,7 @@ input, select, textarea, button {
   align-items: center;
   gap: 12px;
   font-size: 13px;
-  color: #4a4068; 
+  color: #4a4068;
   transition: all 0.5s ease;
 }
 
@@ -122,21 +125,67 @@ input, select, textarea, button {
     애니메이션 키프레임 모음
    ══════════════════════════════════════ */
 @keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-15px); }
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-15px);
+  }
 }
 
 @keyframes pulse {
-  0% { transform: scale(1); opacity: 0.8; }
-  50% { transform: scale(1.1); opacity: 1; }
-  100% { transform: scale(1); opacity: 0.8; }
+  0% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+
+  50% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
 }
 
 @keyframes bounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-15px); }
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-15px);
+  }
 }
 
 .animate-bounce {
   animation: bounce 2s ease-in-out infinite;
+}
+
+@layer utilities {
+
+  /* 대괄호 특수문자 표기법([...])을 강제로 오버라이딩하여 +2px씩 적용 */
+  .text-\[10px\] {
+    font-size: 12px !important;
+  }
+
+  .text-\[11px\] {
+    font-size: 13px !important;
+  }
+
+  .text-\[12px\] {
+    font-size: 14px !important;
+  }
+
+  /* 기본 테일윈드 폰트 사이즈(xs)를 쓴 곳이 있다면 함께 보정 */
+  .text-xs {
+    font-size: 14px !important;
+  }
 }
