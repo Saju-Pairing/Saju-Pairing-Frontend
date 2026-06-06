@@ -1,25 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { getMyPayments } from '../lib/payment';
-
-// 결제 내역 데이터 타입 정의
-interface ServerPaymentItem {
-    id: string;
-    user_id: string;
-    payment_id: string;
-    order_id: string;
-    amount: number;
-    status: string;
-    created_at: string;
-}
+import type { PaymentRecord } from '../lib/payment';
 
 export default function PaymentHistoryView() {
     const navigate = useNavigate();
     const stars = Array.from({ length: 40 }, (_, i) => i + 1);
 
     // 상태 관리
-    const [payments, setPayments] = useState<ServerPaymentItem[]>([]);
+    const [payments, setPayments] = useState<PaymentRecord[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {
@@ -108,6 +98,8 @@ export default function PaymentHistoryView() {
                 ) : (
                     payments.map((item) => {
                         const { date, time } = formatDateTime(item.created_at);
+                        const isCancelled = item.status === 'CANCELLED' || item.status === 'PARTIAL_CANCELLED';
+
                         return (
                             <div key={item.id} className="border-b border-[rgba(192,132,252,0.2)] py-[16px] flex flex-row gap-[16px] items-start w-full">
 
@@ -120,15 +112,15 @@ export default function PaymentHistoryView() {
                                 <div className="flex flex-row justify-between items-start flex-1">
                                     <div className="flex flex-col gap-[2px]">
                                         <div className="text-[#f0eaf8] text-[14px] font-normal font-['Noto Sans KR']">
-                                            심층 사주 분석 결과 보기
+                                            {isCancelled ? '심층분석 구매 취소' : '심층분석 구매'}
                                         </div>
                                         <div className="text-[#4a4068] text-[13px] font-normal font-['Noto Sans KR']">
                                             {time}
                                         </div>
                                     </div>
 
-                                    {/* 금액 표시 (숫자 포맷팅 적용) */}
-                                    <div className="text-[#f0eaf8] text-[14px] font-normal font-['Noto Sans KR']">
+                                    {/* 금액 — 취소 시 색상 흐리게 */}
+                                    <div className={`text-[14px] font-normal font-['Noto Sans KR'] ${isCancelled ? 'text-[#6b5f80] line-through' : 'text-[#f0eaf8]'}`}>
                                         -{item.amount.toLocaleString()}원
                                     </div>
                                 </div>
