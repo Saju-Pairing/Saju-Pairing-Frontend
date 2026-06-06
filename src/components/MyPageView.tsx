@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 
@@ -23,7 +23,7 @@ export default function MyPageView() {
   const [userEmail, setUserEmail] = useState<string>("로그인 정보 없음");
   const [userName, setUserName] = useState<string>("사용자");
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
-  
+
   // 로그인 안내 팝업을 띄울지 결정하는 상태
   const [showLoginPopup, setShowLoginPopup] = useState(false);
 
@@ -46,7 +46,7 @@ export default function MyPageView() {
   const handleWithdraw = async () => {
     // 1. 현재 세션(로그인) 상태를 먼저 확인합니다.
     const { data: { session } } = await supabase.auth.getSession();
-    
+
     // 2. 로그아웃 상태라면 예쁜 팝업창을 띄우고 함수를 멈춥니다!
     if (!session) {
       setShowLoginPopup(true);
@@ -65,12 +65,12 @@ export default function MyPageView() {
       if (error) {
         console.error("서버 응답 에러:", error);
         alert(error.message || "탈퇴 처리에 실패했어요.");
-        return; 
+        return;
       }
 
       console.log("탈퇴 성공:", data);
       await supabase.auth.signOut();
-      
+
       alert("회원 탈퇴가 완료되었습니다. 이용해 주셔서 감사합니다.");
       navigate('/');
 
@@ -202,20 +202,20 @@ export default function MyPageView() {
       {showLoginPopup && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm px-4 animate-fade-in-up">
           <div className="bg-[#141120] border border-[rgba(180,140,255,0.15)] rounded-[1.5rem] p-7 w-full max-w-[320px] shadow-2xl flex flex-col items-center text-center">
-            
+
             {/* 아이콘 */}
             <div className="w-14 h-14 rounded-full bg-[rgba(180,140,255,0.1)] flex items-center justify-center text-2xl mb-4 border border-[rgba(180,140,255,0.2)]">
               🔒
             </div>
-            
+
             <h3 className="text-[17px] font-bold text-[#f0eaf8] mb-2 font-['Noto_Sans_KR']">
               로그인이 필요해요
             </h3>
-            
+
             <p className="text-[13px] text-[#9d8fba] leading-relaxed mb-8 font-light font-['Noto_Sans_KR'] break-keep">
               회원 탈퇴를 진행하시려면<br />먼저 카카오 로그인을 해주세요.
             </p>
-            
+
             <div className="flex flex-row w-full gap-3">
               <button
                 onClick={() => setShowLoginPopup(false)}
@@ -230,7 +230,7 @@ export default function MyPageView() {
                 로그인하기
               </button>
             </div>
-            
+
           </div>
         </div>
       )}

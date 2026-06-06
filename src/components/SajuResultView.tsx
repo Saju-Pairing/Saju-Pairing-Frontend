@@ -16,8 +16,6 @@ interface Props {
   pt: PersonInput;
   analysis: { meSaju: SajuResult; ptSaju: SajuResult; score: number; relation: RelationResult; scoreComment: { title: string; desc: string } };
   onReset: () => void;
-  isLoggedIn: boolean;
-  onRequireLogin: () => void;
   paidResult?: PaidResult | null;
 }
 
@@ -56,7 +54,7 @@ const PremiumCard = ({ num, title, icon, onUnlock, children }: PremiumCardProps)
   </div>
 );
 
-export default function SajuResultView({ me, pt, analysis, onReset, isLoggedIn, onRequireLogin, paidResult }: Props) {
+export default function SajuResultView({ me, pt, analysis, onReset, paidResult }: Props) {
   const navigate = useNavigate();
   const pdfRef = React.useRef<HTMLDivElement>(null);
 

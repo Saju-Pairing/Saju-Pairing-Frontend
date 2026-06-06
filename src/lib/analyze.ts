@@ -4,8 +4,8 @@ import { supabase } from './supabase'
 
 // 무료 결과: 로컬 계산 (Gemini 호출 없음)
 export function buildFreeResult(formData: SajuFormData) {
-  const meSaju = calcSajuPillar(formData.me.birth, formData.me.time)
-  const partnerSaju = calcSajuPillar(formData.partner.birth, formData.partner.time)
+  const meSaju = calcSajuPillar(formData.me.birth, formData.me.time, !formData.me.time)
+  const partnerSaju = calcSajuPillar(formData.partner.birth, formData.partner.time, !formData.partner.time)
   return calcFreeResult(meSaju, partnerSaju)
 }
 

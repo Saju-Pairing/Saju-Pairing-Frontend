@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import Picker from 'react-mobile-picker';
 import { years, months, days } from '../constants/sajuInputOptions';
 
@@ -21,14 +21,14 @@ export default function SajuWheelPickerModal({ isOpen, onClose, onSave, initialD
   return (
     <div className="fixed inset-0 z-[100] flex items-end justify-center bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
       <div className="fixed inset-0" onClick={onClose} />
-      
+
       <div className="relative w-full max-w-md bg-[#0f0d18] rounded-t-[2rem] p-6 border-t border-[rgba(180,140,255,0.2)] animate-in slide-in-from-bottom duration-300">
-        
+
         {/* 헤더 */}
         <div className="flex justify-between items-center mb-6 px-2">
           <button onClick={onClose} className="text-[#9d8fba] font-medium text-[14px]">취소</button>
           <h3 className="text-[#f0eaf8] font-bold text-[15px]">생년월일 선택</h3>
-          <button 
+          <button
             onClick={() => onSave(`${dateValue.year}-${dateValue.month}-${dateValue.day}`)}
             className="text-[#c084fc] font-bold text-[14px]"
           >완료</button>

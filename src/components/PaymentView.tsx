@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { requestPayment, type PayMethod } from '../lib/portone';
 import { verifyPayment } from '../lib/payment';
@@ -8,7 +8,7 @@ import { buildAnalyzePayload } from '../utils/sajuEngine';
 
 import naverLogo from '../assets/images/logo_naverpay.png';
 import kakaoLogo from '../assets/images/logo_kakaopay.png';
-import { MOCK_PAID_RESULT } from '../mocks/sajuMock';
+// import { MOCK_PAID_RESULT } from '../mocks/sajuMock';
 
 export default function PaymentView() {
   const navigate = useNavigate();

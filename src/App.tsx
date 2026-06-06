@@ -63,7 +63,7 @@ function AppContent() {
     });
 
     // 2. 로그인 상태가 바뀔 때
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
       const loggedIn = !!session;
       setIsLoggedIn(loggedIn);
       extractNameAndSet(session);
@@ -248,9 +248,6 @@ function AppContent() {
               me={me} pt={pt}
               analysis={analysis}
               onReset={handleReset}
-              isLoggedIn={isLoggedIn}
-              // 수정: 잠금 해제(결제)를 위해 로그인하는 것이므로 목적지를 /payment로 변경
-              onRequireLogin={() => navigate('/login', { state: { from: '/payment' } })}
               paidResult={paidResult}
             />
           ) : <Navigate to="/" />
