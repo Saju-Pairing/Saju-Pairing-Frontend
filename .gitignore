@@ -24,7 +24,9 @@ dist-ssr
 *.sw?
 
 # --- Security & Credentials (매우 중요!) ---
-.env
+.env.example
+.env.development
+.env.production
 .env.development.local
 .env.test.local
 .env.production.local
@@ -46,45 +48,10 @@ build/
 # package-lock.json
 # pnpm-lock.yaml
 
-<<<<<<< Updated upstream
 # --- OS & Temp files ---
 Thumbs.db
 *.bak
-=======
-# vitepress cache directory
-**/.vitepress/cache
-
-# Docusaurus cache and generated files
-.docusaurus
-
-# Serverless directories
-.serverless/
-
-# FuseBox cache
-.fusebox/
-
-# DynamoDB Local files
-.dynamodb/
-
-# Firebase cache directory
-.firebase/
-
-# TernJS port file
-.tern-port
-
-# Stores VSCode versions used for testing VSCode extensions
-.vscode-test
-
-# yarn v3
-.pnp.*
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/sdks
-!.yarn/versions
 
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
->>>>>>> Stashed changes
