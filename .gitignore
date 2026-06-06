@@ -23,7 +23,7 @@ dist-ssr
 *.sln
 *.sw?
 
-# --- Security & Credentials (매우 중요!) ---
+# --- Security & Credentials ---
 .env.example
 .env.development
 .env.production
