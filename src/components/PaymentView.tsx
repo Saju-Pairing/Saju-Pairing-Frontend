@@ -143,9 +143,9 @@ export default function PaymentView() {
       <div className="fixed bottom-[-10%] right-[-10%] w-[70vw] h-[70vw] bg-[#f472b6] rounded-full blur-[160px] opacity-10 -z-10 pointer-events-none"></div>
 
       {/* 너비 유연성 확보 */}
-      <div className="w-full max-w-[375px] flex flex-col px-[20px] py-[32px] gap-[32px] relative z-10 items-center">
+      <div className="w-full max-w-[375px] flex flex-col px-[20px] py-[32px] gap-[8px] relative z-10 items-center">
 
-        <header className="py-[16px] w-full min-h-[52px]"></header>
+        <header className="py-[16px] w-full min-h-[8px]"></header>
 
         {/* 상단 카드 */}
         <div className="w-full rounded-[20px] border border-[rgba(192,132,252,0.22)] bg-[#0f0d18] p-[30px_24px] flex flex-col gap-[24px]">
