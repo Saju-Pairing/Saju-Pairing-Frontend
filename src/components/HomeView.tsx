@@ -67,7 +67,7 @@ export default function HomeScreen({ onStart }: Props) {
 
       <div className="w-full max-w-md mx-auto flex flex-col relative z-10 animate-fade-in-up px-5">
 
-        <div className="flex flex-col items-center justify-center min-h-[calc(100vh-154px)] pb-10 pt-4">
+        <div className="flex flex-col items-center justify-center min-h-[calc(100vh-180px)] pb-10 pt-4">
           <div className="relative w-[100px] h-[100px] flex items-center justify-center mb-[28px]">
             <div className="absolute w-[100px] h-[100px] rounded-full border border-[rgba(180,140,255,0.15)] animate-[spin_12s_linear_infinite]">
               <div className="absolute top-[-3px] left-1/2 -translate-x-1/2 w-[6px] h-[6px] rounded-full bg-[#c084fc] shadow-[0_0_10px_#c084fc]"></div>
@@ -103,7 +103,7 @@ export default function HomeScreen({ onStart }: Props) {
         <div className="flex flex-col items-center mt-4">
 
           <div className="flex flex-col items-center mb-16 w-full">
-            <div className="px-5 py-1.5 rounded-full border border-[rgba(180,140,255,0.2)] text-center font-['Noto_Sans_KR'] text-[#c084fc] text-[10px] font-light leading-normal tracking-[2.5px] mb-5 bg-[#141120] shadow-[0_0_10px_rgba(192,132,252,0.1)]">
+            <div className="px-5 pb-1.5 rounded-full border border-[rgba(180,140,255,0.2)] text-center font-['Noto_Sans_KR'] text-[#c084fc] text-[10px] font-light leading-normal tracking-[2.5px] mb-5 bg-[#141120] shadow-[0_0_10px_rgba(192,132,252,0.1)]">
               Part 1. 속마음
             </div>
             <h2 className="text-center font-['Noto_Serif_KR'] text-[24px] font-bold leading-[34.8px] tracking-[-0.5px] text-transparent bg-clip-text bg-gradient-to-r from-[#c084fc] to-[#f472b6] mb-3">
