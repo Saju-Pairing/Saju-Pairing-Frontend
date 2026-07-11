@@ -1,16 +1,21 @@
-import { useEffect } from 'react'; 
-import { useLocation } from 'react-router-dom';
-import { supabase } from '../lib/supabase'; // 본인의 경로에 맞게 수정 필요
-import crystalBall from '../assets/icon-crystal-ball.svg'; // 본인의 경로에 맞게 수정 필요
+import { useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { supabase } from '../lib/supabase';
+import crystalBall from '../assets/icon-crystal-ball.svg';
 
 export default function LoginScreen() {
   const location = useLocation();
+  const navigate = useNavigate();
+  const origin = window.location.origin;
 
   const handleKakaoLogin = async () => {
+    // 환경 변수에서 베이스 URL을 가져오거나, 없으면 현재 호스트 주소를 사용
+    const siteUrl = import.meta.env.VITE_SITE_URL || window.location.origin;
+
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'kakao',
       options: {
-        redirectTo: 'http://localhost:5173/auth/callback' 
+        redirectTo: `${origin}/auth/callback`
       }
     });
 
@@ -31,7 +36,7 @@ export default function LoginScreen() {
 
   return (
     <div className="h-[100dvh] bg-[#07060c] flex justify-center font-sans text-[#f0eaf8] relative overflow-x-hidden overflow-y-auto">
-      
+
       {/* --- 배경 애니메이션 요소 --- */}
       <div className="fixed top-[-10%] left-[-10%] w-[60vw] max-w-[400px] h-[60vw] max-h-[400px] bg-[#c084fc] rounded-full blur-[120px] opacity-15 pointer-events-none"></div>
       <div className="fixed bottom-[10%] right-[-10%] w-[50vw] max-w-[300px] h-[50vw] max-h-[300px] bg-[#f472b6] rounded-full blur-[130px] opacity-10 pointer-events-none"></div>
@@ -51,7 +56,7 @@ export default function LoginScreen() {
 
         {/* 전체를 화면 중앙에 정렬 */}
         <div className="flex-1 flex flex-col items-center justify-center w-full pb-[84px]">
-          
+
           {/* 1. 상단 일러스트 (아래 텍스트와 28px 간격) */}
           <div className="relative w-[100px] h-[100px] flex items-center justify-center mb-[28px]">
             <div className="absolute w-[100px] h-[100px] rounded-full border border-[rgba(180,140,255,0.15)] animate-[spin_12s_linear_infinite]">
@@ -77,7 +82,7 @@ export default function LoginScreen() {
 
           {/* 3. 하단 카카오 버튼 영역 (위 텍스트와 28px 간격) */}
           <div className="w-full px-[20px] mt-[28px] relative flex flex-col items-center">
-            <button 
+            <button
               onClick={handleKakaoLogin}
               className="w-full h-[52px] flex items-center justify-center gap-2.5 bg-[#FEE500] hover:bg-[#e6cf00] text-[#000000] font-black rounded-[1rem] transition-transform hover:scale-[1.02] shadow-[0_4px_14px_rgba(254,229,0,0.15)]"
             >
@@ -86,8 +91,15 @@ export default function LoginScreen() {
             </button>
 
             {/* 약관 안내 텍스트 */}
-            <div className="absolute top-[calc(100%+16px)] text-[11px] text-[#4a4068]">
-              로그인 시 <a href="#" className="underline decoration-[#4a4068] hover:text-[#9d8fba]">개인정보처리방침</a> 및 <a href="#" className="underline decoration-[#4a4068] hover:text-[#9d8fba]">이용약관</a>에 동의합니다
+            <div className="absolute top-[calc(100%+16px)] text-[11px] text-[#4a4068] w-full text-center">
+              <span className="font-light">로그인 시 </span>
+              <button
+                onClick={() => navigate('/terms-of-service')}
+                className="font-light underline text-[11px] decoration-[#4a4068] hover:text-[#9d8fba] transition-colors cursor-pointer"
+              >
+                개인정보처리방침 및 이용약관
+              </button>
+              <span className="font-light"> 에 동의합니다</span>
             </div>
           </div>
 

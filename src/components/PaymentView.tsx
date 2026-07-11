@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { requestPayment, type PayMethod } from '../lib/portone';
 import { verifyPayment } from '../lib/payment';
@@ -8,21 +8,53 @@ import { buildAnalyzePayload } from '../utils/sajuEngine';
 
 import naverLogo from '../assets/images/logo_naverpay.png';
 import kakaoLogo from '../assets/images/logo_kakaopay.png';
+// import { MOCK_PAID_RESULT } from '../mocks/sajuMock';
 
 export default function PaymentView() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
+  /* ⭐️ [테스트용] 페이지 진입하자마자 바로 유료 결과 페이지로 연결 
+  useEffect(() => {
+    const isTestMode = true;
+
+    if (isTestMode) {
+      console.log("테스트 모드: 페이지 진입 즉시 결과로 이동합니다.");
+
+      // 1. 목데이터 저장
+      sessionStorage.setItem('saju_paid_result', JSON.stringify(MOCK_PAID_RESULT));
+
+      // 2. 0.5초 뒤 이동
+      const timer = setTimeout(() => {
+        navigate('/result', { state: { paidResult: MOCK_PAID_RESULT } });
+      }, 500);
+
+      return () => clearTimeout(timer);
+    }
+  }, [navigate]);
+  */
+
+  if (loading) {
+    return (
+      <div className="min-h-screen w-full bg-[#07060c] flex flex-col items-center justify-center text-[#f0eaf8]">
+        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#c084fc] mb-4"></div>
+        <p className="text-[14px] font-light text-[#9d8fba] animate-pulse">
+          두 사람의 운명을 심층 분석하고 있습니다...
+        </p>
+      </div>
+    );
+  }
+
   const handlePayment = async (payMethod: PayMethod) => {
+
     if (loading) return;
 
     try {
-      setLoading(true);
-
       // 1. 로그인 체크
       const session = await getSession();
       if (!session) {
         alert("카카오 로그인이 필요합니다.");
+        setLoading(false);
         await signInWithKakao();
         return;
       }
@@ -40,6 +72,8 @@ export default function PaymentView() {
         return;
       }
 
+      setLoading(true);
+
       // 4. 서버 결제 검증 (lib/payment.ts -> Supabase Edge Function)
       const { success, error } = await verifyPayment(payResult.paymentId, orderId);
 
@@ -50,12 +84,14 @@ export default function PaymentView() {
       }
 
       // 5. 성공 시 다음 단계 이동
-      alert("결제가 완료되었습니다! 분석 중입니다...");
-
       const rawMe = JSON.parse(sessionStorage.getItem('saju_raw_me') || '{}');
       const rawPt = JSON.parse(sessionStorage.getItem('saju_raw_pt') || '{}');
       const me = JSON.parse(sessionStorage.getItem('saju_me') || '{}');
       const pt = JSON.parse(sessionStorage.getItem('saju_pt') || '{}');
+
+      // ⭐️ 1. 세션 스토리지에서 무료 결과 객체를 가져옵니다.
+      const freeResultRaw = sessionStorage.getItem('saju_free_result');
+      const freeResult = freeResultRaw ? JSON.parse(freeResultRaw) : { compatibility: 0, score: 0 };
 
       const meSaju = buildAnalyzePayload(rawMe.rawSaju, rawMe.isUnknown);
       const partnerSaju = buildAnalyzePayload(rawPt.rawSaju, rawPt.isUnknown);
@@ -63,13 +99,25 @@ export default function PaymentView() {
       const formData = {
         me: { name: me.name, birth: me.date, gender: me.gender, time: me.time },
         partner: { name: pt.name, birth: pt.date, gender: pt.gender, time: pt.time },
-        breakupDuration: '',
-        breakupReason: '',
+        breakupDuration: me.breakupDuration || pt.breakupDuration || sessionStorage.getItem('saju_breakup_duration') || '미입력',
+        breakupReason: me.breakupReason || pt.breakupReason || sessionStorage.getItem('saju_breakup_reason') || '미입력',
       };
 
-      const result = await analyzePaid(formData, meSaju, partnerSaju, payResult.paymentId);
+      // ⭐️ 2. 서버 명세대로 5개의 인자를 완벽하게 채워서 호출합니다!
+      const result = await analyzePaid(
+        formData,
+        meSaju,
+        partnerSaju,
+        payResult.paymentId,
+        freeResult // 👈 여기에 무료 결과를 매개변수로 던져줍니다.
+      );
+
+      if (!result) {
+        throw new Error("서버에서 분석 결과를 생성하는 데 실패했습니다.");
+      }
+
       sessionStorage.setItem('saju_paid_result', JSON.stringify(result));
-      navigate('/result');
+      navigate('/result', { state: { paidResult: result } });
 
     } catch (e: any) {
       console.error(e);
@@ -95,9 +143,9 @@ export default function PaymentView() {
       <div className="fixed bottom-[-10%] right-[-10%] w-[70vw] h-[70vw] bg-[#f472b6] rounded-full blur-[160px] opacity-10 -z-10 pointer-events-none"></div>
 
       {/* 너비 유연성 확보 */}
-      <div className="w-full max-w-[375px] flex flex-col px-[20px] py-[32px] gap-[32px] relative z-10 items-center">
+      <div className="w-full max-w-[375px] flex flex-col px-[20px] py-[32px] gap-[8px] relative z-10 items-center">
 
-        <header className="py-[16px] w-full min-h-[52px]"></header>
+        <header className="py-[16px] w-full min-h-[8px]"></header>
 
         {/* 상단 카드 */}
         <div className="w-full rounded-[20px] border border-[rgba(192,132,252,0.22)] bg-[#0f0d18] p-[30px_24px] flex flex-col gap-[24px]">
@@ -200,6 +248,7 @@ export default function PaymentView() {
               결제 즉시 분석 결과가 잠금 해제됩니다.
             </span>
             <button
+              onClick={() => navigate('/terms-of-service')}
               style={{
                 ...footerTextStyle,
                 textDecoration: 'underline',
@@ -227,7 +276,7 @@ export default function PaymentView() {
               <div className="flex flex-col gap-[2px]">
                 <span style={{ ...footerTextStyle, fontSize: '10px' }}>이메일: 2019ootd@gmail.com</span>
                 <span style={{ ...footerTextStyle, fontSize: '10px', color: '#4A4068' }}>사업자주소: 서울특별시 영등포구 국회대로 632, 11층 5호</span>
-                <span style={{ ...footerTextStyle, fontSize: '10px', color: '#4A4068' }}>유선번호: 000-0000-0000</span>
+                <span style={{ ...footerTextStyle, fontSize: '10px', color: '#4A4068' }}>유선번호: 070-8098-9363</span>
                 <span style={{ ...footerTextStyle, fontSize: '10px', color: '#4A4068' }}>전화상담은 제공하지 않습니다.</span>
                 <span style={{ ...footerTextStyle, fontSize: '10px', color: '#4A4068' }}>설정 내 문의하기를 통해 문의해주세요.</span>
               </div>

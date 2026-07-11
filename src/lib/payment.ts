@@ -2,6 +2,18 @@ import { supabase } from './supabase'
 
 export const PRICE = 990
 
+// 결제 레코드 타입
+export interface PaymentRecord {
+  id: string
+  user_id: string
+  payment_id: string
+  order_id: string
+  amount: number
+  status: 'PAID' | 'CANCELLED' | 'PARTIAL_CANCELLED'
+  cancelled_at: string | null
+  created_at: string
+}
+
 // 결제 검증 (결제 완료 후 호출)
 export async function verifyPayment(
   paymentId: string,
@@ -18,14 +30,26 @@ export async function verifyPayment(
 }
 
 // 유저의 결제 내역 조회 (유료 콘텐츠 접근 여부 확인)
-export async function getMyPayments() {
+export async function getMyPayments(): Promise<PaymentRecord[]> {
   const { data, error } = await supabase
     .from('payments')
     .select('*')
     .order('created_at', { ascending: false })
 
   if (error) throw error
-  return data
+  return data ?? []
+}
+
+// 유료 접근 가능 여부 (취소되지 않은 결제가 1건 이상)
+export async function hasValidPayment(): Promise<boolean> {
+  const { data, error } = await supabase
+    .from('payments')
+    .select('id')
+    .eq('status', 'PAID')          // CANCELLED, PARTIAL_CANCELLED 제외
+    .limit(1)
+
+  if (error) return false
+  return (data ?? []).length > 0
 }
 
 // 저장된 분석 결과 조회 (결과 다시 보기)

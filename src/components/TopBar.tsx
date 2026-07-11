@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 interface Props {
   isLoggedIn: boolean;
@@ -21,7 +21,7 @@ export default function TopBar({ isLoggedIn, onLoginClick, onLogoutClick }: Prop
       } else {
         setIsVisible(true);
       }
-      
+
       setLastScrollY(currentScrollY);
     };
 
@@ -30,24 +30,23 @@ export default function TopBar({ isLoggedIn, onLoginClick, onLogoutClick }: Prop
   }, [lastScrollY]);
 
   return (
-    <div 
-      className={`fixed top-0 left-0 w-full z-50 transition-transform duration-300 ease-in-out ${
-        isVisible ? 'translate-y-0' : '-translate-y-full'
-      }`}
+    <div
+      className={`fixed top-0 left-0 w-full z-50 transition-transform duration-300 ease-in-out ${isVisible ? 'translate-y-0' : '-translate-y-full'
+        }`}
     >
       {/* 반투명 블랙 배경 + 블러 효과 */}
       <div className="w-full h-[54px] bg-[#07060c]/80 backdrop-blur-md border-b border-[rgba(180,140,255,0.08)] flex items-center">
         <div className="max-w-md w-full mx-auto flex items-center justify-between px-6">
-          
+
           {/* 로고 영역 */}
           <div className="cursor-pointer font-['Noto_Serif_KR'] text-[14px] font-semibold leading-[18.9px] tracking-tight">
             <span className="text-[#f0eaf8]">사주</span>
             <span className="text-[#c084fc]">페어링</span>
           </div>
-          
+
           {/* 로그인 여부에 따라 UI 변경 */}
           {isLoggedIn ? (
-            <button 
+            <button
               onClick={onLogoutClick}
               className="
                 flex flex-col justify-center items-center
@@ -64,7 +63,7 @@ export default function TopBar({ isLoggedIn, onLoginClick, onLogoutClick }: Prop
               로그아웃
             </button>
           ) : (
-            <button 
+            <button
               onClick={onLoginClick}
               className="
                 flex flex-col justify-center items-center

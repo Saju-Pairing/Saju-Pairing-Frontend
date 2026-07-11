@@ -23,13 +23,13 @@ export async function requestPayment(
 
   let response: Awaited<ReturnType<typeof PortOne.requestPayment>>
   if (method === 'card') {
-    response = await PortOne.requestPayment({ ...common, payMethod: 'CARD' })
+    response = await PortOne.requestPayment({ ...common, payMethod: 'CARD' } as any)
   } else {
     response = await PortOne.requestPayment({
       ...common,
       payMethod: 'EASY_PAY',
       easyPay: { easyPayProvider: method === 'kakao' ? 'KAKAOPAY' : 'NAVERPAY' },
-    })
+    } as any)
   }
 
   if (response?.code !== undefined) {
