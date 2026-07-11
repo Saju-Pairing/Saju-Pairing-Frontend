@@ -53,7 +53,7 @@ export default function HomeScreen({ onStart }: Props) {
     <div className="min-h-[100dvh] bg-[#07060c] font-sans text-[#f0eaf8] relative overflow-x-hidden pt-[70px] pb-[84px]">
 
       <div className="fixed top-[-10%] left-[-10%] w-[60vw] max-w-[400px] h-[60vw] max-h-[400px] bg-[#c084fc] rounded-full blur-[120px] opacity-15 pointer-events-none"></div>
-      <div className="fixed bottom-[10%] right-[-10%] w-[50vw] max-w-[300px] h-[50vw] max-h-[300px] bg-[#f472b6] rounded-full blur-[130px] opacity-10 pointer-events-none"></div>
+      <div className="fixed bottom-[10%] right-[-10%] w-[50vw] max-w-[300px] h-[50vw] max-h-[230px] bg-[#f472b6] rounded-full blur-[130px] opacity-10 pointer-events-none"></div>
       <div className="fixed inset-0 pointer-events-none opacity-60">
         <div className="absolute top-[12%] left-[22%] w-[2px] h-[2px] bg-white rounded-full opacity-30"></div>
         <div className="absolute top-[25%] left-[15%] w-[1px] h-[1px] bg-white rounded-full opacity-50"></div>
