@@ -23,6 +23,7 @@ import PaymentView from './components/PaymentView';
 import AuthCallback from './components/AuthCallback';
 import TermsOfServiceView from './components/TermsOfServiceView';
 import ScrollToTop from "./components/ScrollToTop";
+import PaymentRedirect from './components/PaymentRedirect';
 
 function AppContent() {
   const navigate = useNavigate();
@@ -262,6 +263,7 @@ function AppContent() {
               : <Navigate to="/login" state={{ from: '/payment' }} replace />
           )
         } />
+        <Route path="/payments/redirect" element={<PaymentRedirect />} />
 
         {/* /mypage 경로에서는 마이페이지 노출 */}
         <Route path="/mypage" element={<MyPageView />} />
