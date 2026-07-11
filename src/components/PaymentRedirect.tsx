@@ -8,7 +8,7 @@ export default function PaymentRedirect() {
     const [error, setError] = useState<string | null>(null)
 
     useEffect(() => {
-        const paymentId = params.get('payment_id')
+        const paymentId = params.get('paymentId')
         if (!paymentId) {
             setError('결제 정보를 확인할 수 없습니다.')
             return
