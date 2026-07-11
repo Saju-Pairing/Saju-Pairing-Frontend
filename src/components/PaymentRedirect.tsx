@@ -8,7 +8,7 @@ export default function PaymentRedirect() {
     const [error, setError] = useState<string | null>(null)
 
     useEffect(() => {
-        const paymentId = params.get('payment_id')
+        const paymentId = params.get('paymentId')
         if (!paymentId) {
             setError('결제 정보를 확인할 수 없습니다.')
             return
@@ -40,7 +40,7 @@ export default function PaymentRedirect() {
     return (
         <div className="min-h-screen w-full bg-[#07060c] flex flex-col items-center justify-center text-[#f0eaf8]">
             <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#c084fc] mb-4"></div>
-            <p className="text-[14px] font-light text-[#9d8fba] animate-pulse">결제 결과를 확인하고 있습니다...</p>
+            <p className="text-[14px] font-light text-[#9d8fba] animate-pulse">두 사람의 운명을 심층 분석하고 있습니다...</p>
         </div>
     )
 }
