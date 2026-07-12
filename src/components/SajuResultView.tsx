@@ -7,7 +7,7 @@ import crystalBall from '../assets/icon-crystal-ball.svg';
 import heartIcon from '../assets/icon-heart.svg';
 import type { PaidResult } from '../types/saju';
 import { saveAsPdf } from '../lib/pdf';
-import { enableSharing, disableSharing } from '../lib/payment';
+import { enableSharing } from '../lib/payment';
 
 import download from '../assets/images/download.png';
 import link from '../assets/images/link.png';
@@ -59,7 +59,6 @@ const PremiumCard = ({ num, title, icon, onUnlock, children }: PremiumCardProps)
 export default function SajuResultView({ me, pt, analysis, onReset, paidResult, readOnly }: Props) {
   const navigate = useNavigate();
   const pdfRef = React.useRef<HTMLDivElement>(null);
-  const [isSharing, setIsSharing] = useState(false);
   const [shareLoading, setShareLoading] = useState(false);
 
   React.useEffect(() => {
@@ -127,24 +126,18 @@ export default function SajuResultView({ me, pt, analysis, onReset, paidResult, 
 
     setShareLoading(true);
     try {
-      if (!isSharing) {
-        const shareUrl = await enableSharing(readingId);
-        setIsSharing(true);
-        try {
-          await navigator.clipboard.writeText(shareUrl);
-        } catch (clipboardErr) {
-          console.error('클립보드 복사 실패:', clipboardErr);
-        }
+      const shareUrl = await enableSharing(readingId);
 
-        if (navigator.share) {
-          await navigator.share({ title: '사주페어링 결과', url: shareUrl });
-        } else {
-          alert('링크가 복사되었습니다!');
-        }
+      try {
+        await navigator.clipboard.writeText(shareUrl);
+      } catch (clipboardErr) {
+        console.error('클립보드 복사 실패:', clipboardErr);
+      }
+
+      if (navigator.share) {
+        await navigator.share({ title: '사주페어링 결과', url: shareUrl });
       } else {
-        await disableSharing(readingId);
-        setIsSharing(false);
-        alert('공유가 해제되었습니다.');
+        alert('링크가 복사되었습니다!');
       }
     } catch (err) {
       console.error('공유 처리 실패:', err);
