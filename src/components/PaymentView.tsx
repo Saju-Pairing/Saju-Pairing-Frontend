@@ -5,6 +5,7 @@ import { verifyPayment } from '../lib/payment';
 import { getSession, signInWithKakao } from '../lib/auth';
 import { analyzePaid } from '../lib/analyze';
 import { buildAnalyzePayload } from '../utils/sajuEngine';
+import { getReadingByPaymentId } from '../lib/payment';
 
 import naverLogo from '../assets/images/logo_naverpay.png';
 import kakaoLogo from '../assets/images/logo_kakaopay.png';
@@ -116,8 +117,18 @@ export default function PaymentView() {
         throw new Error("서버에서 분석 결과를 생성하는 데 실패했습니다.");
       }
 
+      let readingId: string | undefined;
+      try {
+        const reading = await getReadingByPaymentId(payResult.paymentId);
+        readingId = reading?.id;
+      } catch (e) {
+        console.error('reading 조회 실패:', e);
+      }
+
+      const finalResult = { ...result, readingId };
+
       sessionStorage.setItem('saju_paid_result', JSON.stringify(result));
-      navigate('/result', { state: { paidResult: result } });
+      navigate('/result', { state: { paidResult: finalResult } });
 
     } catch (e: any) {
       console.error(e);
@@ -143,9 +154,9 @@ export default function PaymentView() {
       <div className="fixed bottom-[-10%] right-[-10%] w-[70vw] h-[70vw] bg-[#f472b6] rounded-full blur-[160px] opacity-10 -z-10 pointer-events-none"></div>
 
       {/* 너비 유연성 확보 */}
-      <div className="w-full max-w-[375px] flex flex-col px-[20px] py-[32px] gap-[32px] relative z-10 items-center">
+      <div className="w-full max-w-[375px] flex flex-col px-[20px] py-[32px] gap-[8px] relative z-10 items-center">
 
-        <header className="py-[16px] w-full min-h-[52px]"></header>
+        <header className="py-[16px] w-full min-h-[8px]"></header>
 
         {/* 상단 카드 */}
         <div className="w-full rounded-[20px] border border-[rgba(192,132,252,0.22)] bg-[#0f0d18] p-[30px_24px] flex flex-col gap-[24px]">
