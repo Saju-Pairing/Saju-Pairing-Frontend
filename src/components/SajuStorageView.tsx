@@ -230,22 +230,7 @@ export default function SajuStorageView() {
                                     {/* 하단 버튼 제어 */}
                                     {!isExpired ? (
                                         <button
-                                            onClick={() => {
-                                                navigate('/result', {
-                                                    state: {
-                                                        paidResult: {
-                                                            ...(record.paid_result || {}),
-                                                            id: record.id,
-
-                                                            formData: record.form_data,
-                                                            form_data: record.form_data,
-
-                                                            freeResult: record.free_result,
-                                                            free_result: record.free_result
-                                                        }
-                                                    }
-                                                });
-                                            }}
+                                            onClick={() => navigate(`/mypage/result/${record.id}`)}
                                             className="w-full py-[12px] flex flex-row items-center justify-center gap-[4px] border-t border-[rgba(192,132,252,0.12)] cursor-pointer active:bg-white/5"
                                         >
                                             <span className="text-[10px] text-[#9D8FBA] font-light font-['Noto_Sans_KR']">

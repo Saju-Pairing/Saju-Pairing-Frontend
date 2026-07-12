@@ -135,7 +135,13 @@ export default function SajuResultView({ me, pt, analysis, onReset, paidResult, 
       }
 
       if (navigator.share) {
-        await navigator.share({ title: '사주페어링 결과', url: shareUrl });
+        try {
+          await navigator.share({ title: '사주페어링 결과', url: shareUrl });
+        } catch (shareErr: any) {
+          if (shareErr?.name !== 'AbortError') {
+            console.error('공유 시트 오류:', shareErr);
+          }
+        }
       } else {
         alert('링크가 복사되었습니다!');
       }
