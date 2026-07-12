@@ -47,6 +47,7 @@ export interface RelationResult {
 
 // 유료 결과 
 export interface PaidResult {
+  readingId?: string
   reunionProbability: number
   reunionLabel: string
   reunionDesc: string
