@@ -17,7 +17,7 @@ export default function PaymentRedirect() {
         let cancelled = false
         completeOrder(paymentId, paymentId)
             .then((result) => {
-                if (!cancelled) navigate('/result', { state: { paidResult: result }, replace: true })
+                if (!cancelled) navigate(`/mypage/result/${result.readingId}`, { replace: true })
             })
             .catch((e) => {
                 if (!cancelled) setError(e.message || '결제 확인 중 오류가 발생했습니다.')

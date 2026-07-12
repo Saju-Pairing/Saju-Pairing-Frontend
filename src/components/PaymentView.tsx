@@ -72,11 +72,11 @@ export default function PaymentView() {
 
       setLoading(true);
 
-      // 4. 결제 검증 + 사주 분석 (lib/paymentCompletion.ts)
+      // 4. 결제 검증 + 사주 분석 (lib/paymentFlow.ts)
       const result = await completeOrder(payResult.paymentId, orderId);
 
-      // 5. 성공 시 다음 단계 이동
-      navigate('/result', { state: { paidResult: result } });
+      // 5. 성공 시 다음 단계 이동 (서버 직접 조회 방식으로 전환)
+      navigate(`/mypage/result/${result.readingId}`);
 
     } catch (e: any) {
       console.error(e);

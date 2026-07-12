@@ -1,4 +1,4 @@
-import { verifyPayment } from './payment'
+import { verifyPayment, getReadingByPaymentId } from './payment'
 import { analyzePaid } from './analyze'
 import { buildAnalyzePayload } from '../utils/sajuEngine'
 
@@ -28,6 +28,17 @@ export async function completeOrder(paymentId: string, orderId: string) {
     const result = await analyzePaid(formData, meSaju, partnerSaju, paymentId, freeResult)
     if (!result) throw new Error('서버에서 분석 결과를 생성하는 데 실패했습니다.')
 
-    sessionStorage.setItem('saju_paid_result', JSON.stringify(result))
-    return result
+    let readingId: string | undefined
+    try {
+        const reading = await getReadingByPaymentId(paymentId)
+        readingId = reading?.id
+    } catch (e) {
+        console.error('reading 조회 실패:', e)
+    }
+
+    if (!readingId) {
+        throw new Error('결과 조회에 실패했습니다. 마이페이지에서 다시 확인해주세요.')
+    }
+
+    return { ...result, readingId }
 }
