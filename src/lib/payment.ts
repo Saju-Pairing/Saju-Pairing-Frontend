@@ -99,12 +99,14 @@ export async function enableSharing(readingId: string): Promise<string> {
   return `${window.location.origin}/result/${readingId}`
 }
 
-// 공유 링크 해제 (is_public = false로 변경)
-export async function disableSharing(readingId: string) {
-  const { error } = await supabase
+// 본인 소유의 reading을 id로 직접 조회
+export async function getReadingById(readingId: string) {
+  const { data, error } = await supabase
     .from('readings')
-    .update({ is_public: false })
+    .select('*')
     .eq('id', readingId)
+    .single()
 
   if (error) throw error
+  return data
 }

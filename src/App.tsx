@@ -25,6 +25,7 @@ import TermsOfServiceView from './components/TermsOfServiceView';
 import ScrollToTop from "./components/ScrollToTop";
 import SharedResultView from "./components/SharedResultView";
 import PaymentRedirect from './components/PaymentRedirect';
+import MyResultView from './components/MyResultView';
 
 function AppContent() {
   const navigate = useNavigate();
@@ -256,6 +257,7 @@ function AppContent() {
         } />
 
         <Route path="/result/:readingId" element={<SharedResultView />} />
+        <Route path="/mypage/result/:readingId" element={<MyResultView />} />
 
         <Route path="/payment" element={
           isAuthLoading ? (
