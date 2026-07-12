@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { PersonInput, SajuResult, RelationResult } from '../types/saju';
 import { HANJA_TO_HANGUL } from '../constants/sajuData';
@@ -7,6 +7,7 @@ import crystalBall from '../assets/icon-crystal-ball.svg';
 import heartIcon from '../assets/icon-heart.svg';
 import type { PaidResult } from '../types/saju';
 import { saveAsPdf } from '../lib/pdf';
+import { enableSharing } from '../lib/payment';
 
 import download from '../assets/images/download.png';
 import link from '../assets/images/link.png';
@@ -17,6 +18,7 @@ interface Props {
   analysis: { meSaju: SajuResult; ptSaju: SajuResult; score: number; relation: RelationResult; scoreComment: { title: string; desc: string } };
   onReset: () => void;
   paidResult?: PaidResult | null;
+  readOnly?: boolean;
 }
 
 // PremiumCard 컴포넌트
@@ -54,9 +56,10 @@ const PremiumCard = ({ num, title, icon, onUnlock, children }: PremiumCardProps)
   </div>
 );
 
-export default function SajuResultView({ me, pt, analysis, onReset, paidResult }: Props) {
+export default function SajuResultView({ me, pt, analysis, onReset, paidResult, readOnly }: Props) {
   const navigate = useNavigate();
   const pdfRef = React.useRef<HTMLDivElement>(null);
+  const [shareLoading, setShareLoading] = useState(false);
 
   React.useEffect(() => {
     if (paidResult) {
@@ -108,6 +111,39 @@ export default function SajuResultView({ me, pt, analysis, onReset, paidResult }
   const handleDownloadPdf = () => {
     if (pdfRef.current) {
       saveAsPdf(pdfRef.current, '사주페어링_결과.pdf');
+    }
+  };
+
+  // 링크 공유 클릭 핸들러
+  const handleShareLink = async () => {
+    if (shareLoading) return;
+    const readingId = paidResult?.readingId;
+
+    if (!readingId) {
+      alert('공유할 수 있는 결과가 없습니다.');
+      return;
+    }
+
+    setShareLoading(true);
+    try {
+      const shareUrl = await enableSharing(readingId);
+
+      try {
+        await navigator.clipboard.writeText(shareUrl);
+      } catch (clipboardErr) {
+        console.error('클립보드 복사 실패:', clipboardErr);
+      }
+
+      if (navigator.share) {
+        await navigator.share({ title: '사주페어링 결과', url: shareUrl });
+      } else {
+        alert('링크가 복사되었습니다!');
+      }
+    } catch (err) {
+      console.error('공유 처리 실패:', err);
+      alert('오류가 발생했습니다. 다시 시도해주세요.');
+    } finally {
+      setShareLoading(false);
     }
   };
 
@@ -546,61 +582,66 @@ export default function SajuResultView({ me, pt, analysis, onReset, paidResult }
             </div>
 
             {/* 공유 및 안내 섹션 */}
-            <div data-html2canvas-ignore="true" className="mt-20 space-y-8 px-2 pt-8 border-t border-[rgba(180,140,255,0.1)]">
+            {!readOnly && (
+              <div data-html2canvas-ignore="true" className="mt-20 space-y-8 px-2 pt-8 border-t border-[rgba(180,140,255,0.1)]">
 
-              {/* 1. 상단 버튼 그룹 (PDF저장 / 링크 공유) */}
-              <div className="grid grid-cols-2 gap-5 px-2 max-w-[300px] mx-auto">
-                <button onClick={handleDownloadPdf} className="flex items-center justify-center gap-2 py-4 bg-gradient-to-r from-[#c084fc] to-[#f472b6] text-white rounded-[1.2rem] shadow-[0_4px_15px_rgba(192,132,252,0.3)] active:scale-[0.98] transition-transform">
-                  <img
-                    src={download}
-                    alt="pdf저장"
-                    className="h-[17px] w-auto object-contain"
-                  />
-                  <span className="text-[14px] font-bold">PDF 저장</span>
+                {/* 1. 상단 버튼 그룹 (PDF저장 / 링크 공유) */}
+                <div className="grid grid-cols-2 gap-5 px-2 max-w-[300px] mx-auto">
+                  <button onClick={handleDownloadPdf} className="flex items-center justify-center gap-2 py-4 bg-gradient-to-r from-[#c084fc] to-[#f472b6] text-white rounded-[1.2rem] shadow-[0_4px_15px_rgba(192,132,252,0.3)] active:scale-[0.98] transition-transform">
+                    <img
+                      src={download}
+                      alt="pdf저장"
+                      className="h-[17px] w-auto object-contain"
+                    />
+                    <span className="text-[14px] font-bold">PDF 저장</span>
+                  </button>
+                  <button
+                    onClick={handleShareLink}
+                    disabled={shareLoading}
+                    className="flex items-center justify-center gap-2 py-4 bg-gradient-to-r from-[#c084fc] to-[#f472b6] text-white rounded-[1.2rem] shadow-[0_4px_15px_rgba(192,132,252,0.3)] active:scale-[0.98] transition-transform">
+                    <img
+                      src={link}
+                      alt="링크공유"
+                      className="h-[17px] w-auto object-contain"
+                    />
+                    <span className="text-[14px] font-bold">링크 공유</span>
+                  </button>
+                </div>
+
+                {/* 2. 공유 안내 문구 */}
+                <div className="text-center space-y-1.5">
+                  <p className="text-[12px] text-[#9d8fba] font-light">
+                    링크 공유는 <span className="font-bold text-[#9d8fba]">7일 후 만료</span>되요.
+                  </p>
+                  <p className="text-[12px] text-[#9d8fba] font-light">
+                    영구 소장은 <span className="font-bold text-[#9d8fba]">PDF저장을 이용</span>해주세요.
+                  </p>
+                </div>
+
+                {/* 3. 이용 문의하기 버튼 */}
+                <button
+                  onClick={() => handleInquiryClick()}
+                  className="w-full max-w-[300px] mx-auto block py-4 rounded-[1.2rem] font-bold text-[14px] text-[#c084fc] transition-all active:scale-[0.98]"
+                  style={{
+                    backgroundColor: 'rgba(192, 132, 252, 0.08)',
+                    border: '1px solid rgba(192, 132, 252, 0.18)',
+                  }}
+                >
+                  이용 문의하기
                 </button>
-                <button className="flex items-center justify-center gap-2 py-4 bg-gradient-to-r from-[#c084fc] to-[#f472b6] text-white rounded-[1.2rem] shadow-[0_4px_15px_rgba(192,132,252,0.3)] active:scale-[0.98] transition-transform">
-                  <img
-                    src={link}
-                    alt="링크공유"
-                    className="h-[17px] w-auto object-contain"
-                  />
-                  <span className="text-[14px] font-bold">링크 공유</span>
-                </button>
+
+                {/* 4. 최종 안내 문구 */}
+                <div className="text-center space-y-1.5 opacity-60">
+                  <p className="text-[12px] text-[#9d8fba] font-light">
+                    결과 페이지가 뜨지 않는다면, <span className="font-bold text-[#9d8fba]">새로고침</span>을 해주세요.
+                  </p>
+                  <p className="text-[12px] text-[#9d8fba] font-light">
+                    결과는 <span className="font-bold text-[#9d8fba]">마이페이지</span>에서 다시 볼 수 있어요.
+                  </p>
+                </div>
+
               </div>
-
-              {/* 2. 공유 안내 문구 */}
-              <div className="text-center space-y-1.5">
-                <p className="text-[12px] text-[#9d8fba] font-light">
-                  링크 공유는 <span className="font-bold text-[#9d8fba]">7일 후 만료</span>되요.
-                </p>
-                <p className="text-[12px] text-[#9d8fba] font-light">
-                  영구 소장은 <span className="font-bold text-[#9d8fba]">PDF저장을 이용</span>해주세요.
-                </p>
-              </div>
-
-              {/* 3. 이용 문의하기 버튼 */}
-              <button
-                onClick={() => handleInquiryClick()}
-                className="w-full max-w-[300px] mx-auto block py-4 rounded-[1.2rem] font-bold text-[14px] text-[#c084fc] transition-all active:scale-[0.98]"
-                style={{
-                  backgroundColor: 'rgba(192, 132, 252, 0.08)',
-                  border: '1px solid rgba(192, 132, 252, 0.18)',
-                }}
-              >
-                이용 문의하기
-              </button>
-
-              {/* 4. 최종 안내 문구 */}
-              <div className="text-center space-y-1.5 opacity-60">
-                <p className="text-[12px] text-[#9d8fba] font-light">
-                  결과 페이지가 뜨지 않는다면, <span className="font-bold text-[#9d8fba]">새로고침</span>을 해주세요.
-                </p>
-                <p className="text-[12px] text-[#9d8fba] font-light">
-                  결과는 <span className="font-bold text-[#9d8fba]">마이페이지</span>에서 다시 볼 수 있어요.
-                </p>
-              </div>
-
-            </div>
+            )}
 
           </div>
         ) : (
