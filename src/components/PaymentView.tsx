@@ -5,6 +5,7 @@ import { verifyPayment } from '../lib/payment';
 import { getSession, signInWithKakao } from '../lib/auth';
 import { analyzePaid } from '../lib/analyze';
 import { buildAnalyzePayload } from '../utils/sajuEngine';
+import { getReadingByPaymentId } from '../lib/payment';
 
 import naverLogo from '../assets/images/logo_naverpay.png';
 import kakaoLogo from '../assets/images/logo_kakaopay.png';
@@ -116,8 +117,18 @@ export default function PaymentView() {
         throw new Error("서버에서 분석 결과를 생성하는 데 실패했습니다.");
       }
 
+      let readingId: string | undefined;
+      try {
+        const reading = await getReadingByPaymentId(payResult.paymentId);
+        readingId = reading?.id;
+      } catch (e) {
+        console.error('reading 조회 실패:', e);
+      }
+
+      const finalResult = { ...result, readingId };
+
       sessionStorage.setItem('saju_paid_result', JSON.stringify(result));
-      navigate('/result', { state: { paidResult: result } });
+      navigate('/result', { state: { paidResult: finalResult } });
 
     } catch (e: any) {
       console.error(e);
