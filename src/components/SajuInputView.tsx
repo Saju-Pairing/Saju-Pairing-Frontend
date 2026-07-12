@@ -17,8 +17,8 @@ interface Props {
 }
 
 const labelStyle = "text-[#9D8FBA] font-['Noto_Sans_KR'] text-[11px] font-light leading-normal tracking-[0.3px] mb-1.5 block";
-const inputStyle = "w-full bg-[#141120] border border-[rgba(180,140,255,0.11)] rounded-xl p-3.5 text-[14px] text-[#f0eaf8] placeholder-[#4a4068] focus:outline-none focus:border-[rgba(180,140,255,0.4)] transition-colors";
-const inputErrorStyle = "w-full bg-[#141120] border border-[rgba(255,100,100,0.5)] rounded-xl p-3.5 text-[14px] text-[#f0eaf8] placeholder-[#4a4068] focus:outline-none focus:border-[rgba(255,100,100,0.7)] transition-colors";
+const inputStyle = "w-full bg-[#141120] border border-[rgba(180,140,255,0.11)] rounded-xl p-3.5 text-[16px] text-[#f0eaf8] placeholder-[#4a4068] focus:outline-none focus:border-[rgba(180,140,255,0.4)] transition-colors";
+const inputErrorStyle = "w-full bg-[#141120] border border-[rgba(255,100,100,0.5)] rounded-xl p-3.5 text-[16px] text-[#f0eaf8] placeholder-[#4a4068] focus:outline-none focus:border-[rgba(255,100,100,0.7)] transition-colors";
 const errorMsgStyle = "text-[#ff6b6b] text-[11px] mt-1.5 font-['Noto_Sans_KR'] font-light";
 
 function formatDateInput(value: string): string {
@@ -88,25 +88,21 @@ const TimeField = ({ value, unknown, onChangeValue, onChangeUnknown, error }: Ti
 
   return (
     <div>
-      {/* 🌟 부모 컨테이너의 mb-1.5 블록 레이아웃을 그대로 유지하여 다른 입력창과 간격을 완전히 일치시킵니다. */}
       <div className="flex items-center gap-1.5 mb-1.5 select-none">
         <span className="text-[#9D8FBA] font-['Noto_Sans_KR'] text-[11px] font-light leading-normal tracking-[0.3px]">
-          태어난 시간
+          태어난 시간 (필수)
         </span>
-        
-        {/* 🌟 레이아웃 틀어짐을 방지하기 위해 전체 transform을 제거하고 relative 속성만 남깁니다. */}
+
         <div
           className="relative cursor-pointer flex items-center justify-center"
           onMouseEnter={() => setShowTooltip(true)}
           onMouseLeave={() => setShowTooltip(false)}
           onClick={() => setShowTooltip(!showTooltip)}
         >
-          {/* 🌟 SVG 자체에 미세 상단 마진(mt-[1px])을 주어, 라벨 박스 크기는 유지한 채 아이콘 그림만 아래로 살짝 내립니다. */}
           <svg className="block mt-[1.5px]" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(157,143,186,0.5)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
           </svg>
 
-          {/* 툴팁 위치는 원상 복구하여 완벽한 중앙에 고정합니다. */}
           {showTooltip && (
             <div className="absolute bottom-[calc(100%+8px)] left-1/2 -translate-x-1/2 w-max bg-[#635b75] rounded-[10px] px-5 py-3 shadow-lg z-50 pointer-events-none">
               <div className="text-[#d6bdfa] text-[13px] font-light font-['Noto_Sans_KR'] text-center leading-[1.6] tracking-wide whitespace-nowrap">
@@ -184,7 +180,6 @@ export default function SajuInputForm({ me, setMe, pt, setPt, onCalculate, isLoa
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // 🌟 [검증 조건 수정] 이름 필수 입력 보장 및 추가정보 입력 유무 상관없이 통과하도록 변경
   const isFormValid =
     !!me.name?.trim() &&
     !!pt.name?.trim() &&
@@ -233,7 +228,6 @@ export default function SajuInputForm({ me, setMe, pt, setPt, onCalculate, isLoa
 
       <div className="max-w-md mx-auto space-y-4">
 
-        {/* 나의 정보 카드 */}
         <div className="bg-[#0f0d18] rounded-[1.5rem] p-5 border border-[rgba(180,140,255,0.11)] shadow-lg">
           <div className="text-[#7eb8f7] font-['Noto_Sans_KR'] text-[12px] font-light tracking-[2px] mb-5 flex items-center gap-2">
             <img src={sunIcon} alt="" className="w-[14px] h-[14px] drop-shadow-[0_0_8px_rgba(126,184,247,0.6)]" />
@@ -242,7 +236,7 @@ export default function SajuInputForm({ me, setMe, pt, setPt, onCalculate, isLoa
 
           <div className="space-y-4">
             <div>
-              <label className={labelStyle}>이름</label>
+              <label className={labelStyle}>이름 (필수)</label>
               <input
                 type="text"
                 maxLength={5}
@@ -254,7 +248,7 @@ export default function SajuInputForm({ me, setMe, pt, setPt, onCalculate, isLoa
             </div>
 
             <div>
-              <label className={labelStyle}>생년월일</label>
+              <label className={labelStyle}>생년월일 (필수)</label>
               <input
                 type="text"
                 inputMode="numeric"
@@ -309,7 +303,6 @@ export default function SajuInputForm({ me, setMe, pt, setPt, onCalculate, isLoa
           </div>
         </div>
 
-        {/* 상대방 정보 카드 */}
         <div className="bg-[#0f0d18] rounded-[1.5rem] p-5 border border-[rgba(180,140,255,0.11)] shadow-lg">
           <div className="text-[#c084fc] font-['Noto_Sans_KR'] text-[12px] font-light tracking-[2px] mb-5 flex items-center gap-2">
             <span className="text-[10px]">🌙</span>
@@ -318,7 +311,7 @@ export default function SajuInputForm({ me, setMe, pt, setPt, onCalculate, isLoa
 
           <div className="space-y-4">
             <div>
-              <label className={labelStyle}>이름</label>
+              <label className={labelStyle}>이름 (필수)</label>
               <input
                 type="text"
                 maxLength={5}
@@ -330,7 +323,7 @@ export default function SajuInputForm({ me, setMe, pt, setPt, onCalculate, isLoa
             </div>
 
             <div>
-              <label className={labelStyle}>생년월일</label>
+              <label className={labelStyle}>생년월일 (필수)</label>
               <input
                 type="text"
                 inputMode="numeric"
@@ -385,7 +378,6 @@ export default function SajuInputForm({ me, setMe, pt, setPt, onCalculate, isLoa
           </div>
         </div>
 
-        {/* 추가 정보 카드 */}
         <div className="bg-[#141120] rounded-[16px] border border-[rgba(180,140,255,0.11)] p-4">
           <div className="text-[#c084fc] font-['Noto_Sans_KR'] text-[12px] font-light tracking-[2px] mb-3">
             ✦ 추가정보(선택・더 정확한 분석)
@@ -397,10 +389,9 @@ export default function SajuInputForm({ me, setMe, pt, setPt, onCalculate, isLoa
                 <button
                   type="button"
                   onClick={() => setBreakupDurOpen(!breakupDurOpen)}
-                  className="w-full bg-[#141120] border border-[rgba(180,140,255,0.11)] rounded-xl p-3.5 pr-10 text-left text-[14px] text-[#f0eaf8] focus:outline-none h-[48px] flex items-center"
+                  className="w-full bg-[#141120] border border-[rgba(180,140,255,0.11)] rounded-xl p-3.5 pr-10 text-left text-[16px] text-[#f0eaf8] focus:outline-none h-[48px] flex items-center"
                 >
                   <span className={breakupDur ? 'text-[#f0eaf8]' : 'text-[#4a4068]'}>
-                    {/* 🌟 기존 드롭다운 텍스트 노출 로직으로 완전 복구 */}
                     {breakupDur || '선택 안 함'}
                   </span>
                 </button>
@@ -436,7 +427,6 @@ export default function SajuInputForm({ me, setMe, pt, setPt, onCalculate, isLoa
           </div>
         </div>
 
-        {/* 분석하기 버튼 */}
         <button
           type="button"
           onClick={handleCalculate}
