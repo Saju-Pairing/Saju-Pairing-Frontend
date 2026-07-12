@@ -17,8 +17,13 @@ export async function requestPayment(
     paymentId: orderId,
     orderName: '재회사주 상세 분석',
     totalAmount: PRICE,
-    currency: 'KRW' as const,
+    currency: 'CURRENCY_KRW' as const,
     customer: { fullName: customerName || '고객' },
+    redirectUrl: `${window.location.origin}/payments/redirect`, // 모바일 REDIRECTION 복귀 URL
+    windowType: {
+      pc: 'IFRAME',
+      mobile: 'REDIRECTION',
+    },
   }
 
   let response: Awaited<ReturnType<typeof PortOne.requestPayment>>

@@ -1,11 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { requestPayment, type PayMethod } from '../lib/portone';
-import { verifyPayment } from '../lib/payment';
 import { getSession, signInWithKakao } from '../lib/auth';
-import { analyzePaid } from '../lib/analyze';
-import { buildAnalyzePayload } from '../utils/sajuEngine';
-import { getReadingByPaymentId } from '../lib/payment';
+import { completeOrder } from '../lib/paymentFlow';
 
 import naverLogo from '../assets/images/logo_naverpay.png';
 import kakaoLogo from '../assets/images/logo_kakaopay.png';
@@ -68,67 +65,18 @@ export default function PaymentView() {
       const payResult = await requestPayment(payMethod, orderId, userName);
 
       if (!payResult) {
-        // 유저가 결제창을 닫았을 때
+        // 유저가 결제창을 닫았을 때 (PC/IFRAME 방식에서만 발생)
         setLoading(false);
         return;
       }
 
       setLoading(true);
 
-      // 4. 서버 결제 검증 (lib/payment.ts -> Supabase Edge Function)
-      const { success, error } = await verifyPayment(payResult.paymentId, orderId);
-
-      if (!success) {
-        alert(`결제 실패: ${error}`);
-        setLoading(false);
-        return;
-      }
+      // 4. 결제 검증 + 사주 분석 (lib/paymentCompletion.ts)
+      const result = await completeOrder(payResult.paymentId, orderId);
 
       // 5. 성공 시 다음 단계 이동
-      const rawMe = JSON.parse(sessionStorage.getItem('saju_raw_me') || '{}');
-      const rawPt = JSON.parse(sessionStorage.getItem('saju_raw_pt') || '{}');
-      const me = JSON.parse(sessionStorage.getItem('saju_me') || '{}');
-      const pt = JSON.parse(sessionStorage.getItem('saju_pt') || '{}');
-
-      // ⭐️ 1. 세션 스토리지에서 무료 결과 객체를 가져옵니다.
-      const freeResultRaw = sessionStorage.getItem('saju_free_result');
-      const freeResult = freeResultRaw ? JSON.parse(freeResultRaw) : { compatibility: 0, score: 0 };
-
-      const meSaju = buildAnalyzePayload(rawMe.rawSaju, rawMe.isUnknown);
-      const partnerSaju = buildAnalyzePayload(rawPt.rawSaju, rawPt.isUnknown);
-
-      const formData = {
-        me: { name: me.name, birth: me.date, gender: me.gender, time: me.time },
-        partner: { name: pt.name, birth: pt.date, gender: pt.gender, time: pt.time },
-        breakupDuration: me.breakupDuration || pt.breakupDuration || sessionStorage.getItem('saju_breakup_duration') || '미입력',
-        breakupReason: me.breakupReason || pt.breakupReason || sessionStorage.getItem('saju_breakup_reason') || '미입력',
-      };
-
-      // ⭐️ 2. 서버 명세대로 5개의 인자를 완벽하게 채워서 호출합니다!
-      const result = await analyzePaid(
-        formData,
-        meSaju,
-        partnerSaju,
-        payResult.paymentId,
-        freeResult // 👈 여기에 무료 결과를 매개변수로 던져줍니다.
-      );
-
-      if (!result) {
-        throw new Error("서버에서 분석 결과를 생성하는 데 실패했습니다.");
-      }
-
-      let readingId: string | undefined;
-      try {
-        const reading = await getReadingByPaymentId(payResult.paymentId);
-        readingId = reading?.id;
-      } catch (e) {
-        console.error('reading 조회 실패:', e);
-      }
-
-      const finalResult = { ...result, readingId };
-
-      sessionStorage.setItem('saju_paid_result', JSON.stringify(result));
-      navigate('/result', { state: { paidResult: finalResult } });
+      navigate('/result', { state: { paidResult: result } });
 
     } catch (e: any) {
       console.error(e);

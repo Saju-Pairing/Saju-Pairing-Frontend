@@ -53,7 +53,7 @@ export default function HomeScreen({ onStart }: Props) {
     <div className="min-h-[100dvh] bg-[#07060c] font-sans text-[#f0eaf8] relative overflow-x-hidden pt-[70px] pb-[84px]">
 
       <div className="fixed top-[-10%] left-[-10%] w-[60vw] max-w-[400px] h-[60vw] max-h-[400px] bg-[#c084fc] rounded-full blur-[120px] opacity-15 pointer-events-none"></div>
-      <div className="fixed bottom-[10%] right-[-10%] w-[50vw] max-w-[300px] h-[50vw] max-h-[300px] bg-[#f472b6] rounded-full blur-[130px] opacity-10 pointer-events-none"></div>
+      <div className="fixed bottom-[10%] right-[-10%] w-[50vw] max-w-[300px] h-[50vw] max-h-[154px] bg-[#f472b6] rounded-full blur-[130px] opacity-10 pointer-events-none"></div>
       <div className="fixed inset-0 pointer-events-none opacity-60">
         <div className="absolute top-[12%] left-[22%] w-[2px] h-[2px] bg-white rounded-full opacity-30"></div>
         <div className="absolute top-[25%] left-[15%] w-[1px] h-[1px] bg-white rounded-full opacity-50"></div>
@@ -67,7 +67,7 @@ export default function HomeScreen({ onStart }: Props) {
 
       <div className="w-full max-w-md mx-auto flex flex-col relative z-10 animate-fade-in-up px-5">
 
-        <div className="flex flex-col items-center justify-center min-h-[calc(100vh-300px)] pb-10 pt-4">
+        <div className="flex flex-col items-center justify-center min-h-[calc(100vh-300px)] pb-10 pt-10">
           <div className="relative w-[100px] h-[100px] flex items-center justify-center mb-[28px]">
             <div className="absolute w-[100px] h-[100px] rounded-full border border-[rgba(180,140,255,0.15)] animate-[spin_12s_linear_infinite]">
               <div className="absolute top-[-3px] left-1/2 -translate-x-1/2 w-[6px] h-[6px] rounded-full bg-[#c084fc] shadow-[0_0_10px_#c084fc]"></div>
@@ -100,10 +100,10 @@ export default function HomeScreen({ onStart }: Props) {
           </div>
         </div>
 
-        <div className="flex flex-col items-center mt-4">
+        <div className="flex flex-col items-center mt-10">
 
           <div className="flex flex-col items-center mb-16 w-full">
-            <div className="px-5 pb-1.5 rounded-full border border-[rgba(180,140,255,0.2)] text-center font-['Noto_Sans_KR'] text-[#c084fc] text-[10px] font-light leading-normal tracking-[2.5px] mb-5 bg-[#141120] shadow-[0_0_10px_rgba(192,132,252,0.1)]">
+            <div className="px-5 py-1.5 rounded-full border border-[rgba(180,140,255,0.2)] text-center font-['Noto_Sans_KR'] text-[#c084fc] text-[10px] font-light leading-normal tracking-[2.5px] mb-5 bg-[#141120] shadow-[0_0_10px_rgba(192,132,252,0.1)]">
               Part 1. 속마음
             </div>
             <h2 className="text-center font-['Noto_Serif_KR'] text-[24px] font-bold leading-[34.8px] tracking-[-0.5px] text-transparent bg-clip-text bg-gradient-to-r from-[#c084fc] to-[#f472b6] mb-3">
