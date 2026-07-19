@@ -1,0 +1,15 @@
+User-agent: *
+Allow: /$
+Disallow: /input
+Disallow: /loading
+Disallow: /result
+Disallow: /mypage
+Disallow: /payment
+Disallow: /payments
+Disallow: /login
+Disallow: /auth
+Disallow: /saju-storage
+Disallow: /payment-history
+Disallow: /terms-of-service
+
+Sitemap: https://saju-paring.com/sitemap.xml
