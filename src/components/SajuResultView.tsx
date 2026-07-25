@@ -8,6 +8,7 @@ import heartIcon from '../assets/icon-heart.svg';
 import type { PaidResult } from '../types/saju';
 import { saveAsPdf } from '../lib/pdf';
 import { enableSharing } from '../lib/payment';
+import { monthToSortKey } from '../utils/sajuEngine'
 
 import download from '../assets/images/download.png';
 import link from '../assets/images/link.png';
@@ -487,19 +488,37 @@ export default function SajuResultView({ me, pt, analysis, onReset, paidResult, 
               <div className="p-6 text-[13px] text-[#c0bad0] leading-relaxed space-y-4">
                 {/* 타이밍 칩 */}
                 <div className="flex flex-wrap gap-2 mb-4">
-                  {paidResult.goodMonths.map((month) => (
-                    <span key={month} className="px-3 py-1 bg-[#0f0d18] border border-[rgba(180,140,255,0.08)] text-[#c084fc] rounded-full text-[10px] font-bold">
-                      {month} ✓
-                    </span>
-                  ))}
-                  <span className="px-3 py-1 bg-[#0f0d18] text-[#f472b6] rounded-full text-[10px] font-bold border border-[#f472b6]/30">
-                    {paidResult.bestMonth} 🔥 최고
-                  </span>
-                  {paidResult.badMonths.map((month) => (
-                    <span key={month} className="px-3 py-1 bg-[#0f0d18] border border-[rgba(180,140,255,0.08)] text-[#4a4068] rounded-full text-[10px]">
-                      {month} ⚠️
-                    </span>
-                  ))}
+                  {[
+                    ...paidResult.goodMonths
+                      .filter((m) => m !== paidResult.bestMonth)
+                      .map((m) => ({ month: m, type: 'good' as const })),
+                    ...(paidResult.bestMonth ? [{ month: paidResult.bestMonth, type: 'best' as const }] : []),
+                    ...paidResult.badMonths
+                      .filter((m) => m !== paidResult.bestMonth)
+                      .map((m) => ({ month: m, type: 'bad' as const })),
+                  ]
+                    .sort((a, b) => monthToSortKey(a.month) - monthToSortKey(b.month))
+                    .map(({ month, type }) => {
+                      if (type === 'best') {
+                        return (
+                          <span key={month} className="px-3 py-1 bg-[#0f0d18] text-[#f472b6] rounded-full text-[10px] font-bold border border-[#f472b6]/30">
+                            {month} 🔥 최고
+                          </span>
+                        );
+                      }
+                      if (type === 'good') {
+                        return (
+                          <span key={month} className="px-3 py-1 bg-[#0f0d18] border border-[rgba(180,140,255,0.08)] text-[#c084fc] rounded-full text-[10px] font-bold">
+                            {month} ✓
+                          </span>
+                        );
+                      }
+                      return (
+                        <span key={month} className="px-3 py-1 bg-[#0f0d18] border border-[rgba(180,140,255,0.08)] text-[#4a4068] rounded-full text-[10px]">
+                          {month} ⚠️
+                        </span>
+                      );
+                    })}
                 </div>
                 <p>{paidResult.sections.타이밍설명}</p>
               </div>
@@ -576,15 +595,6 @@ export default function SajuResultView({ me, pt, analysis, onReset, paidResult, 
               <p className="text-[12.5px] text-[#c0bad0] leading-relaxed mb-6 text-left break-keep">
                 {paidResult.sections.총평}
               </p>
-              <div
-                className="inline-flex items-center gap-2 py-3 px-8 rounded-full font-normal text-[13px] text-[#ffffff] shadow-sm transition-all"
-                style={{
-                  backgroundColor: 'rgba(192, 132, 252, 0.14)',
-                  border: '1px solid rgba(192, 132, 252, 0.18)',
-                }}
-              >
-                <span>{paidResult.verdict}</span>
-              </div>
             </div>
 
             {/* 공유 및 안내 섹션 */}
