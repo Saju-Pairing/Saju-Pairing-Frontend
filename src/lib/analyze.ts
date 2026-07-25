@@ -9,7 +9,18 @@ export function buildFreeResult(formData: SajuFormData) {
   return calcFreeResult(meSaju, partnerSaju)
 }
 
-// 기준 날짜(TODAY)를 "YYYY년 M월 D일" 한국어 형식으로 생성
+// 기준 날짜 다음 달부터 12개월치 "YYYY년 M월" 목록 생성
+function getAllowedMonths(): string[] {
+  const now = new Date()
+  const months: string[] = []
+  for (let i = 1; i <= 12; i++) {
+    const d = new Date(now.getFullYear(), now.getMonth() + i, 1)
+    months.push(`${d.getFullYear()}년 ${d.getMonth() + 1}월`)
+  }
+  return months
+}
+
+// 기준 날짜(Today)를 'YYYY년 M월 D일' 한국어 형식으로 생성
 function getTodayKoreanStr(): string {
   const now = new Date()
   return `${now.getFullYear()}년 ${now.getMonth() + 1}월 ${now.getDate()}일`
@@ -34,6 +45,7 @@ const SYSTEM_PROMPT = `당신은 사주명리학을 기반으로 연애 상담�
 
 function buildUserPrompt(
   today: string,
+  allowedMonths: string[],
   mePillarStr: string,
   partnerPillarStr: string,
   meGender: string,
@@ -49,7 +61,8 @@ function buildUserPrompt(
   return `아래 두 사람의 사주 데이터를 바탕으로 재회 상담 분석을 작성해주세요.
 
 [기준 날짜] ${today}
-→ goodMonths/badMonths/neutralMonths/bestMonth는 반드시 ${today} 다음 날부터 12개월 이내 달만 선택할 것. ${today} 이전이거나 오늘이 속한 달은 선택 금지.
+[선택 가능한 달 목록 - goodMonths/badMonths/neutralMonths/bestMonth 및 섹션04는 반드시 이 목록 안에서만 선택할 것]
+${allowedMonths.join(', ')}
 
 [두 사람 사주 원국]
 나(사용자): ${mePillarStr} / 성별: ${meGender}
@@ -86,9 +99,11 @@ export function buildPaidPrompts(formData: SajuFormData, meSaju: SajuPillar, par
   const relation = calcRelation(meSaju, partnerSaju)
   const partnerPersonality = calcPersonality(partnerSaju)
   const today = getTodayKoreanStr()
+  const allowedMonths = getAllowedMonths()
 
   const userPrompt = buildUserPrompt(
     today,
+    allowedMonths,
     pillarToStr(meSaju),
     pillarToStr(partnerSaju),
     formData.me.gender,
