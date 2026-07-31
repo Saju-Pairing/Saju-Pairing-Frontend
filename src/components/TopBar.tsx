@@ -1,15 +1,17 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 interface Props {
   isLoggedIn: boolean;
   userName?: string;
   onLoginClick: () => void;
-  onLogoutClick?: () => void; // 👈 로그아웃 클릭 함수 추가
+  onLogoutClick?: () => void; 
 }
 
 export default function TopBar({ isLoggedIn, onLoginClick, onLogoutClick }: Props) {
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -39,7 +41,10 @@ export default function TopBar({ isLoggedIn, onLoginClick, onLogoutClick }: Prop
         <div className="max-w-md w-full mx-auto flex items-center justify-between px-6">
 
           {/* 로고 영역 */}
-          <div className="cursor-pointer font-['Noto_Serif_KR'] text-[14px] font-semibold leading-[18.9px] tracking-tight">
+          <div
+            onClick={() => navigate('/')}
+            className="cursor-pointer font-['Noto_Serif_KR'] text-[14px] font-semibold leading-[18.9px] tracking-tight"
+          >
             <span className="text-[#f0eaf8]">사주</span>
             <span className="text-[#c084fc]">페어링</span>
           </div>

@@ -207,3 +207,12 @@ export const buildServerPayload = (
     }
   };
 };
+
+// "2026년 10월" → 202610 같은 정렬용 숫자로 변환
+export function monthToSortKey(monthStr: string): number {
+  const match = monthStr.match(/(\d{4})년\s*(\d{1,2})월/)
+  if (!match) return 0
+  const year = parseInt(match[1], 10)
+  const month = parseInt(match[2], 10)
+  return year * 100 + month
+}

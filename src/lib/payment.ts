@@ -54,13 +54,17 @@ export async function hasValidPayment(): Promise<boolean> {
 
 // 저장된 분석 결과 조회 (결과 다시 보기)
 export async function getMyReadings() {
+  const { data: { user }, error: userError } = await supabase.auth.getUser()
+  if (userError || !user) throw userError ?? new Error('로그인이 필요합니다.')
+
   const { data, error } = await supabase
     .from('readings')
     .select('*')
+    .eq('user_id', user.id)          // ★ 이 줄 추가
     .order('created_at', { ascending: false })
 
   if (error) throw error
-  return data
+  return data ?? []
 }
 
 // 특정 결제의 분석 결과 조회
