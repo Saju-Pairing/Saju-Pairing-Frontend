@@ -186,65 +186,89 @@ export default function PaymentView() {
             ))}
           </div>
 
-          <div className="pt-[16px] border-t border-[rgba(180,140,255,0.11)] flex flex-row justify-between items-center">
-            <div className="text-[13px] text-[#9d8fba] font-light font-['Noto_Sans_KR']">결제 금액</div>
-            <div className="flex flex-col items-end gap-[6px]">
-              <div className="text-[24px] font-bold text-[#c084fc] font-['Noto_Serif_KR'] leading-none">₩990</div>
-              <div className="text-[10px] text-[#4a4068] font-light font-['Noto_Sans_KR']">일회성 결제 · 소장가능</div>
+          {freeRemaining > 0 ? (
+            <div className="pt-[16px] border-t border-[rgba(180,140,255,0.11)] flex flex-row justify-between items-center">
+              <div className="text-[13px] text-[#9d8fba] font-light font-['Noto_Sans_KR']">첫 분석</div>
+              <div className="text-[18px] font-bold text-[#c084fc] font-['Noto_Serif_KR']">무료</div>
             </div>
-          </div>
+          ) : (
+            <div className="pt-[16px] border-t border-[rgba(180,140,255,0.11)] flex flex-row justify-between items-center">
+              <div className="text-[13px] text-[#9d8fba] font-light font-['Noto_Sans_KR']">결제 금액</div>
+              <div className="flex flex-col items-end gap-[6px]">
+                <div className="text-[24px] font-bold text-[#c084fc] font-['Noto_Serif_KR'] leading-none">₩990</div>
+                <div className="text-[10px] text-[#4a4068] font-light font-['Noto_Sans_KR']">일회성 결제 · 소장가능</div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* 결제 수단 선택 */}
         <div className="w-full flex flex-col gap-[14px]">
-          <div className="text-[11px] text-[#4a4068] font-light tracking-[1.5px] px-1">결제 수단 선택</div>
-          <div className="flex flex-col gap-3">
-
-            {/* 간편결제 (카카오 & 네이버) */}
-            <div className="flex flex-row gap-3 w-full">
-              {/* 카카오페이 */}
+          {freeRemaining > 0 ? (
+            <>
+              <div className="text-[11px] text-[#4a4068] font-light tracking-[1.5px] px-1">
+                결제 없이 바로 분석받을 수 있어요
+              </div>
               <button
-                onClick={() => handlePayment('kakao')}
+                onClick={handleFree}
                 disabled={loading}
-                className="flex-1 h-[54px] rounded-[14px] bg-[#FFEB00] flex flex-col items-center justify-center gap-1 active:scale-[0.96] transition-all"
+                className="w-full h-[54px] rounded-[14px] font-bold bg-[#c084fc] text-black active:scale-[0.96] transition-all"
               >
-                <div className="flex items-center gap-1">
-                  <img
-                    src={kakaoLogo}
-                    alt="카카오페이"
-                    className="h-[13px] w-auto object-contain"
-                  />
-                  <span className="text-[14px] font-bold text-black">카카오페이</span>
-                </div>
+                무료로 분석받기
               </button>
+            </>
+          ) : (
+            <>
+              <div className="text-[11px] text-[#4a4068] font-light tracking-[1.5px] px-1">결제 수단 선택</div>
+              <div className="flex flex-col gap-3">
 
-              {/* 네이버페이 */}
-              <button
-                onClick={() => handlePayment('naver')}
-                disabled={loading}
-                className="flex-1 h-[54px] rounded-[14px] bg-[#58D662] flex flex-col items-center justify-center gap-1 active:scale-[0.96] transition-all"
-              >
-                <div className="flex items-center gap-1">
-                  <img
-                    src={naverLogo}
-                    alt="네이버페이"
-                    className="h-[17px] w-auto object-contain"
-                  />
-                  <span className="text-[14px] font-bold text-black">네이버페이</span>
+                {/* 간편결제 (카카오 & 네이버) */}
+                <div className="flex flex-row gap-3 w-full">
+                  {/* 카카오페이 */}
+                  <button
+                    onClick={() => handlePayment('kakao')}
+                    disabled={loading}
+                    className="flex-1 h-[54px] rounded-[14px] bg-[#FFEB00] flex flex-col items-center justify-center gap-1 active:scale-[0.96] transition-all"
+                  >
+                    <div className="flex items-center gap-1">
+                      <img
+                        src={kakaoLogo}
+                        alt="카카오페이"
+                        className="h-[13px] w-auto object-contain"
+                      />
+                      <span className="text-[14px] font-bold text-black">카카오페이</span>
+                    </div>
+                  </button>
+
+                  {/* 네이버페이 */}
+                  <button
+                    onClick={() => handlePayment('naver')}
+                    disabled={loading}
+                    className="flex-1 h-[54px] rounded-[14px] bg-[#58D662] flex flex-col items-center justify-center gap-1 active:scale-[0.96] transition-all"
+                  >
+                    <div className="flex items-center gap-1">
+                      <img
+                        src={naverLogo}
+                        alt="네이버페이"
+                        className="h-[17px] w-auto object-contain"
+                      />
+                      <span className="text-[14px] font-bold text-black">네이버페이</span>
+                    </div>
+                  </button>
                 </div>
-              </button>
-            </div>
 
-            {/* 신용카드/체크카드 결제 */}
-            <button
-              onClick={() => handlePayment('card')}
-              disabled={loading}
-              className={`w-full max-w-[335px] h-[54px] rounded-[14px] font-bold border transition-all active:scale-[0.96]
-                ${loading ? 'border-[rgba(180,140,255,0.2)] text-[#c084fc]/70' : 'border-[#c084fc] bg-[#c084fc]/10 text-[#c084fc]'}`}
-            >
-              신용카드 / 체크카드
-            </button>
-          </div>
+                {/* 신용카드/체크카드 결제 */}
+                <button
+                  onClick={() => handlePayment('card')}
+                  disabled={loading}
+                  className={`w-full max-w-[335px] h-[54px] rounded-[14px] font-bold border transition-all active:scale-[0.96]
+                    ${loading ? 'border-[rgba(180,140,255,0.2)] text-[#c084fc]/70' : 'border-[#c084fc] bg-[#c084fc]/10 text-[#c084fc]'}`}
+                >
+                  신용카드 / 체크카드
+                </button>
+              </div>
+            </>
+          )}
         </div>
 
         {/* 하단 정보 섹션 */}
