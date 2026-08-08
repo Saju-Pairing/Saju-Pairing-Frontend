@@ -2,12 +2,7 @@ import { verifyPayment, getReadingByPaymentId } from './payment'
 import { analyzePaid } from './analyze'
 import { buildAnalyzePayload } from '../utils/sajuEngine'
 
-export async function completeOrder(paymentId: string, orderId: string) {
-    const { success, error } = await verifyPayment(paymentId, orderId)
-    if (!success) {
-        throw new Error(`결제 실패: ${error}`)
-    }
-
+function buildFormPayload() {
     const rawMe = JSON.parse(sessionStorage.getItem('saju_raw_me') || '{}')
     const rawPt = JSON.parse(sessionStorage.getItem('saju_raw_pt') || '{}')
     const me = JSON.parse(sessionStorage.getItem('saju_me') || '{}')
@@ -25,6 +20,12 @@ export async function completeOrder(paymentId: string, orderId: string) {
         breakupReason: me.breakupReason || pt.breakupReason || sessionStorage.getItem('saju_breakup_reason') || '미입력',
     }
 
+    return { formData, meSaju, partnerSaju, freeResult }
+}
+
+async function runAnalysisAndFetchReading(paymentId: string) {
+    const { formData, meSaju, partnerSaju, freeResult } = buildFormPayload()
+
     const result = await analyzePaid(formData, meSaju, partnerSaju, paymentId, freeResult)
     if (!result) throw new Error('서버에서 분석 결과를 생성하는 데 실패했습니다.')
 
@@ -41,4 +42,17 @@ export async function completeOrder(paymentId: string, orderId: string) {
     }
 
     return { ...result, readingId }
+}
+
+export async function completeOrder(paymentId: string, orderId: string) {
+    const { success, error } = await verifyPayment(paymentId, orderId)
+    if (!success) {
+        throw new Error(`결제 실패: ${error}`)
+    }
+
+    return runAnalysisAndFetchReading(paymentId)
+}
+
+export async function completeFreeOrder(paymentId: string) {
+    return runAnalysisAndFetchReading(paymentId)
 }

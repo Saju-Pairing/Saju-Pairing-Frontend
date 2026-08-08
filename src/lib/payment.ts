@@ -114,3 +114,33 @@ export async function getReadingById(readingId: string) {
   if (error) throw error
   return data
 }
+
+// 남은 무료 이용권 개수 조회
+export async function getFreeCreditRemaining(): Promise<number> {
+  const { data: { user }, error: userError } = await supabase.auth.getUser()
+  if (userError || !user) throw userError ?? new Error('로그인이 필요합니다.')
+
+  const { data, error } = await supabase
+    .from('free_credits')
+    .select('total, used')
+    .eq('user_id', user.id)
+    .maybeSingle()
+
+  if (error) throw error
+  if (!data) return 0
+
+  const remaining = data.total - data.used
+  return remaining > 0 ? remaining : 0
+}
+
+// 무료 이용권 1회 사용 → paymentId 발급
+export async function claimFreePass(): Promise<{ paymentId: string }> {
+  const { data, error } = await supabase.functions.invoke('claim-free-pass', {
+    body: {},
+  })
+
+  if (error) throw new Error(error.message)
+  if (!data?.paymentId) throw new Error('사용할 수 있는 무료 이용권이 없어요.')
+
+  return { paymentId: data.paymentId }
+}

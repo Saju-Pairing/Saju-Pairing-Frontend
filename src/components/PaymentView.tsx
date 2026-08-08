@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { requestPayment, type PayMethod } from '../lib/portone';
 import { getSession, signInWithKakao } from '../lib/auth';
-import { completeOrder } from '../lib/paymentFlow';
+import { getFreeCreditRemaining, claimFreePass } from '../lib/payment'
+import { completeOrder, completeFreeOrder } from '../lib/paymentFlow'
 
 import naverLogo from '../assets/images/logo_naverpay.png';
 import kakaoLogo from '../assets/images/logo_kakaopay.png';
@@ -11,6 +12,23 @@ import kakaoLogo from '../assets/images/logo_kakaopay.png';
 export default function PaymentView() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [checking, setChecking] = useState(true)
+  const [freeRemaining, setFreeRemaining] = useState(0)
+
+  useEffect(() => {
+    (async () => {
+      const session = await getSession();
+      if (!session) { setChecking(false); return; }
+      try {
+        const remaining = await getFreeCreditRemaining();
+        setFreeRemaining(remaining);
+      } catch {
+        setFreeRemaining(0);
+      } finally {
+        setChecking(false);
+      }
+    })();
+  }, []);
 
   /* ⭐️ [테스트용] 페이지 진입하자마자 바로 유료 결과 페이지로 연결 
   useEffect(() => {
@@ -42,6 +60,37 @@ export default function PaymentView() {
       </div>
     );
   }
+
+  if (checking) {
+    return (
+      <div className="min-h-screen w-full bg-[#07060c] flex flex-col items-center justify-center text-[#f0eaf8]">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#c084fc]"></div>
+      </div>
+    );
+  }
+
+  const handleFree = async () => {
+    if (loading) return;
+    try {
+      const session = await getSession();
+      if (!session) {
+        alert("카카오 로그인이 필요합니다.");
+        await signInWithKakao();
+        return;
+      }
+      setLoading(true);
+      const { paymentId } = await claimFreePass();
+      const result = await completeFreeOrder(paymentId);
+      navigate(`/mypage/result/${result.readingId}`);
+    } catch (e: any) {
+      console.error(e);
+      setFreeRemaining(0);
+      alert(e.message || '무료 이용권을 사용할 수 없어요. 결제로 진행해주세요.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
 
   const handlePayment = async (payMethod: PayMethod) => {
 
