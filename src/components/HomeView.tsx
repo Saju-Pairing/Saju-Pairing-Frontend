@@ -16,7 +16,7 @@ interface LandingCardProps {
 }
 
 const LandingCard = ({ num, category, icon, title, visibleContent, blurredContent }: LandingCardProps) => (
-  <div className="w-full bg-[#141120] rounded-[1.5rem] border border-[rgba(180,140,255,0.11)] overflow-hidden relative shadow-lg text-left">
+  <div className="w-full bg-[#141120] rounded-[1.5rem] border border-[rgba(192,132,252,0.18)] overflow-hidden relative shadow-lg text-left">
     <div className="p-5 border-b border-[rgba(180,140,255,0.05)] flex items-center gap-4">
       <div className="w-10 h-10 rounded-[12px] flex items-center justify-center text-lg bg-[rgba(244,114,182,0.12)] border border-[rgba(180,140,255,0.11)] text-[#f0eaf8] flex-shrink-0 shadow-inner">
         {icon}
@@ -90,7 +90,17 @@ export default function HomeScreen({ onStart }: Props) {
             </p>
           </div>
 
-          <div className="w-full mt-[36px]">
+          {/* ⭐️ 버튼 & 말풍선 영역 (SajuResultView와 동일한 동일한 여백/스타일 패턴) */}
+          <div className="w-full mt-[26px] flex flex-col items-end">
+            <div className="my-[10px] animate-fade-in-up">
+              <div className="relative bg-[#251b3a] border border-[rgba(192,132,252,0.4)] text-white text-[12px] font-[300] font-['Noto_Sans_KR'] leading-normal text-center px-3.5 py-1.5 rounded-full shadow-lg flex items-center gap-1">
+                <span>🎉</span>
+                <span>지금 가입 시 심층분석 무료</span>
+                {/* 정삼각형 형태 꼬리 */}
+                <div className="absolute -bottom-[5px] right-7 w-2.5 h-2.5 bg-[#251b3a] border-r border-b border-[rgba(192,132,252,0.4)] rotate-45"></div>
+              </div>
+            </div>
+
             <button
               onClick={onStart}
               className="w-full h-[54px] flex items-center justify-center gap-2 bg-[linear-gradient(135deg,#C084FC,#F472B6)] text-white font-bold rounded-[1.2rem] transition-transform hover:scale-[1.02] shadow-[0_4px_20px_rgba(192,132,252,0.3)]"
@@ -221,8 +231,9 @@ export default function HomeScreen({ onStart }: Props) {
                   icon="📅"
                   title="언제 연락하는 게 가장 좋을까요"
                   visibleContent={
-                    <div className="space-y-5">
-                      <div className="flex flex-wrap gap-2">
+                    <div>
+                      {/* 5개 단위 줄맞춤(312px) 및 중앙 배치, 아래 설명글과 18px 간격 */}
+                      <div className="flex flex-wrap gap-2 justify-start max-w-[312px] mx-auto mb-[18px]">
                         {[
                           { label: '4월', status: 'good' },
                           { label: '5월', status: 'avoid' },
@@ -234,7 +245,6 @@ export default function HomeScreen({ onStart }: Props) {
                           { label: '11월', status: 'good' },
                           { label: '12월', status: 'good' },
                         ].map((m) => {
-                          // 공통 크기 및 레이아웃 (56px x 30px, rounded-30px, 12px font)
                           const baseStyles = 'w-[56px] h-[30px] px-3 py-[6px] justify-center items-center rounded-[30px] text-[12px] font-medium';
 
                           const statusStyles =
@@ -326,26 +336,26 @@ export default function HomeScreen({ onStart }: Props) {
                     <div className="space-y-6">
                       <p>지금 당신의 기운은 먼저 움직이는 게 유리한 시기예요. 기다리기만 하면 기회가 지나갈 수 있어요. 단, 조급하게 굴면 역효과가 나요. 적극적이지만 여유 있는 태도가 핵심이에요.</p>
                       <div className="grid grid-cols-1 gap-3">
-                        <div className="bg-[#0f0d18] p-4 rounded-xl border border-[rgba(180,140,255,0.08)]">
-                        <div className="text-[#C084FC] font-['Noto_Sans_KR'] text-[10px] font-bold tracking-[1.5px] mb-2">✦ 지금 해야 할 것</div>
-                        <ul className="text-[11.5px] space-y-1.5 text-[#b0a8c4] list-none leading-relaxed blur-[3px] opacity-70 select-none text-left">
-                          <li><span className="text-[#C084FC]">✓</span> 자연스러운 안부 연락 (짧고 가볍게)</li>
-                          <li><span className="text-[#C084FC]">✓</span> 공통의 추억을 소재로 한 대화 시도</li>
-                          <li><span className="text-[#C084FC]">✓</span> 답장을 기다리는 여유 갖기</li>
-                          <li><span className="text-[#C084FC]">✓</span> 나 자신을 가꾸고 성장하는 모습 보여주기</li>
-                          <li><span className="text-[#C084FC]">✓</span> 4월~7월 사이에 집중적으로 행동하기</li>
-                        </ul>
-                      </div>
-                      <div className="bg-[#0f0d18] p-4 rounded-xl border border-[#f472b6]/20">
-                        <div className="text-[#F472B6] font-['Noto_Sans_KR'] text-[10px] font-bold tracking-[1.5px] mb-2">✦ 절대 하면 안 될 것</div>
-                        <ul className="text-[11.5px] space-y-1.5 text-[#b0a8c4] list-none leading-relaxed blur-[3px] opacity-70 select-none text-left">
-                          <li><span className="text-[#F472B6]">✗</span> 재회를 강요하거나 결론 재촉하기</li>
-                          <li><span className="text-[#F472B6]">✗</span> 과거의 잘못을 끄집어내며 따지기</li>
-                          <li><span className="text-[#F472B6]">✗</span> 읽씹에 연속 메시지 보내기</li>
-                          <li><span className="text-[#F472B6]">✗</span> 술 마신 상태에서 감정적 연락하기</li>
-                          <li><span className="text-[#F472B6]">✗</span> SNS로 현재 상태를 과시하며 어필하기</li>
-                        </ul>
-                      </div>
+                        <div className="bg-[#0f0d18] p-4 rounded-xl border border-[rgba(192,132,252,0.18)]">
+                          <div className="text-[#C084FC] font-['Noto_Sans_KR'] text-[10px] font-bold tracking-[1.5px] mb-2">✦ 지금 해야 할 것</div>
+                          <ul className="text-[11.5px] space-y-1.5 text-[#b0a8c4] list-none leading-relaxed blur-[3px] opacity-70 select-none text-left">
+                            <li><span className="text-[#C084FC]">✓</span> 자연스러운 안부 연락 (짧고 가볍게)</li>
+                            <li><span className="text-[#C084FC]">✓</span> 공통의 추억을 소재로 한 대화 시도</li>
+                            <li><span className="text-[#C084FC]">✓</span> 답장을 기다리는 여유 갖기</li>
+                            <li><span className="text-[#C084FC]">✓</span> 나 자신을 가꾸고 성장하는 모습 보여주기</li>
+                            <li><span className="text-[#C084FC]">✓</span> 4월~7월 사이에 집중적으로 행동하기</li>
+                          </ul>
+                        </div>
+                        <div className="bg-[#0f0d18] p-4 rounded-xl border border-[#f472b6]/20">
+                          <div className="text-[#F472B6] font-['Noto_Sans_KR'] text-[10px] font-bold tracking-[1.5px] mb-2">✦ 절대 하면 안 될 것</div>
+                          <ul className="text-[11.5px] space-y-1.5 text-[#b0a8c4] list-none leading-relaxed blur-[3px] opacity-70 select-none text-left">
+                            <li><span className="text-[#F472B6]">✗</span> 재회를 강요하거나 결론 재촉하기</li>
+                            <li><span className="text-[#F472B6]">✗</span> 과거의 잘못을 끄집어내며 따지기</li>
+                            <li><span className="text-[#F472B6]">✗</span> 읽씹에 연속 메시지 보내기</li>
+                            <li><span className="text-[#F472B6]">✗</span> 술 마신 상태에서 감정적 연락하기</li>
+                            <li><span className="text-[#F472B6]">✗</span> SNS로 현재 상태를 과시하며 어필하기</li>
+                          </ul>
+                        </div>
                       </div>
                     </div>
                   }
@@ -358,7 +368,7 @@ export default function HomeScreen({ onStart }: Props) {
           </div>
 
           {/* 종합 총평 */}
-          <div className="mt-4 w-full bg-[#110c1d] rounded-[24px] border border-[#3b2d5a] p-10 flex flex-col items-center text-center relative overflow-hidden shadow-2xl">
+          <div className="mt-4 w-full bg-[#110c1d] rounded-[24px] border border-[rgba(192,132,252,0.18)] p-10 flex flex-col items-center text-center relative overflow-hidden shadow-2xl">
             <div className="text-white font-bold mb-8 font-['Noto_Serif_KR'] text-[18px] tracking-wider">
               ✦ 종합 총평 ✦
             </div>
