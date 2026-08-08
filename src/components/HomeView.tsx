@@ -18,7 +18,7 @@ interface LandingCardProps {
 const LandingCard = ({ num, category, icon, title, visibleContent, blurredContent }: LandingCardProps) => (
   <div className="w-full bg-[#141120] rounded-[1.5rem] border border-[rgba(180,140,255,0.11)] overflow-hidden relative shadow-lg text-left">
     <div className="p-5 border-b border-[rgba(180,140,255,0.05)] flex items-center gap-4">
-      <div className="w-10 h-10 rounded-full flex items-center justify-center text-lg bg-[#0f0d18] border border-[rgba(180,140,255,0.11)] text-[#f0eaf8] flex-shrink-0 shadow-inner">
+      <div className="w-10 h-10 rounded-[12px] flex items-center justify-center text-lg bg-[rgba(244,114,182,0.12)] border border-[rgba(180,140,255,0.11)] text-[#f0eaf8] flex-shrink-0 shadow-inner">
         {icon}
       </div>
       <div>
@@ -33,12 +33,12 @@ const LandingCard = ({ num, category, icon, title, visibleContent, blurredConten
 
     <div className="p-6">
       {visibleContent && (
-        <div className="text-[#C0BAD0] font-['Noto_Sans_KR'] text-[13.5px] font-light leading-[27.68px] break-keep mb-6">
+        <div className="text-[#C0BAD0] font-['Noto_Sans_KR'] text-[13.5px] font-light leading-[27.68px] break-keep mb-6 text-left">
           {visibleContent}
         </div>
       )}
       {blurredContent && (
-        <div className="text-[#C0BAD0] font-['Noto_Sans_KR'] text-[13.5px] font-light leading-[27.68px] break-keep space-y-4 blur-[6px] opacity-40 select-none pointer-events-none">
+        <div className="text-[#C0BAD0] font-['Noto_Sans_KR'] text-[13.5px] font-light leading-[27.68px] break-keep space-y-4 blur-[3px] opacity-40 select-none pointer-events-none text-left">
           {blurredContent}
         </div>
       )}
@@ -183,9 +183,14 @@ export default function HomeScreen({ onStart }: Props) {
                           />
                         </svg>
                         <div className="absolute inset-0 flex items-center justify-center">
-                          <span className="text-[#c084fc] text-center font-['Noto_Serif_KR'] text-[18px] font-black tracking-tighter">
-                            89<span className="text-[10px] ml-0.5 font-sans">%</span>
-                          </span>
+                          <div className="flex items-center justify-center leading-none -translate-y-[1px]">
+                            <span className="text-[#C084FC] font-['Noto_Serif_KR'] text-[18px] font-black tracking-tighter">
+                              89
+                            </span>
+                            <span className="text-[#C084FC] font-['Noto_Sans_KR'] text-[9px] font-light tracking-[1px] ml-[1px] translate-y-[1px]">
+                              %
+                            </span>
+                          </div>
                         </div>
                       </div>
                       <div className="flex flex-col gap-1">
@@ -211,39 +216,55 @@ export default function HomeScreen({ onStart }: Props) {
               />
               <div className="mt-4">
                 <LandingCard
-                  num="07"
-                  category="지금 당장의 행동 지침"
-                  icon="⚡"
-                  title="해야 할 것과 절대 하면 안 될 것"
+                  num="04"
+                  category="재회 최적 타이밍"
+                  icon="📅"
+                  title="언제 연락하는 게 가장 좋을까요"
                   visibleContent={
-                    <div className="space-y-6">
-                      <p>지금 당신의 기운은 먼저 움직이는 게 유리한 시기예요. 기다리기만 하면 기회가 지나갈 수 있어요. 단, 조급하게 굴면 역효과가 나요. 적극적이지만 여유 있는 태도가 핵심이에요.</p>
-                      <div className="grid grid-cols-1 gap-3">
-                        <div className="flex flex-col items-start gap-[9px] self-stretch p-[14px] rounded-[12px] border border-[rgba(192,132,252,0.18)] bg-[rgba(192,132,252,0.06)]">
-                          <div className="text-[#C084FC] font-['Noto_Sans_KR'] text-[10px] font-bold tracking-[1.5px]">✦ 지금 해야 할 것</div>
-                          <ul className="text-[11.5px] space-y-1.5 text-[#b0a8c4] list-none leading-relaxed blur-[4px] opacity-70 select-none">
-                            <li>✓ 자연스러운 안부 연락 (짧고 가볍게)</li>
-                            <li>✓ 공통의 추억을 소재로 한 대화 시도</li>
-                            <li>✓ 답장을 기다리는 여유 갖기</li>
-                            <li>✓ 나 자신을 가꾸고 성장하는 모습 보여주기</li>
-                            <li>✓ 4월~7월 사이에 집중적으로 행동하기</li>
-                          </ul>
-                        </div>
-                        <div className="flex flex-col items-start gap-[9px] self-stretch p-[14px] rounded-[12px] border border-[rgba(244,114,182,0.18)] bg-[rgba(192,132,252,0.06)]">
-                          <div className="text-[#F472B6] font-['Noto_Sans_KR'] text-[10px] font-bold tracking-[1.5px]">✦ 절대 하면 안 될 것</div>
-                          <ul className="text-[11.5px] space-y-1.5 text-[#b0a8c4] list-none leading-relaxed blur-[4px] opacity-70 select-none">
-                            <li>✗ 재회를 강요하거나 결론 재촉하기</li>
-                            <li>✗ 과거의 잘못을 끄집어내며 따지기</li>
-                            <li>✗ 읽씹에 연속 메시지 보내기</li>
-                            <li>✗ 술 마신 상태에서 감정적 연락하기</li>
-                            <li>✗ SNS로 현재 상태를 과시하며 어필하기</li>
-                          </ul>
-                        </div>
+                    <div className="space-y-5">
+                      <div className="flex flex-wrap gap-2">
+                        {[
+                          { label: '4월', status: 'good' },
+                          { label: '5월', status: 'avoid' },
+                          { label: '6월', status: 'avoid' },
+                          { label: '7월', status: 'best' },
+                          { label: '8월', status: 'avoid' },
+                          { label: '9월', status: 'good' },
+                          { label: '10월', status: 'good' },
+                          { label: '11월', status: 'good' },
+                          { label: '12월', status: 'good' },
+                        ].map((m) => {
+                          // 공통 크기 및 레이아웃 (56px x 30px, rounded-30px, 12px font)
+                          const baseStyles = 'w-[56px] h-[30px] px-3 py-[6px] justify-center items-center rounded-[30px] text-[12px] font-medium';
+
+                          const statusStyles =
+                            m.status === 'avoid'
+                              ? 'border border-[rgba(58,68,96,0.40)] bg-[rgba(58,68,96,0.30)] text-[#4A4068]'
+                              : m.status === 'best'
+                              ? 'border border-[rgba(244,114,182,0.23)] bg-[rgba(244,114,182,0.09)] text-[#F472B6] font-bold'
+                              : 'border border-[rgba(192,132,252,0.23)] text-[#C084FC]';
+                          
+                          const mark = m.status === 'best' ? '🔥' : m.status === 'good' ? '✓' : '⚠';
+                          
+                          return (
+                            <div
+                              key={m.label}
+                              className={`font-['Noto_Sans_KR'] flex gap-1 ${baseStyles} ${statusStyles}`}
+                            >
+                              <span>{m.label}</span>
+                              <span className="text-[10px]">{mark}</span>
+                            </div>
+                          );
+                        })}
                       </div>
+                      <p>7월이 올해 두 사람에게 가장 중요한 시기예요. 이 달에는 두 사람의 기운이 자연스럽게 같은 방향을 향하는 구간이 생겨요. 이 시기에는 같은 말을 해도 훨씬 잘 전달되고, 상대방도 마음이 열리기 쉬운 상태예요.</p>
                     </div>
                   }
                   blurredContent={
-                    <p className="leading-relaxed">이 중에서 가장 중요한 건 상대방이 숨 쉴 공간을 주는 것이에요. 진심을 담되, 조급하지 않게. 그게 이 사람한테 가장 크게 작동하는 방식이에요.</p>
+                    <>
+                      <p>4월과 10월, 11월도 두 사람의 흐름이 잘 맞는 달이에요. 이 시기에는 가벼운 연락이나 짧은 만남도 좋은 계기가 될 수 있어요. 부담 없이 시작하기에 좋은 때예요.</p>
+                      <p>반면 5월과 8월은 두 사람의 기운이 서로 다른 방향을 향하는 시기예요. 이 두 달엔 중요한 연락이나 고백, 만남 시도는 잠시 미뤄두세요. 그 시간엔 자기 자신을 가꾸고 준비하는 시간으로 쓰면 돼요.</p>
+                    </>
                   }
                 />
               </div>
@@ -306,25 +327,25 @@ export default function HomeScreen({ onStart }: Props) {
                       <p>지금 당신의 기운은 먼저 움직이는 게 유리한 시기예요. 기다리기만 하면 기회가 지나갈 수 있어요. 단, 조급하게 굴면 역효과가 나요. 적극적이지만 여유 있는 태도가 핵심이에요.</p>
                       <div className="grid grid-cols-1 gap-3">
                         <div className="bg-[#0f0d18] p-4 rounded-xl border border-[rgba(180,140,255,0.08)]">
-                          <div className="text-[#C084FC] font-['Noto_Sans_KR'] text-[10px] font-bold tracking-[1.5px] mb-2">✦ 지금 해야 할 것</div>
-                          <ul className="text-[11.5px] space-y-1.5 text-[#b0a8c4] list-none leading-relaxed blur-[4px] opacity-70 select-none">
-                            <li>✓ 자연스러운 안부 연락 (짧고 가볍게)</li>
-                            <li>✓ 공통의 추억을 소재로 한 대화 시도</li>
-                            <li>✓ 답장을 기다리는 여유 갖기</li>
-                            <li>✓ 나 자신을 가꾸고 성장하는 모습 보여주기</li>
-                            <li>✓ 4월~7월 사이에 집중적으로 행동하기</li>
-                          </ul>
-                        </div>
-                        <div className="bg-[#0f0d18] p-4 rounded-xl border border-[#f472b6]/20">
-                          <div className="text-[#F472B6] font-['Noto_Sans_KR'] text-[10px] font-bold tracking-[1.5px] mb-2">✦ 절대 하면 안 될 것</div>
-                          <ul className="text-[11.5px] space-y-1.5 text-[#b0a8c4] list-none leading-relaxed blur-[4px] opacity-70 select-none">
-                            <li>✗ 재회를 강요하거나 결론 재촉하기</li>
-                            <li>✗ 과거의 잘못을 끄집어내며 따지기</li>
-                            <li>✗ 읽씹에 연속 메시지 보내기</li>
-                            <li>✗ 술 마신 상태에서 감정적 연락하기</li>
-                            <li>✗ SNS로 현재 상태를 과시하며 어필하기</li>
-                          </ul>
-                        </div>
+                        <div className="text-[#C084FC] font-['Noto_Sans_KR'] text-[10px] font-bold tracking-[1.5px] mb-2">✦ 지금 해야 할 것</div>
+                        <ul className="text-[11.5px] space-y-1.5 text-[#b0a8c4] list-none leading-relaxed blur-[3px] opacity-70 select-none text-left">
+                          <li><span className="text-[#C084FC]">✓</span> 자연스러운 안부 연락 (짧고 가볍게)</li>
+                          <li><span className="text-[#C084FC]">✓</span> 공통의 추억을 소재로 한 대화 시도</li>
+                          <li><span className="text-[#C084FC]">✓</span> 답장을 기다리는 여유 갖기</li>
+                          <li><span className="text-[#C084FC]">✓</span> 나 자신을 가꾸고 성장하는 모습 보여주기</li>
+                          <li><span className="text-[#C084FC]">✓</span> 4월~7월 사이에 집중적으로 행동하기</li>
+                        </ul>
+                      </div>
+                      <div className="bg-[#0f0d18] p-4 rounded-xl border border-[#f472b6]/20">
+                        <div className="text-[#F472B6] font-['Noto_Sans_KR'] text-[10px] font-bold tracking-[1.5px] mb-2">✦ 절대 하면 안 될 것</div>
+                        <ul className="text-[11.5px] space-y-1.5 text-[#b0a8c4] list-none leading-relaxed blur-[3px] opacity-70 select-none text-left">
+                          <li><span className="text-[#F472B6]">✗</span> 재회를 강요하거나 결론 재촉하기</li>
+                          <li><span className="text-[#F472B6]">✗</span> 과거의 잘못을 끄집어내며 따지기</li>
+                          <li><span className="text-[#F472B6]">✗</span> 읽씹에 연속 메시지 보내기</li>
+                          <li><span className="text-[#F472B6]">✗</span> 술 마신 상태에서 감정적 연락하기</li>
+                          <li><span className="text-[#F472B6]">✗</span> SNS로 현재 상태를 과시하며 어필하기</li>
+                        </ul>
+                      </div>
                       </div>
                     </div>
                   }
@@ -341,7 +362,7 @@ export default function HomeScreen({ onStart }: Props) {
             <div className="text-white font-bold mb-8 font-['Noto_Serif_KR'] text-[18px] tracking-wider">
               ✦ 종합 총평 ✦
             </div>
-            <div className="text-[#d1c9e0] font-['Noto_Sans_KR'] text-[14px] font-light leading-[1.8] mb-10 space-y-4 break-keep blur-[10px] opacity-40 select-none pointer-events-none">
+            <div className="text-[#d1c9e0] font-['Noto_Sans_KR'] text-[14px] font-light leading-[1.8] mb-10 space-y-4 break-keep blur-[3px] opacity-40 select-none pointer-events-none text-left">
               <p>두 사람의 관계는 단순히 감정적인 미련으로만 이어진 인연이 아니에요. 기본적으로 서로를 끌어당기는 기운(합)이 있고, 올해의 흐름도 재회에 우호적이에요. 가장 중요한 건 7월 이전, 4~7월 사이에 자연스럽고 가볍게 접근하는 거예요.</p>
               <p>다만 재회 후에도 두 사람의 타고난 방식 차이는 여전히 있어요. 이번엔 그 차이를 이해하고 대화하는 방식을 달리해보세요. 아는 만큼 달라질 수 있거든요.</p>
             </div>
