@@ -104,6 +104,7 @@ export default function HomeScreen({ onStart }: Props) {
             <button
               onClick={onStart}
               className="w-full h-[54px] flex items-center justify-center gap-2 bg-[linear-gradient(135deg,#C084FC,#F472B6)] text-white font-bold rounded-[1.2rem] transition-transform hover:scale-[1.02] shadow-[0_4px_20px_rgba(192,132,252,0.3)]"
+              data-testid="home-start-button"
             >
               <span className="text-[14px]">✦</span>
               <span className="text-[16px] font-black tracking-wide">재회사주 보러 가기</span>
@@ -251,11 +252,11 @@ export default function HomeScreen({ onStart }: Props) {
                             m.status === 'avoid'
                               ? 'border border-[rgba(58,68,96,0.40)] bg-[rgba(58,68,96,0.30)] text-[#4A4068]'
                               : m.status === 'best'
-                              ? 'border border-[rgba(244,114,182,0.23)] bg-[rgba(244,114,182,0.09)] text-[#F472B6] font-bold'
-                              : 'border border-[rgba(192,132,252,0.23)] text-[#C084FC]';
-                          
+                                ? 'border border-[rgba(244,114,182,0.23)] bg-[rgba(244,114,182,0.09)] text-[#F472B6] font-bold'
+                                : 'border border-[rgba(192,132,252,0.23)] text-[#C084FC]';
+
                           const mark = m.status === 'best' ? '🔥' : m.status === 'good' ? '✓' : '⚠';
-                          
+
                           return (
                             <div
                               key={m.label}

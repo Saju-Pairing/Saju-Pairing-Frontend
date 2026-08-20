@@ -76,6 +76,7 @@ function validateTime(value: string): string {
 }
 
 interface TimeFieldProps {
+  testIdPrefix: string; // 'my-time' 또는 'pt-time'
   value: string;
   unknown: boolean;
   onChangeValue: (val: string) => void;
@@ -83,7 +84,7 @@ interface TimeFieldProps {
   error?: string;
 }
 
-const TimeField = ({ value, unknown, onChangeValue, onChangeUnknown, error }: TimeFieldProps) => {
+const TimeField = ({ testIdPrefix, value, unknown, onChangeValue, onChangeUnknown, error }: TimeFieldProps) => {
   const [showTooltip, setShowTooltip] = useState(false);
 
   return (
@@ -100,7 +101,7 @@ const TimeField = ({ value, unknown, onChangeValue, onChangeUnknown, error }: Ti
           onClick={() => setShowTooltip(!showTooltip)}
         >
           <svg className="block mt-[1.5px]" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(157,143,186,0.5)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
+            <circle cx="12" cy="12" r="10" /><line x1="12" y1="16" x2="12" y2="12" /><line x1="12" y1="8" x2="12.01" y2="8" />
           </svg>
 
           {showTooltip && (
@@ -122,17 +123,18 @@ const TimeField = ({ value, unknown, onChangeValue, onChangeUnknown, error }: Ti
         disabled={unknown}
         onChange={e => onChangeValue(formatTimeInput(e.target.value))}
         className={`${error ? inputErrorStyle : inputStyle} disabled:opacity-40`}
+        data-testid={`${testIdPrefix}-input`}
       />
-      {error && <p className={errorMsgStyle}>⚠ {error}</p>}
+      {error && <p className={errorMsgStyle} data-testid={`${testIdPrefix}-error`}>⚠ {error}</p>}
 
-      <label className="flex items-center gap-2 mt-2.5 cursor-pointer select-none">
+      <label className="flex items-center gap-2 mt-2.5 cursor-pointer select-none" data-testid={`${testIdPrefix}-unknown-checkbox`}>
         <div
           onClick={() => onChangeUnknown(!unknown)}
           className={`w-5 h-5 rounded-full border flex items-center justify-center transition-colors flex-shrink-0 cursor-pointer ${unknown ? 'bg-[#c084fc] border-[#c084fc]' : 'border-[rgba(180,140,255,0.3)] bg-transparent'}`}
         >
           {unknown && (
             <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-              <path d="M2 5l2.5 2.5L8 3" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M2 5l2.5 2.5L8 3" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           )}
         </div>
@@ -145,7 +147,7 @@ const TimeField = ({ value, unknown, onChangeValue, onChangeUnknown, error }: Ti
 const SelectIcon = () => (
   <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[#4a4068]">
     <svg width="12" height="8" viewBox="0 0 12 8" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M1 1l5 5 5-5"/>
+      <path d="M1 1l5 5 5-5" />
     </svg>
   </div>
 );
@@ -222,7 +224,7 @@ export default function SajuInputForm({ me, setMe, pt, setPt, onCalculate, isLoa
           <span className="text-[#f0eaf8]">당신을 위해</span>
         </h1>
         <p className="text-center text-[#9D8FBA] text-[13px] font-light leading-[23.4px] font-['Noto_Sans_KR']">
-          두 사람의 재회 가능성,<br/>최적의 타이밍, 접근법을 분석해드려요.
+          두 사람의 재회 가능성,<br />최적의 타이밍, 접근법을 분석해드려요.
         </p>
       </header>
 
@@ -244,6 +246,7 @@ export default function SajuInputForm({ me, setMe, pt, setPt, onCalculate, isLoa
                 value={me.name || ''}
                 onChange={e => setMe({ ...me, name: e.target.value })}
                 className={inputStyle}
+                data-testid="my-name-input"
               />
             </div>
 
@@ -262,11 +265,13 @@ export default function SajuInputForm({ me, setMe, pt, setPt, onCalculate, isLoa
                   if (iso) setMe({ ...me, date: iso });
                 }}
                 className={meDateError ? inputErrorStyle : inputStyle}
+                data-testid="my-birth-input"
               />
-              {meDateError && <p className={errorMsgStyle}>⚠ {meDateError}</p>}
+              {meDateError && <p className={errorMsgStyle} data-testid="my-birth-error">⚠ {meDateError}</p>}
             </div>
 
             <TimeField
+              testIdPrefix="my-time"
               value={meTimeInput}
               unknown={meTimeUnknown}
               error={meTimeError}
@@ -291,11 +296,13 @@ export default function SajuInputForm({ me, setMe, pt, setPt, onCalculate, isLoa
               <label className={labelStyle}>성별</label>
               <div className="grid grid-cols-2 gap-2">
                 <button type="button" onClick={() => setMe({ ...me, gender: 'F' })}
-                  className={`py-3 rounded-xl text-[14px] transition-all ${me.gender === 'F' ? 'bg-[rgba(192,132,252,0.08)] border border-[rgba(192,132,252,0.5)] text-[#c084fc]' : 'bg-[#141120] border border-[rgba(180,140,255,0.11)] text-[#9d8fba]'}`}>
+                  className={`py-3 rounded-xl text-[14px] transition-all ${me.gender === 'F' ? 'bg-[rgba(192,132,252,0.08)] border border-[rgba(192,132,252,0.5)] text-[#c084fc]' : 'bg-[#141120] border border-[rgba(180,140,255,0.11)] text-[#9d8fba]'}`}
+                  data-testid="my-gender-female">
                   여성
                 </button>
                 <button type="button" onClick={() => setMe({ ...me, gender: 'M' })}
-                  className={`py-3 rounded-xl text-[14px] transition-all ${me.gender === 'M' ? 'bg-[rgba(192,132,252,0.08)] border border-[rgba(192,132,252,0.5)] text-[#c084fc]' : 'bg-[#141120] border border-[rgba(180,140,255,0.11)] text-[#9d8fba]'}`}>
+                  className={`py-3 rounded-xl text-[14px] transition-all ${me.gender === 'M' ? 'bg-[rgba(192,132,252,0.08)] border border-[rgba(192,132,252,0.5)] text-[#c084fc]' : 'bg-[#141120] border border-[rgba(180,140,255,0.11)] text-[#9d8fba]'}`}
+                  data-testid="my-gender-male">
                   남성
                 </button>
               </div>
@@ -319,6 +326,7 @@ export default function SajuInputForm({ me, setMe, pt, setPt, onCalculate, isLoa
                 value={pt.name || ''}
                 onChange={e => setPt({ ...pt, name: e.target.value })}
                 className={inputStyle}
+                data-testid="pt-name-input"
               />
             </div>
 
@@ -337,11 +345,13 @@ export default function SajuInputForm({ me, setMe, pt, setPt, onCalculate, isLoa
                   if (iso) setPt({ ...pt, date: iso });
                 }}
                 className={ptDateError ? inputErrorStyle : inputStyle}
+                data-testid="pt-birth-input"
               />
-              {ptDateError && <p className={errorMsgStyle}>⚠ {ptDateError}</p>}
+              {ptDateError && <p className={errorMsgStyle} data-testid="pt-birth-error">⚠ {ptDateError}</p>}
             </div>
 
             <TimeField
+              testIdPrefix="pt-time"
               value={ptTimeInput}
               unknown={ptTimeUnknown}
               error={ptTimeError}
@@ -366,11 +376,15 @@ export default function SajuInputForm({ me, setMe, pt, setPt, onCalculate, isLoa
               <label className={labelStyle}>성별</label>
               <div className="grid grid-cols-2 gap-2">
                 <button type="button" onClick={() => setPt({ ...pt, gender: 'F' })}
-                  className={`py-3 rounded-xl text-[14px] transition-all ${pt.gender === 'F' ? 'bg-[rgba(192,132,252,0.08)] border border-[rgba(192,132,252,0.5)] text-[#c084fc]' : 'bg-[#141120] border border-[rgba(180,140,255,0.11)] text-[#9d8fba]'}`}>
+                  className={`py-3 rounded-xl text-[14px] transition-all ${pt.gender === 'F' ? 'bg-[rgba(192,132,252,0.08)] border border-[rgba(192,132,252,0.5)] text-[#c084fc]' : 'bg-[#141120] border border-[rgba(180,140,255,0.11)] text-[#9d8fba]'}`}
+                  data-testid="pt-gender-female"
+                >
                   여성
                 </button>
                 <button type="button" onClick={() => setPt({ ...pt, gender: 'M' })}
-                  className={`py-3 rounded-xl text-[14px] transition-all ${pt.gender === 'M' ? 'bg-[rgba(192,132,252,0.08)] border border-[rgba(192,132,252,0.5)] text-[#c084fc]' : 'bg-[#141120] border border-[rgba(180,140,255,0.11)] text-[#9d8fba]'}`}>
+                  className={`py-3 rounded-xl text-[14px] transition-all ${pt.gender === 'M' ? 'bg-[rgba(192,132,252,0.08)] border border-[rgba(192,132,252,0.5)] text-[#c084fc]' : 'bg-[#141120] border border-[rgba(180,140,255,0.11)] text-[#9d8fba]'}`}
+                  data-testid="pt-gender-male"
+                >
                   남성
                 </button>
               </div>
@@ -390,6 +404,7 @@ export default function SajuInputForm({ me, setMe, pt, setPt, onCalculate, isLoa
                   type="button"
                   onClick={() => setBreakupDurOpen(!breakupDurOpen)}
                   className="w-full bg-[#141120] border border-[rgba(180,140,255,0.11)] rounded-xl p-3.5 pr-10 text-left text-[16px] text-[#f0eaf8] focus:outline-none h-[48px] flex items-center"
+                  data-testid="breakup-duration-select"
                 >
                   <span className={breakupDur ? 'text-[#f0eaf8]' : 'text-[#4a4068]'}>
                     {breakupDur || '선택 안 함'}
@@ -397,13 +412,14 @@ export default function SajuInputForm({ me, setMe, pt, setPt, onCalculate, isLoa
                 </button>
                 <SelectIcon />
                 {breakupDurOpen && (
-                  <div className="absolute z-50 w-full mt-1 bg-[#141120] border border-[rgba(180,140,255,0.2)] rounded-xl overflow-hidden shadow-xl">
+                  <div className="absolute z-50 w-full mt-1 bg-[#141120] border border-[rgba(180,140,255,0.2)] rounded-xl overflow-hidden shadow-xl" data-testid="breakup-duration-options">
                     {breakupDurOptions.map(opt => (
                       <button
                         key={opt.value}
                         type="button"
                         onClick={() => { setBreakupDur(opt.value); setBreakupDurOpen(false); }}
                         className={`w-full px-4 py-3 text-left text-[14px] transition-colors hover:bg-[rgba(180,140,255,0.08)] ${breakupDur === opt.value ? 'text-[#c084fc] font-bold bg-[rgba(180,140,255,0.06)]' : 'text-[#9d8fba]'}`}
+                        data-testid={`breakup-duration-option-${opt.value}`}
                       >
                         {opt.label}
                       </button>
@@ -422,6 +438,7 @@ export default function SajuInputForm({ me, setMe, pt, setPt, onCalculate, isLoa
                 value={breakupReason}
                 onChange={e => setBreakupReason(e.target.value)}
                 className={inputStyle}
+                data-testid="breakup-reason-input"
               />
             </div>
           </div>
@@ -432,6 +449,7 @@ export default function SajuInputForm({ me, setMe, pt, setPt, onCalculate, isLoa
           onClick={handleCalculate}
           disabled={isLoading || !isFormValid}
           className="w-full h-[54px] bg-[linear-gradient(99.16deg,#C084FC_0%,#F472B6_100%)] text-white font-bold text-[16px] rounded-[14px] shadow-[0px_8px_32px_0px_rgba(192,132,252,0.3)] hover:opacity-90 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          data-testid="analyze-button"
         >
           {isLoading ? '✦ 사주 분석 중...' : '✦  지금 바로 분석하기'}
         </button>
