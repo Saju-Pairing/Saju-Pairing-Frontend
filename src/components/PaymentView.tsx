@@ -52,7 +52,7 @@ export default function PaymentView() {
 
   if (loading) {
     return (
-      <div className="min-h-screen w-full bg-[#07060c] flex flex-col items-center justify-center text-[#f0eaf8]" data-testid="payment-view">
+      <div className="min-h-screen w-full bg-[#07060c] flex flex-col items-center justify-center text-[#f0eaf8]">
         <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#c084fc] mb-4"></div>
         <p className="text-[14px] font-light text-[#9d8fba] animate-pulse">
           두 사람의 운명을 심층 분석하고 있습니다...
@@ -145,7 +145,7 @@ export default function PaymentView() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#000] text-[#f0eaf8] font-sans flex justify-center overflow-x-hidden antialiased select-none">
+    <div className="min-h-screen w-full bg-[#000] text-[#f0eaf8] font-sans flex justify-center overflow-x-hidden antialiased select-none" data-testid="payment-view">
       {/* 배경 효과 */}
       <div className="fixed top-[-10%] left-[-10%] w-[50vw] h-[50vw] bg-[#c084fc] rounded-full blur-[120px] opacity-10 -z-10 pointer-events-none"></div>
       <div className="fixed bottom-[-10%] right-[-10%] w-[70vw] h-[70vw] bg-[#f472b6] rounded-full blur-[160px] opacity-10 -z-10 pointer-events-none"></div>
