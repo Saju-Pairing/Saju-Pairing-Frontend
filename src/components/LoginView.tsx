@@ -35,7 +35,7 @@ export default function LoginScreen() {
   }, [location]);
 
   return (
-    <div className="h-[100dvh] bg-[#07060c] flex justify-center font-sans text-[#f0eaf8] relative overflow-x-hidden overflow-y-auto">
+    <div className="h-[100dvh] bg-[#07060c] flex justify-center font-sans text-[#f0eaf8] relative overflow-x-hidden overflow-y-auto" data-testid="login-view">
 
       {/* --- 배경 애니메이션 요소 --- */}
       <div className="fixed top-[-10%] left-[-10%] w-[60vw] max-w-[400px] h-[60vw] max-h-[400px] bg-[#c084fc] rounded-full blur-[120px] opacity-15 pointer-events-none"></div>
@@ -85,6 +85,7 @@ export default function LoginScreen() {
             <button
               onClick={handleKakaoLogin}
               className="w-full h-[52px] flex items-center justify-center gap-2.5 bg-[#FEE500] hover:bg-[#e6cf00] text-[#000000] font-black rounded-[1rem] transition-transform hover:scale-[1.02] shadow-[0_4px_14px_rgba(254,229,0,0.15)]"
+              data-testid="kakao-login-button"
             >
               <span className="text-lg">💬</span>
               <span className="text-[15px]">카카오로 5초만에 시작</span>
