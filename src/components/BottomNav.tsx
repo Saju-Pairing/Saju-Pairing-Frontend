@@ -25,6 +25,7 @@ export default function BottomNav() {
           <button
             onClick={() => navigate('/')}
             className={`flex flex-col items-center gap-1.5 cursor-pointer group w-[64px] transition-opacity ${isSaju ? 'opacity-100' : 'opacity-40 hover:opacity-100'}`}
+            data-testid="bottom-nav-saju"
           >
             <img
               src={navLeftIcon}
@@ -39,6 +40,7 @@ export default function BottomNav() {
           <button
             onClick={() => navigate('/mypage')}
             className={`flex flex-col items-center gap-1.5 cursor-pointer group w-[64px] transition-opacity ${isMyPage ? 'opacity-100' : 'opacity-40 hover:opacity-100'}`}
+            data-testid="bottom-nav-mypage"
           >
             <img
               src={navRightIcon}

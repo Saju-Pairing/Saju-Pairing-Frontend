@@ -52,7 +52,7 @@ export default function PaymentView() {
 
   if (loading) {
     return (
-      <div className="min-h-screen w-full bg-[#07060c] flex flex-col items-center justify-center text-[#f0eaf8]">
+      <div className="min-h-screen w-full bg-[#07060c] flex flex-col items-center justify-center text-[#f0eaf8]" data-testid="payment-view">
         <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#c084fc] mb-4"></div>
         <p className="text-[14px] font-light text-[#9d8fba] animate-pulse">
           두 사람의 운명을 심층 분석하고 있습니다...
@@ -187,12 +187,12 @@ export default function PaymentView() {
           </div>
 
           {freeRemaining > 0 ? (
-            <div className="pt-[16px] border-t border-[rgba(180,140,255,0.11)] flex flex-row justify-between items-center">
+            <div className="pt-[16px] border-t border-[rgba(180,140,255,0.11)] flex flex-row justify-between items-center" data-testid="payment-free-badge">
               <div className="text-[13px] text-[#9d8fba] font-light font-['Noto_Sans_KR']">첫 분석</div>
               <div className="text-[18px] font-bold text-[#c084fc] font-['Noto_Serif_KR']">무료</div>
             </div>
           ) : (
-            <div className="pt-[16px] border-t border-[rgba(180,140,255,0.11)] flex flex-row justify-between items-center">
+            <div className="pt-[16px] border-t border-[rgba(180,140,255,0.11)] flex flex-row justify-between items-center" data-testid="payment-amount-badge">
               <div className="text-[13px] text-[#9d8fba] font-light font-['Noto_Sans_KR']">결제 금액</div>
               <div className="flex flex-col items-end gap-[6px]">
                 <div className="text-[24px] font-bold text-[#c084fc] font-['Noto_Serif_KR'] leading-none">₩990</div>
@@ -213,6 +213,7 @@ export default function PaymentView() {
                 onClick={handleFree}
                 disabled={loading}
                 className="w-full h-[54px] rounded-[14px] font-bold bg-[#c084fc] text-black active:scale-[0.96] transition-all"
+                data-testid="free-analyze-button"
               >
                 무료로 분석받기
               </button>
@@ -229,6 +230,7 @@ export default function PaymentView() {
                     onClick={() => handlePayment('kakao')}
                     disabled={loading}
                     className="flex-1 h-[54px] rounded-[14px] bg-[#FFEB00] flex flex-col items-center justify-center gap-1 active:scale-[0.96] transition-all"
+                    data-testid="pay-kakao-button"
                   >
                     <div className="flex items-center gap-1">
                       <img
@@ -245,6 +247,7 @@ export default function PaymentView() {
                     onClick={() => handlePayment('naver')}
                     disabled={loading}
                     className="flex-1 h-[54px] rounded-[14px] bg-[#58D662] flex flex-col items-center justify-center gap-1 active:scale-[0.96] transition-all"
+                    data-testid="pay-naver-button"
                   >
                     <div className="flex items-center gap-1">
                       <img
@@ -263,6 +266,7 @@ export default function PaymentView() {
                   disabled={loading}
                   className={`w-full max-w-[335px] h-[54px] rounded-[14px] font-bold border transition-all active:scale-[0.96]
                     ${loading ? 'border-[rgba(180,140,255,0.2)] text-[#c084fc]/70' : 'border-[#c084fc] bg-[#c084fc]/10 text-[#c084fc]'}`}
+                  data-testid="pay-card-button"
                 >
                   신용카드 / 체크카드
                 </button>
