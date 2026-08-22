@@ -26,12 +26,12 @@ export default function LoadingScreen() {
 
   return (
     // 전체 화면 컨테이너: h-full과 justify-center로 요소를 수직 중앙에 배치
-    <div className="h-[100dvh] bg-[#07060c] flex justify-center font-sans text-[#f0eaf8] relative overflow-x-hidden overflow-y-auto">
-      
+    <div className="h-[100dvh] bg-[#07060c] flex justify-center font-sans text-[#f0eaf8] relative overflow-x-hidden overflow-y-auto" data-testid="loading-view">
+
       {/* --- 배경 애니메이션 요소 --- */}
       <div className="fixed top-[-10%] left-[-10%] w-[60vw] max-w-[400px] h-[60vw] max-h-[400px] bg-[#c084fc] rounded-full blur-[120px] opacity-15 pointer-events-none"></div>
       <div className="fixed bottom-[10%] right-[-10%] w-[50vw] max-w-[300px] h-[50vw] max-h-[300px] bg-[#f472b6] rounded-full blur-[130px] opacity-10 pointer-events-none"></div>
-      
+
       {/* 밤하늘 별빛 레이어 */}
       <div className="fixed inset-0 pointer-events-none opacity-60">
         <div className="absolute top-[12%] left-[22%] w-[2px] h-[2px] bg-white rounded-full opacity-30"></div>
@@ -49,7 +49,7 @@ export default function LoadingScreen() {
 
         {/* 전체 콘텐츠를 시각적 중앙에 배치 (하단 바 여백 pb-20 고려) */}
         <div className="flex-1 flex flex-col items-center justify-center w-full pb-20">
-          
+
           {/* 1. 중앙 수정구슬 일러스트 */}
           <div className="relative w-[140px] h-[140px] mb-[28px] flex items-center justify-center">
             <div className="absolute w-[140px] h-[140px] rounded-full border border-[rgba(180,140,255,0.08)]"></div>
@@ -71,7 +71,7 @@ export default function LoadingScreen() {
             {steps.map((text, i) => {
               const isPast = i < step;
               const isActive = i === step;
-              
+
               let textColor = 'text-[#4a4068]';
               let dotColor = 'bg-[#4a4068]';
               let borderColor = 'border-[rgba(180,140,255,0.05)]';
@@ -97,8 +97,8 @@ export default function LoadingScreen() {
               }
 
               return (
-                <div 
-                  key={i} 
+                <div
+                  key={i}
                   className={`flex items-center gap-4 px-5 py-4 rounded-[1.2rem] border ${borderColor} ${bgColor} transition-all duration-700`}
                 >
                   <div className={`w-1.5 h-1.5 rounded-full transition-all duration-500 ${dotColor}`} />

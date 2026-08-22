@@ -171,7 +171,7 @@ export default function SajuResultView({ me, pt, analysis, onReset, paidResult, 
   };
 
   return (
-    <div ref={pdfRef} className="min-h-screen relative overflow-x-hidden font-sans text-[#f0eaf8] bg-[#07060c] pb-20 pt-[70px] animate-fade-in-up [&.is-pdf-capturing]:animate-none">
+    <div ref={pdfRef} className="min-h-screen relative overflow-x-hidden font-sans text-[#f0eaf8] bg-[#07060c] pb-20 pt-[70px] animate-fade-in-up [&.is-pdf-capturing]:animate-none" data-testid={paidResult ? 'saju-result-view-paid' : 'saju-result-view-free'}>
       {/* 몽환적 배경 */}
       <div data-html2canvas-ignore="true" className="fixed top-[-10%] left-[-10%] w-[50vw] h-[50vw] bg-[#c084fc] rounded-full blur-[120px] opacity-10 -z-10 mix-blend-screen pointer-events-none"></div>
       <div data-html2canvas-ignore="true" className="fixed bottom-[-10%] right-[-10%] w-[60vw] h-[60vw] bg-[#f472b6] rounded-full blur-[140px] opacity-10 -z-10 mix-blend-screen pointer-events-none"></div>
@@ -197,7 +197,7 @@ export default function SajuResultView({ me, pt, analysis, onReset, paidResult, 
             <div className="w-14 h-14 rounded-full bg-[rgba(180,140,255,0.08)] border border-[rgba(180,140,255,0.2)] flex items-center justify-center mb-2 shadow-[0_0_20px_rgba(192,132,252,0.15)]">
               <img src={heartIcon} alt="heart icon" className="w-[24px] h-[24px]" />
             </div>
-            <div className="text-[12px] font-black text-[#f472b6]">궁합 {analysis.score}점</div>
+            <div className="text-[12px] font-black text-[#f472b6]" data-testid="compatibility-score">궁합 {analysis.score}점</div>
           </div>
 
           <div className="text-center flex-1">
@@ -503,8 +503,8 @@ export default function SajuResultView({ me, pt, analysis, onReset, paidResult, 
                           status === 'avoid'
                             ? 'border border-[rgba(58,68,96,0.40)] bg-[rgba(58,68,96,0.30)] text-[#4A4068]'
                             : status === 'best'
-                            ? 'border border-[rgba(244,114,182,0.23)] bg-[rgba(244,114,182,0.09)] text-[#F472B6] font-bold'
-                            : 'border border-[rgba(192,132,252,0.23)] text-[#C084FC]';
+                              ? 'border border-[rgba(244,114,182,0.23)] bg-[rgba(244,114,182,0.09)] text-[#F472B6] font-bold'
+                              : 'border border-[rgba(192,132,252,0.23)] text-[#C084FC]';
 
                         const mark = status === 'best' ? '🔥' : status === 'good' ? '✓' : '⚠';
 
@@ -587,11 +587,11 @@ export default function SajuResultView({ me, pt, analysis, onReset, paidResult, 
             {!readOnly && (
               <div data-html2canvas-ignore="true" className="mt-20 space-y-8 px-2 pt-8 border-t border-[rgba(180,140,255,0.1)]">
                 <div className="grid grid-cols-2 gap-5 px-2 max-w-[300px] mx-auto">
-                  <button onClick={handleDownloadPdf} className="flex items-center justify-center gap-2 py-4 bg-gradient-to-r from-[#c084fc] to-[#f472b6] text-white rounded-[1.2rem] shadow-[0_4px_15px_rgba(192,132,252,0.3)] active:scale-[0.98] transition-transform">
+                  <button onClick={handleDownloadPdf} className="flex items-center justify-center gap-2 py-4 bg-gradient-to-r from-[#c084fc] to-[#f472b6] text-white rounded-[1.2rem] shadow-[0_4px_15px_rgba(192,132,252,0.3)] active:scale-[0.98] transition-transform" data-testid="pdf-download-button">
                     <img src={download} alt="pdf저장" className="h-[17px] w-auto object-contain" />
                     <span className="text-[14px] font-bold">PDF 저장</span>
                   </button>
-                  <button onClick={handleShareLink} disabled={shareLoading} className="flex items-center justify-center gap-2 py-4 bg-gradient-to-r from-[#c084fc] to-[#f472b6] text-white rounded-[1.2rem] shadow-[0_4px_15px_rgba(192,132,252,0.3)] active:scale-[0.98] transition-transform">
+                  <button onClick={handleShareLink} disabled={shareLoading} className="flex items-center justify-center gap-2 py-4 bg-gradient-to-r from-[#c084fc] to-[#f472b6] text-white rounded-[1.2rem] shadow-[0_4px_15px_rgba(192,132,252,0.3)] active:scale-[0.98] transition-transform" data-testid="share-link-button">
                     <img src={link} alt="링크공유" className="h-[17px] w-auto object-contain" />
                     <span className="text-[14px] font-bold">링크 공유</span>
                   </button>
@@ -609,6 +609,7 @@ export default function SajuResultView({ me, pt, analysis, onReset, paidResult, 
                 <button
                   onClick={() => handleInquiryClick()}
                   className="w-full max-w-[300px] mx-auto block py-4 rounded-[1.2rem] font-bold text-[14px] text-[#c084fc] transition-all active:scale-[0.98]"
+                  data-testid="inquiry-button"
                   style={{
                     backgroundColor: 'rgba(192, 132, 252, 0.08)',
                     border: '1px solid rgba(192, 132, 252, 0.18)',
@@ -660,7 +661,7 @@ export default function SajuResultView({ me, pt, analysis, onReset, paidResult, 
                   </div>
                 )}
 
-                <button onClick={handleUnlockClick} className="w-full py-3.5 bg-[linear-gradient(135deg,#C084FC,#F472B6)] text-white rounded-[1.2rem] shadow-[0_4px_20px_rgba(192,132,252,0.3)] hover:scale-[1.02] active:scale-[0.98] transition-transform flex flex-col items-center justify-center gap-0.5">
+                <button onClick={handleUnlockClick} className="w-full py-3.5 bg-[linear-gradient(135deg,#C084FC,#F472B6)] text-white rounded-[1.2rem] shadow-[0_4px_20px_rgba(192,132,252,0.3)] hover:scale-[1.02] active:scale-[0.98] transition-transform flex flex-col items-center justify-center gap-0.5" data-testid="unlock-main-button">
                   <span className="font-black text-[15px]">지금 바로 분석 보기</span>
                   <span className="text-[10px] text-white/90 font-medium">₩990 · 평생 소장</span>
                 </button>
@@ -781,8 +782,8 @@ export default function SajuResultView({ me, pt, analysis, onReset, paidResult, 
                         m.status === 'avoid'
                           ? 'border border-[rgba(58,68,96,0.40)] bg-[rgba(58,68,96,0.30)] text-[#4A4068]'
                           : m.status === 'best'
-                          ? 'border border-[rgba(244,114,182,0.23)] bg-[rgba(244,114,182,0.09)] text-[#F472B6] font-bold'
-                          : 'border border-[rgba(192,132,252,0.23)] text-[#C084FC]';
+                            ? 'border border-[rgba(244,114,182,0.23)] bg-[rgba(244,114,182,0.09)] text-[#F472B6] font-bold'
+                            : 'border border-[rgba(192,132,252,0.23)] text-[#C084FC]';
 
                       const mark = m.status === 'best' ? '🔥' : m.status === 'good' ? '✓' : '⚠';
 
@@ -899,7 +900,7 @@ export default function SajuResultView({ me, pt, analysis, onReset, paidResult, 
               <div className="absolute inset-0 flex flex-col items-center justify-center bg-[linear-gradient(180deg,rgba(7,6,12,0)_0%,rgba(7,6,12,0.96)_40%)] z-10">
                 <div className="text-3xl mb-3 text-[#f0c060]">🔒</div>
                 <div className="text-[12px] text-[#9d8fba] mb-5">결제 후 종합 총평을 확인하세요</div>
-                <button type="button" onClick={handleUnlockClick} className="px-6 py-3.5 bg-[linear-gradient(135deg,#C084FC,#F472B6)] hover:scale-[1.02] text-white text-[13px] font-bold rounded-[1rem] transition-transform shadow-[0_4px_14px_rgba(192,132,252,0.3)] flex flex-col items-center gap-0.5">
+                <button type="button" onClick={handleUnlockClick} className="px-6 py-3.5 bg-[linear-gradient(135deg,#C084FC,#F472B6)] hover:scale-[1.02] text-white text-[13px] font-bold rounded-[1rem] transition-transform shadow-[0_4px_14px_rgba(192,132,252,0.3)] flex flex-col items-center gap-0.5" data-testid="unlock-summary-button">
                   <span>잠금 해제하고 전체 보기</span>
                 </button>
               </div>
@@ -908,7 +909,7 @@ export default function SajuResultView({ me, pt, analysis, onReset, paidResult, 
         )}
 
         {/* 하단 다시하기 버튼 */}
-        <button data-html2canvas-ignore="true" type="button" onClick={onReset} className="block w-full mt-10 mb-6 text-[12px] font-bold text-[#4a4068] py-4 hover:text-[#9d8fba] transition-colors">
+        <button data-html2canvas-ignore="true" type="button" onClick={onReset} className="block w-full mt-10 mb-6 text-[12px] font-bold text-[#4a4068] py-4 hover:text-[#9d8fba] transition-colors" data-testid="reset-button">
           처음으로 돌아가기
         </button>
 
