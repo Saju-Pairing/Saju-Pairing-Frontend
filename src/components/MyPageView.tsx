@@ -100,7 +100,7 @@ export default function MyPageView() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#0a0a0c] relative overflow-hidden flex flex-col items-center font-sans text-[#f0eaf8]">
+    <div className="min-h-screen w-full bg-[#0a0a0c] relative overflow-hidden flex flex-col items-center font-sans text-[#f0eaf8]" data-testid="mypage-view">
 
       {/* 배경 블러 효과 */}
       <div className="background-blur absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[200px] h-[200px] rounded-full bg-[#60a5fa] opacity-[0.18] blur-[40px]"></div>
@@ -142,12 +142,12 @@ export default function MyPageView() {
             </div>
 
             <div className="frame-1707481497 flex flex-col gap-[4px] justify-center flex-shrink-0">
-              <div className="div7 text-white text-[14px] font-normal font-['Noto_Sans_KR']">
+              <div className="div7 text-white text-[14px] font-normal font-['Noto_Sans_KR']" data-testid="mypage-username">
                 {userName}님, 반가워요!
               </div>
               <div className="frame-1707482109 flex flex-row gap-[4px] items-center">
                 <img src={kakaoLogo} alt="카카오" className="h-[16px] w-auto object-contain" />
-                <div className="sajuparing-kko-com text-[#9d8fba] text-[14px] font-normal leading-[133.4%] tracking-[0.0252em]">
+                <div className="sajuparing-kko-com text-[#9d8fba] text-[14px] font-normal leading-[133.4%] tracking-[0.0252em]" data-testid="mypage-user-email">
                   {userEmail}
                 </div>
               </div>
@@ -161,21 +161,21 @@ export default function MyPageView() {
           <div className="frame-1707482466 absolute top-[202px] left-0 w-full flex flex-col">
             <div
               onClick={() => navigate('/payment-history')}
-              className="background-border border-b border-[#c084fc33] p-[16px_14px] flex flex-row items-center gap-[12px] cursor-pointer">
+              className="background-border border-b border-[#c084fc33] p-[16px_14px] flex flex-row items-center gap-[12px] cursor-pointer" data-testid="mypage-menu-payment-history">
               <img src={payIcon} alt="결제내역" className="h-[24px] w-auto object-contain" />
               <div className="div8 text-white text-[13px] font-light font-['Noto_Sans_KR']">결제내역</div>
             </div>
 
             <div
               onClick={() => navigate('/saju-storage')}
-              className="background-border border-b border-[#c084fc33] p-[16px_14px] flex flex-row items-center gap-[12px] cursor-pointer">
+              className="background-border border-b border-[#c084fc33] p-[16px_14px] flex flex-row items-center gap-[12px] cursor-pointer" data-testid="mypage-menu-saju-storage">
               <img src={storageIcon} alt="사주보관" className="h-[24px] w-auto object-contain" />
               <div className="div8 text-white text-[13px] font-light font-['Noto_Sans_KR']">사주보관</div>
             </div>
 
             <div
               onClick={() => handleInquiryClick()}
-              className="background-border p-[16px_14px] flex flex-row items-center gap-[12px] cursor-pointer">
+              className="background-border p-[16px_14px] flex flex-row items-center gap-[12px] cursor-pointer" data-testid="mypage-menu-inquiry">
               <img src={mailIcon} alt="문의하기" className="h-[24px] w-auto object-contain" />
               <div className="div8 text-white text-[13px] font-light font-['Noto_Sans_KR']">문의하기</div>
             </div>
@@ -191,7 +191,7 @@ export default function MyPageView() {
           </button>
           <button
             onClick={handleWithdraw}
-            className="text-[#9d8fba] text-[13px] font-light opacity-80 hover:opacity-100 transition-opacity">
+            className="text-[#9d8fba] text-[13px] font-light opacity-80 hover:opacity-100 transition-opacity" data-testid="withdraw-button">
             탈퇴하기
           </button>
         </div>

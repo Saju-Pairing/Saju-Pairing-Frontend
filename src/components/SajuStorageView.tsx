@@ -82,7 +82,7 @@ export default function SajuStorageView() {
     };
 
     return (
-        <div className="min-h-screen w-full bg-[#0a0a0c] relative overflow-hidden flex flex-col items-center font-sans text-[#f0eaf8]">
+        <div className="min-h-screen w-full bg-[#0a0a0c] relative overflow-hidden flex flex-col items-center font-sans text-[#f0eaf8]" data-testid="saju-storage-view">
 
             {/* 배경 디자인 */}
             <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[200px] h-[200px] rounded-full bg-[#60a5fa] opacity-[0.12] blur-[40px]"></div>
@@ -98,6 +98,7 @@ export default function SajuStorageView() {
                 <button
                     onClick={() => navigate(-1)}
                     className="w-[24px] h-[24px] flex items-center justify-center cursor-pointer"
+                    data-testid="saju-storage-back-button"
                 >
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M15 18L9 12L15 6" stroke="#f0eaf8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
@@ -135,120 +136,124 @@ export default function SajuStorageView() {
                 {/* 사주 리스트 컨테이너 */}
                 <div className="absolute top-[150px] left-[20px] w-[335px] flex flex-col gap-[20px] z-10 overflow-y-auto max-h-[480px] pb-10 scrollbar-hide">
                     {isLoading ? (
-                        <div className="text-center text-[#9d8fba] py-12 text-[14px]">보관 기록을 불러오는 중...</div>
+                        <div className="text-center text-[#9d8fba] py-12 text-[14px]" data-testid="saju-storage-loading">보관 기록을 불러오는 중...</div>
                     ) : readings.length === 0 ? (
-                        <div className="text-center text-[#9d8fba] py-12 text-[14px]">보관된 분석 결과가 없습니다.</div>
+                        <div className="text-center text-[#9d8fba] py-12 text-[14px]" data-testid="saju-storage-empty">보관된 분석 결과가 없습니다.</div>
                     ) : (
-                        readings.map((record) => {
-                            // 각 데이터의 날짜, D-day, 만료상태 계산
-                            const { analysisDate, dDay, isExpired } = getExpiryStatus(record.created_at);
+                        <div data-testid="saju-storage-list">
+                            {readings.map((record) => {
+                                // 각 데이터의 날짜, D-day, 만료상태 계산
+                                const { analysisDate, dDay, isExpired } = getExpiryStatus(record.created_at);
 
-                            // 서버 form_data 내 이름 가져오기 (예외처리 방어코드 포함)
-                            const myName = record.form_data?.me?.name || '나';
-                            const partnerName = record.form_data?.partner?.name || '상대방';
+                                // 서버 form_data 내 이름 가져오기 (예외처리 방어코드 포함)
+                                const myName = record.form_data?.me?.name || '나';
+                                const partnerName = record.form_data?.partner?.name || '상대방';
 
-                            // 궁합 점수 (무료 결과 혹은 유료 결과의 스코어 연동 - 명세 기준 compatibility 매칭)
-                            const score = record.free_result?.score || record.free_result?.compatibility || 0;
+                                // 궁합 점수 (무료 결과 혹은 유료 결과의 스코어 연동 - 명세 기준 compatibility 매칭)
+                                const score = record.free_result?.score || record.free_result?.compatibility || 0;
 
-                            return (
-                                <div
-                                    key={record.id}
-                                    className={`w-full rounded-[20px] border border-[rgba(192,132,252,0.2)] overflow-hidden transition-all
+                                return (
+                                    <div
+                                        key={record.id}
+                                        className={`w-full rounded-[20px] border border-[rgba(192,132,252,0.2)] overflow-hidden transition-all
                                     ${isExpired ? 'bg-[#0f0d18] opacity-60' : 'bg-[#0f0d18] shadow-lg'}`}
-                                >
-                                    {/* 상단 바 */}
-                                    <div className="bg-[#141120] border-b border-[rgba(180,140,255,0.11)] p-[12px_16px] flex flex-row items-center justify-between">
-                                        <div className="text-[#4a4068] text-[10px] font-light font-['Noto_Sans_KR']">
-                                            {analysisDate} 분석
-                                        </div>
-                                        <div className={`text-[10px] font-light font-['Noto_Sans_KR'] ${isExpired ? 'text-[#4a4068]' : 'text-[#f472b6]'}`}>
-                                            {isExpired ? '만료' : `D-${dDay}`}
-                                        </div>
-                                    </div>
-
-                                    {/* 내용 섹션 */}
-                                    <div className="p-[16px_20px] flex flex-col gap-[8px] self-stretch relative overflow-hidden min-h-[100px] justify-center">
-                                        {isExpired ? (
-                                            <div className="flex flex-row items-center justify-center gap-[6px] py-[10px]">
-                                                <span className="text-[10px]">⚠️</span>
-                                                <span className="text-[#9D8FBA] text-[10px] font-light font-['Noto_Sans_KR'] tracking-tight">
-                                                    열람 기간이 만료되었어요.
-                                                </span>
+                                        data-testid={`saju-storage-item-${record.id}`}
+                                    >
+                                        {/* 상단 바 */}
+                                        <div className="bg-[#141120] border-b border-[rgba(180,140,255,0.11)] p-[12px_16px] flex flex-row items-center justify-between">
+                                            <div className="text-[#4a4068] text-[10px] font-light font-['Noto_Sans_KR']">
+                                                {analysisDate} 분석
                                             </div>
-                                        ) : (
-                                            <div className="flex flex-row items-center justify-between self-stretch flex-shrink-0 relative">
-                                                {/* 왼쪽: 이름 영역 */}
-                                                <div className="flex flex-row gap-[8px] items-center justify-center flex-shrink-0 relative">
-                                                    <div className="flex flex-col gap-0 items-center justify-center flex-shrink-0 relative">
-                                                        <div className="text-[#4a4068] text-center text-[9px] tracking-[1px] font-light font-['Noto_Sans_KR']">나</div>
-                                                        <div className="text-[#f0eaf8] text-center text-[14px] leading-[18.9px] font-semibold font-['Noto_Serif_KR']">
-                                                            {myName}
-                                                        </div>
-                                                    </div>
+                                            <div className={`text-[10px] font-light font-['Noto_Sans_KR'] ${isExpired ? 'text-[#4a4068]' : 'text-[#f472b6]'}`} data-testid={`saju-storage-status-${record.id}`}>
+                                                {isExpired ? '만료' : `D-${dDay}`}
+                                            </div>
+                                        </div>
 
-                                                    <div className="w-[12px] h-[12px] flex-shrink-0 opacity-40">
-                                                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 10.5S1 7.5 1 4a2.5 2.5 0 014.5-1.5h1A2.5 2.5 0 0111 4c0 3.5-5 6.5-5 6.5z" fill="#c084fc" /></svg>
-                                                    </div>
-
-                                                    <div className="flex flex-col gap-0 items-center justify-center flex-shrink-0 relative">
-                                                        <div className="text-[#4a4068] text-center text-[9px] tracking-[1px] font-light font-['Noto_Sans_KR']">상대방</div>
-                                                        <div className="text-[#f0eaf8] text-center text-[14px] leading-[18.9px] font-semibold font-['Noto_Serif_KR']">
-                                                            {partnerName}
-                                                        </div>
-                                                    </div>
+                                        {/* 내용 섹션 */}
+                                        <div className="p-[16px_20px] flex flex-col gap-[8px] self-stretch relative overflow-hidden min-h-[100px] justify-center">
+                                            {isExpired ? (
+                                                <div className="flex flex-row items-center justify-center gap-[6px] py-[10px]">
+                                                    <span className="text-[10px]">⚠️</span>
+                                                    <span className="text-[#9D8FBA] text-[10px] font-light font-['Noto_Sans_KR'] tracking-tight">
+                                                        열람 기간이 만료되었어요.
+                                                    </span>
                                                 </div>
-
-                                                {/* 오른쪽: 궁합 점수 영역 */}
-                                                <div className="flex flex-col gap-[8px] items-center justify-start flex-shrink-0 relative">
-                                                    <div className="rounded-[36px] flex flex-row gap-0 items-center justify-center flex-shrink-0 relative">
-                                                        <div className="relative w-[42px] h-[42px] flex-shrink-0">
-                                                            <div className="absolute inset-0 rounded-full border-[4px] border-[rgba(180,140,255,0.11)]"></div>
-                                                            <div className="absolute inset-0 flex items-center justify-center text-[#c084fc] text-center text-[16px] font-semibold font-['Noto_Serif_KR']">
-                                                                {score}
+                                            ) : (
+                                                <div className="flex flex-row items-center justify-between self-stretch flex-shrink-0 relative">
+                                                    {/* 왼쪽: 이름 영역 */}
+                                                    <div className="flex flex-row gap-[8px] items-center justify-center flex-shrink-0 relative">
+                                                        <div className="flex flex-col gap-0 items-center justify-center flex-shrink-0 relative">
+                                                            <div className="text-[#4a4068] text-center text-[9px] tracking-[1px] font-light font-['Noto_Sans_KR']">나</div>
+                                                            <div className="text-[#f0eaf8] text-center text-[14px] leading-[18.9px] font-semibold font-['Noto_Serif_KR']">
+                                                                {myName}
                                                             </div>
-                                                            <svg className="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 42 42">
-                                                                <circle
-                                                                    cx="21"
-                                                                    cy="21"
-                                                                    r="19"
-                                                                    fill="none"
-                                                                    stroke="#c084fc"
-                                                                    strokeWidth="4"
-                                                                    strokeDasharray={`${2 * Math.PI * 19}`}
-                                                                    strokeDashoffset={`${2 * Math.PI * 19 * (1 - score / 100)}`}
-                                                                    strokeLinecap="round"
-                                                                />
-                                                            </svg>
+                                                        </div>
+
+                                                        <div className="w-[12px] h-[12px] flex-shrink-0 opacity-40">
+                                                            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 10.5S1 7.5 1 4a2.5 2.5 0 014.5-1.5h1A2.5 2.5 0 0111 4c0 3.5-5 6.5-5 6.5z" fill="#c084fc" /></svg>
+                                                        </div>
+
+                                                        <div className="flex flex-col gap-0 items-center justify-center flex-shrink-0 relative">
+                                                            <div className="text-[#4a4068] text-center text-[9px] tracking-[1px] font-light font-['Noto_Sans_KR']">상대방</div>
+                                                            <div className="text-[#f0eaf8] text-center text-[14px] leading-[18.9px] font-semibold font-['Noto_Serif_KR']">
+                                                                {partnerName}
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                    <div className="text-[#4a4068] text-center text-[9px] tracking-[1px] font-light font-['Noto_Sans_KR']">궁합점수</div>
+
+                                                    {/* 오른쪽: 궁합 점수 영역 */}
+                                                    <div className="flex flex-col gap-[8px] items-center justify-start flex-shrink-0 relative">
+                                                        <div className="rounded-[36px] flex flex-row gap-0 items-center justify-center flex-shrink-0 relative">
+                                                            <div className="relative w-[42px] h-[42px] flex-shrink-0">
+                                                                <div className="absolute inset-0 rounded-full border-[4px] border-[rgba(180,140,255,0.11)]"></div>
+                                                                <div className="absolute inset-0 flex items-center justify-center text-[#c084fc] text-center text-[16px] font-semibold font-['Noto_Serif_KR']">
+                                                                    {score}
+                                                                </div>
+                                                                <svg className="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 42 42">
+                                                                    <circle
+                                                                        cx="21"
+                                                                        cy="21"
+                                                                        r="19"
+                                                                        fill="none"
+                                                                        stroke="#c084fc"
+                                                                        strokeWidth="4"
+                                                                        strokeDasharray={`${2 * Math.PI * 19}`}
+                                                                        strokeDashoffset={`${2 * Math.PI * 19 * (1 - score / 100)}`}
+                                                                        strokeLinecap="round"
+                                                                    />
+                                                                </svg>
+                                                            </div>
+                                                        </div>
+                                                        <div className="text-[#4a4068] text-center text-[9px] tracking-[1px] font-light font-['Noto_Sans_KR']">궁합점수</div>
+                                                    </div>
                                                 </div>
-                                            </div>
+                                            )}
+                                        </div>
+
+                                        {/* 하단 버튼 제어 */}
+                                        {!isExpired ? (
+                                            <button
+                                                onClick={() => navigate(`/mypage/result/${record.id}`)}
+                                                className="w-full py-[12px] flex flex-row items-center justify-center gap-[4px] border-t border-[rgba(192,132,252,0.12)] cursor-pointer active:bg-white/5"
+                                                data-testid={`saju-storage-result-link-${record.id}`}
+                                            >
+                                                <span className="text-[10px] text-[#9D8FBA] font-light font-['Noto_Sans_KR']">
+                                                    결과 보러가기
+                                                </span>
+                                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+                                                    <path d="M9 18L15 12L9 6" stroke="#9D8FBA" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                                </svg>
+                                            </button>
+                                        ) : (
+                                            <div className="h-[12px]"></div>
                                         )}
                                     </div>
-
-                                    {/* 하단 버튼 제어 */}
-                                    {!isExpired ? (
-                                        <button
-                                            onClick={() => navigate(`/mypage/result/${record.id}`)}
-                                            className="w-full py-[12px] flex flex-row items-center justify-center gap-[4px] border-t border-[rgba(192,132,252,0.12)] cursor-pointer active:bg-white/5"
-                                        >
-                                            <span className="text-[10px] text-[#9D8FBA] font-light font-['Noto_Sans_KR']">
-                                                결과 보러가기
-                                            </span>
-                                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
-                                                <path d="M9 18L15 12L9 6" stroke="#9D8FBA" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                            </svg>
-                                        </button>
-                                    ) : (
-                                        <div className="h-[12px]"></div>
-                                    )}
-                                </div>
-                            );
-                        })
+                                );
+                            })}
+                        </div>
                     )}
                 </div>
-            </div>
-        </div >
+            </div >
+        </div>
     );
 }
