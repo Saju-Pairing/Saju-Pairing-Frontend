@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { PersonInput, SajuResult, RelationResult, PaidResult } from '../types/saju';
 import { HANJA_TO_HANGUL } from '../constants/sajuData';
@@ -6,7 +6,7 @@ import { getSipseong, monthToSortKey } from '../utils/sajuEngine';
 import crystalBall from '../assets/icon-crystal-ball.svg';
 import heartIcon from '../assets/icon-heart.svg';
 import { saveAsPdf } from '../lib/pdf';
-import { enableSharing } from '../lib/payment';
+import { enableSharing, getFreeCreditRemaining } from '../lib/payment';
 import ReactGA from 'react-ga4';
 import download from '../assets/images/download.png';
 import link from '../assets/images/link.png';
@@ -18,7 +18,6 @@ interface Props {
   onReset: () => void;
   paidResult?: PaidResult | null;
   readOnly?: boolean;
-  showFreeEvent?: boolean; // ⭐️ 선착순 이벤트 말풍선 노출 여부 (기본값: true)
 }
 
 // ⭐️ "2026년 10월" → { yearPart: "2026년", monthPart: "10월" } 로 분리해서 2줄로 표시
@@ -86,15 +85,40 @@ const LandingCard = ({ num, category, icon, title, visibleContent, blurredConten
   </div>
 );
 
-export default function SajuResultView({ me, pt, analysis, onReset, paidResult, readOnly, showFreeEvent = true }: Props) {
+export default function SajuResultView({ me, pt, analysis, onReset, paidResult, readOnly }: Props) {
   const navigate = useNavigate();
   const pdfRef = React.useRef<HTMLDivElement>(null);
   const [shareLoading, setShareLoading] = useState(false);
+  const [showBubble, setShowBubble] = useState(false);
 
   React.useEffect(() => {
     if (paidResult) {
       sessionStorage.removeItem('saju_paid_result');
     }
+  }, [paidResult]);
+
+  // ⭐️ 결제 전(무료 결과 화면)일 때만 무료 이용권 잔여 여부를 확인해서 말풍선 노출 결정
+  useEffect(() => {
+    if (paidResult) {
+      setShowBubble(false);
+      return;
+    }
+
+    let cancelled = false;
+
+    (async () => {
+      try {
+        const remaining = await getFreeCreditRemaining();
+        if (!cancelled) setShowBubble(remaining > 0);
+      } catch {
+        // 비로그인 등으로 조회 실패 시엔 아직 안 쓴 것으로 간주하고 노출
+        if (!cancelled) setShowBubble(true);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
   }, [paidResult]);
 
   const handleUnlockClick = () => {
@@ -665,7 +689,7 @@ export default function SajuResultView({ me, pt, analysis, onReset, paidResult, 
 
               {/* ⭐️ 버튼 & 말풍선 영역 (위/아래 균등한 my-[10px] 여백 + 우측 정렬 + 정삼각형 꼬리) */}
               <div className="w-full max-w-sm mx-auto flex flex-col items-end">
-                {showFreeEvent && (
+                {showBubble && (
                   <div className="my-[10px] animate-fade-in-up">
                     <div className="relative bg-[#251b3a] border border-[rgba(192,132,252,0.4)] text-white text-[12px] font-[300] font-['Noto_Sans_KR'] leading-normal text-center px-3.5 py-1.5 rounded-full shadow-lg flex items-center gap-1">
                       <span>🎉</span>
@@ -676,7 +700,11 @@ export default function SajuResultView({ me, pt, analysis, onReset, paidResult, 
                   </div>
                 )}
 
-                <button onClick={handleUnlockClick} className="w-full py-3.5 bg-[linear-gradient(135deg,#C084FC,#F472B6)] text-white rounded-[1.2rem] shadow-[0_4px_20px_rgba(192,132,252,0.3)] hover:scale-[1.02] active:scale-[0.98] transition-transform flex flex-col items-center justify-center gap-0.5" data-testid="unlock-main-button">
+                <button
+                  onClick={handleUnlockClick}
+                  className={`w-full py-3.5 bg-[linear-gradient(135deg,#C084FC,#F472B6)] text-white rounded-[1.2rem] shadow-[0_4px_20px_rgba(192,132,252,0.3)] hover:scale-[1.02] active:scale-[0.98] transition-transform flex flex-col items-center justify-center gap-0.5 ${!showBubble ? 'mt-[30px]' : ''}`}
+                  data-testid="unlock-main-button"
+                >
                   <span className="font-black text-[15px]">지금 바로 분석 보기</span>
                   <span className="text-[10px] text-white/90 font-medium">₩990 · 평생 소장</span>
                 </button>

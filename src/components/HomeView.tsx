@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import taijiIcon from '../assets/icon-taiji.svg';
 import { useNavigate } from 'react-router-dom';
+import { getFreeCreditRemaining } from '../lib/payment';
 
 interface Props {
   onStart: () => void;
@@ -48,6 +49,25 @@ const LandingCard = ({ num, category, icon, title, visibleContent, blurredConten
 
 export default function HomeScreen({ onStart }: Props) {
   const navigate = useNavigate();
+  const [showBubble, setShowBubble] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    (async () => {
+      try {
+        const remaining = await getFreeCreditRemaining();
+        if (!cancelled) setShowBubble(remaining > 0);
+      } catch {
+        // 비로그인 등으로 조회 실패 시엔 아직 안 쓴 것으로 간주하고 노출
+        if (!cancelled) setShowBubble(true);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   return (
     <div className="min-h-[100dvh] bg-[#07060c] font-sans text-[#f0eaf8] relative overflow-x-hidden pb-[84px]">
@@ -90,16 +110,18 @@ export default function HomeScreen({ onStart }: Props) {
             </p>
           </div>
 
-          {/* ⭐️ 버튼 & 말풍선 영역 (SajuResultView와 동일한 동일한 여백/스타일 패턴) */}
+          {/* ⭐️ 버튼 & 말풍선 영역 (SajuResultView와 동일한 여백/스타일 패턴) */}
           <div className="w-full mt-[26px] flex flex-col items-end">
-            <div className="my-[10px] animate-fade-in-up">
-              <div className="relative bg-[#251b3a] border border-[rgba(192,132,252,0.4)] text-white text-[12px] font-[300] font-['Noto_Sans_KR'] leading-normal text-center px-3.5 py-1.5 rounded-full shadow-lg flex items-center gap-1">
-                <span>🎉</span>
-                <span>최초 1회 심층 분석 무료</span>
-                {/* 정삼각형 형태 꼬리 */}
-                <div className="absolute -bottom-[5px] right-7 w-2.5 h-2.5 bg-[#251b3a] border-r border-b border-[rgba(192,132,252,0.4)] rotate-45"></div>
+            {showBubble && (
+              <div className="my-[10px] animate-fade-in-up">
+                <div className="relative bg-[#251b3a] border border-[rgba(192,132,252,0.4)] text-white text-[12px] font-[300] font-['Noto_Sans_KR'] leading-normal text-center px-3.5 py-1.5 rounded-full shadow-lg flex items-center gap-1">
+                  <span>🎉</span>
+                  <span>최초 1회 심층 분석 무료</span>
+                  {/* 정삼각형 형태 꼬리 */}
+                  <div className="absolute -bottom-[5px] right-7 w-2.5 h-2.5 bg-[#251b3a] border-r border-b border-[rgba(192,132,252,0.4)] rotate-45"></div>
+                </div>
               </div>
-            </div>
+            )}
 
             <button
               onClick={onStart}
