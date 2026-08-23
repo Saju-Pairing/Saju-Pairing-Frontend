@@ -1,3 +1,4 @@
+import ReactGA from 'react-ga4' 
 import { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useNavigate, Navigate, useLocation } from 'react-router-dom';
 import { calculateSaju } from '@fullstackfamily/manseryeok';
@@ -204,6 +205,13 @@ function AppContent() {
       console.log("🚀 Server Payload:", serverPayload);
 
       await new Promise(resolve => setTimeout(resolve, 3200));
+
+      // 무료 결과 화면 진입 직전
+      ReactGA.event({
+        category: 'saju',
+        action: 'free_result_view',
+      });
+      
       navigate('/result');
 
     } catch (error) {

@@ -7,7 +7,7 @@ import crystalBall from '../assets/icon-crystal-ball.svg';
 import heartIcon from '../assets/icon-heart.svg';
 import { saveAsPdf } from '../lib/pdf';
 import { enableSharing } from '../lib/payment';
-
+import ReactGA from 'react-ga4';
 import download from '../assets/images/download.png';
 import link from '../assets/images/link.png';
 
@@ -144,6 +144,12 @@ export default function SajuResultView({ me, pt, analysis, onReset, paidResult, 
     setShareLoading(true);
     try {
       const shareUrl = await enableSharing(readingId);
+
+      // 공유 링크 생성
+      ReactGA.event({
+        category: 'saju',
+        action: 'share_link',
+      });
 
       try {
         await navigator.clipboard.writeText(shareUrl);

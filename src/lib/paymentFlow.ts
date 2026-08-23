@@ -1,6 +1,8 @@
+import ReactGA from 'react-ga4' 
 import { verifyPayment, getReadingByPaymentId } from './payment'
 import { analyzePaid } from './analyze'
 import { buildAnalyzePayload } from '../utils/sajuEngine'
+import { PRICE } from './portone' 
 
 function buildFormPayload() {
     const rawMe = JSON.parse(sessionStorage.getItem('saju_raw_me') || '{}')
@@ -40,6 +42,13 @@ async function runAnalysisAndFetchReading(paymentId: string) {
     if (!readingId) {
         throw new Error('결과 조회에 실패했습니다. 마이페이지에서 다시 확인해주세요.')
     }
+
+    // 유료결제 완료
+    ReactGA.event({
+        category: 'saju',
+        action: 'payment_complete',
+        value: PRICE,
+    })
 
     return { ...result, readingId }
 }

@@ -95,7 +95,7 @@ export default function HomeScreen({ onStart }: Props) {
             <div className="my-[10px] animate-fade-in-up">
               <div className="relative bg-[#251b3a] border border-[rgba(192,132,252,0.4)] text-white text-[12px] font-[300] font-['Noto_Sans_KR'] leading-normal text-center px-3.5 py-1.5 rounded-full shadow-lg flex items-center gap-1">
                 <span>🎉</span>
-                <span>지금 가입 시 심층분석 무료</span>
+                <span>최초 1회 심층 분석 무료</span>
                 {/* 정삼각형 형태 꼬리 */}
                 <div className="absolute -bottom-[5px] right-7 w-2.5 h-2.5 bg-[#251b3a] border-r border-b border-[rgba(192,132,252,0.4)] rotate-45"></div>
               </div>
