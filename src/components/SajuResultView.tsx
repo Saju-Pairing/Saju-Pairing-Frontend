@@ -21,6 +21,14 @@ interface Props {
   showFreeEvent?: boolean; // ⭐️ 선착순 이벤트 말풍선 노출 여부 (기본값: true)
 }
 
+// ⭐️ "2026년 10월" → { yearPart: "2026년", monthPart: "10월" } 로 분리해서 2줄로 표시
+const splitMonthLabel = (m: string) => {
+  const match = m.match(/(\d{4}년)\s*(\d{1,2}월)/);
+  if (!match) return { yearPart: '', monthPart: m };
+  const [, yearPart, monthPart] = match;
+  return { yearPart, monthPart };
+};
+
 // 공통 LandingCard 컴포넌트
 interface LandingCardProps {
   num: string;
@@ -492,7 +500,7 @@ export default function SajuResultView({ me, pt, analysis, onReset, paidResult, 
               title="언제 연락하는 게 가장 좋을까요"
               visibleContent={
                 <div>
-                  <div className="flex flex-wrap gap-2 justify-start max-w-[312px] mx-auto mb-[18px]">
+                  <div className="grid grid-cols-3 gap-2 max-w-[312px] mx-auto mb-[18px]">
                     {[
                       ...paidResult.goodMonths
                         .filter((m) => m !== paidResult.bestMonth)
@@ -504,7 +512,7 @@ export default function SajuResultView({ me, pt, analysis, onReset, paidResult, 
                     ]
                       .sort((a, b) => monthToSortKey(a.month) - monthToSortKey(b.month))
                       .map(({ month, status }) => {
-                        const baseStyles = 'w-[56px] h-[30px] px-3 py-[6px] justify-center items-center rounded-[30px] text-[12px] font-medium';
+                        const baseStyles = 'min-h-[30px] px-1.5 py-[6px] flex-col items-center justify-center gap-0.5 rounded-[14px] text-[10px] font-medium text-center leading-tight';
                         const statusStyles =
                           status === 'avoid'
                             ? 'border border-[rgba(58,68,96,0.40)] bg-[rgba(58,68,96,0.30)] text-[#4A4068]'
@@ -513,11 +521,12 @@ export default function SajuResultView({ me, pt, analysis, onReset, paidResult, 
                               : 'border border-[rgba(192,132,252,0.23)] text-[#C084FC]';
 
                         const mark = status === 'best' ? '🔥' : status === 'good' ? '✓' : '⚠';
+                        const { yearPart, monthPart } = splitMonthLabel(month);
 
                         return (
-                          <div key={month} className={`font-['Noto_Sans_KR'] flex gap-1 ${baseStyles} ${statusStyles}`}>
-                            <span>{month}</span>
-                            <span className="text-[10px]">{mark}</span>
+                          <div key={month} className={`font-['Noto_Sans_KR'] flex ${baseStyles} ${statusStyles}`}>
+                            {yearPart && <span>{yearPart}</span>}
+                            <span>{monthPart} {mark}</span>
                           </div>
                         );
                       })}
