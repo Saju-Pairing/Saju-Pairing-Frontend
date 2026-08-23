@@ -1,4 +1,4 @@
-import ReactGA from 'react-ga4' 
+import ReactGA from 'react-ga4'
 import { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useNavigate, Navigate, useLocation } from 'react-router-dom';
 import ReactGA from 'react-ga4';
@@ -32,6 +32,10 @@ import ScrollToTop from "./components/ScrollToTop";
 import SharedResultView from "./components/SharedResultView";
 import PaymentRedirect from './components/PaymentRedirect';
 import MyResultView from './components/MyResultView';
+
+// GA4 측정 ID 설정
+const GA_TRACKING_ID = "G-3FVEM0C3DF";
+ReactGA.initialize(GA_TRACKING_ID);
 
 function AppContent() {
   const navigate = useNavigate();
@@ -224,7 +228,7 @@ function AppContent() {
         category: 'saju',
         action: 'free_result_view',
       });
-      
+
       navigate('/result');
 
     } catch (error) {
