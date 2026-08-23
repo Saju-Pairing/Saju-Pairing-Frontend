@@ -5,10 +5,6 @@ import { calculateSaju } from '@fullstackfamily/manseryeok';
 import { supabase } from './lib/supabase';
 import type { Session } from '@supabase/supabase-js';
 
-// GA4 측정 ID 설정
-const GA_TRACKING_ID = "G-3FVEM0C3DF";
-ReactGA.initialize(GA_TRACKING_ID);
-
 // Types & Utils
 import type { PersonInput, SajuResult, RelationResult } from './types/saju';
 import { getElements, getFortuneFlow, getRelation, getScoreComment, buildServerPayload } from './utils/sajuEngine';
