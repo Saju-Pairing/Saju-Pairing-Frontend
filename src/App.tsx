@@ -1,4 +1,4 @@
-import ReactGA from 'react-ga4' 
+import ReactGA from 'react-ga4'
 import { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useNavigate, Navigate, useLocation } from 'react-router-dom';
 import { calculateSaju } from '@fullstackfamily/manseryeok';
@@ -27,6 +27,10 @@ import ScrollToTop from "./components/ScrollToTop";
 import SharedResultView from "./components/SharedResultView";
 import PaymentRedirect from './components/PaymentRedirect';
 import MyResultView from './components/MyResultView';
+
+// GA4 측정 ID 설정
+const GA_TRACKING_ID = "G-3FVEM0C3DF";
+ReactGA.initialize(GA_TRACKING_ID);
 
 function AppContent() {
   const navigate = useNavigate();
@@ -89,6 +93,14 @@ function AppContent() {
       setPaidResult(null);
     }
   }, [location.pathname]);
+
+  // 페이지 경로(URL)가 바뀔 때마다 GA4로 페이지뷰 전송
+  useEffect(() => {
+    ReactGA.send({
+      hitType: "pageview",
+      page: location.pathname + location.search
+    });
+  }, [location]);
 
   // 입력값과 분석 결과를 초기화할 때, sessionStorage에 저장된 게 있으면 가져오도록 설정
   const [me, setMe] = useState<PersonInput>(() => {
@@ -211,7 +223,7 @@ function AppContent() {
         category: 'saju',
         action: 'free_result_view',
       });
-      
+
       navigate('/result');
 
     } catch (error) {
