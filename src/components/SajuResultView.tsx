@@ -159,6 +159,13 @@ export default function SajuResultView({ me, pt, analysis, onReset, paidResult, 
   };
 
   const handleDownloadPdf = () => {
+  // PDF 다운로드 클릭 GA4 이벤트 전송
+    ReactGA.event({
+      category: 'saju',
+      action: 'download_pdf_click',
+      label: paidResult?.readingId || 'result_view',
+    });
+
     if (pdfRef.current) {
       saveAsPdf(pdfRef.current, '사주페어링_결과.pdf');
     }

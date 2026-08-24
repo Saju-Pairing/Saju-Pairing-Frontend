@@ -25,7 +25,7 @@ function buildFormPayload() {
     return { formData, meSaju, partnerSaju, freeResult }
 }
 
-async function runAnalysisAndFetchReading(paymentId: string) {
+async function runAnalysisAndFetchReading(paymentId: string, isFree = false) {
     const { formData, meSaju, partnerSaju, freeResult } = buildFormPayload()
 
     const result = await analyzePaid(formData, meSaju, partnerSaju, paymentId, freeResult)
@@ -43,12 +43,20 @@ async function runAnalysisAndFetchReading(paymentId: string) {
         throw new Error('결과 조회에 실패했습니다. 마이페이지에서 다시 확인해주세요.')
     }
 
-    // 유료결제 완료
-    ReactGA.event({
-        category: 'saju',
-        action: 'payment_complete',
-        value: PRICE,
-    })
+    // GA4 이벤트 분기 전송
+    if (isFree) {
+        ReactGA.event({
+            category: 'saju',
+            action: 'free_trial_complete',
+            value: 0,
+        })
+    } else {
+        ReactGA.event({
+            category: 'saju',
+            action: 'payment_complete',
+            value: PRICE,
+        })
+    }
 
     return { ...result, readingId }
 }
@@ -59,9 +67,11 @@ export async function completeOrder(paymentId: string, orderId: string) {
         throw new Error(`결제 실패: ${error}`)
     }
 
-    return runAnalysisAndFetchReading(paymentId)
+    // 실제 PG 결제 완료 (isFree = false)
+    return runAnalysisAndFetchReading(paymentId, false)
 }
 
 export async function completeFreeOrder(paymentId: string) {
-    return runAnalysisAndFetchReading(paymentId)
+    // 무료 이용권 사용 완료 (isFree = true)
+    return runAnalysisAndFetchReading(paymentId, true)
 }

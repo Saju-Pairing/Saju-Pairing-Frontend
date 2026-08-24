@@ -1,6 +1,6 @@
-import ReactGA from 'react-ga4'
 import { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useNavigate, Navigate, useLocation } from 'react-router-dom';
+import ReactGA from 'react-ga4';
 import { calculateSaju } from '@fullstackfamily/manseryeok';
 import { supabase } from './lib/supabase';
 import type { Session } from '@supabase/supabase-js';
