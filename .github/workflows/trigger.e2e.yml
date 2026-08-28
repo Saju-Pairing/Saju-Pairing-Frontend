@@ -1,0 +1,50 @@
+name: Trigger E2E before main merge
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  deployments: read
+  statuses: write
+
+jobs:
+  handle-e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - name: skip-e2e 라벨이면 체크를 success로 즉시 보고하고 종료
+        if: contains(github.event.pull_request.labels.*.name, 'skip-e2e')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api "repos/${{ github.repository }}/statuses/${{ github.event.pull_request.head.sha }}" \
+            -f state=success \
+            -f context="e2e-tests/playwright" \
+            -f description="skip-e2e 라벨로 생략됨"
+
+      # 배포 URL 자체는 쓰지 않는다. develop -> main 고정 흐름이라 테스트 저장소가
+      # 항상 develop 고정 프리뷰 URL로 테스트하므로, 여기서는 "배포가 끝났다"는
+      # 신호만 있으면 된다.
+      - name: Vercel Preview 배포 완료 대기
+        if: "!contains(github.event.pull_request.labels.*.name, 'skip-e2e')"
+        uses: vercel/wait-for-deployment-action@0e2b0c5c5cce31f1648108aeec56467187aca037
+        with:
+          environment: preview
+
+      - name: 테스트 저장소에 E2E 실행 요청
+        if: "!contains(github.event.pull_request.labels.*.name, 'skip-e2e')"
+        run: |
+          curl -sf -X POST \
+            -H "Authorization: token ${{ secrets.E2E_DISPATCH_PAT }}" \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/repos/Saju-Pairing/Saju-Pairing-UITest/dispatches \
+            -d '{
+              "event_type": "e2e-trigger",
+              "client_payload": {
+                "pr_number": ${{ github.event.pull_request.number }},
+                "head_sha": "${{ github.event.pull_request.head.sha }}",
+                "head_ref": "${{ github.event.pull_request.head.ref }}"
+              }
+            }'
