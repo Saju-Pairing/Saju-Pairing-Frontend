@@ -5,7 +5,7 @@ interface Props {
   isLoggedIn: boolean;
   userName?: string;
   onLoginClick: () => void;
-  onLogoutClick?: () => void; 
+  onLogoutClick?: () => void;
 }
 
 export default function TopBar({ isLoggedIn, onLoginClick, onLogoutClick }: Props) {
@@ -35,6 +35,7 @@ export default function TopBar({ isLoggedIn, onLoginClick, onLogoutClick }: Prop
     <div
       className={`fixed top-0 left-0 w-full z-50 transition-transform duration-300 ease-in-out ${isVisible ? 'translate-y-0' : '-translate-y-full'
         }`}
+      data-testid="top-bar"
     >
       {/* 반투명 블랙 배경 + 블러 효과 */}
       <div className="w-full h-[54px] bg-[#07060c]/80 backdrop-blur-md border-b border-[rgba(180,140,255,0.08)] flex items-center">
@@ -64,6 +65,7 @@ export default function TopBar({ isLoggedIn, onLoginClick, onLogoutClick }: Prop
                 hover:bg-[rgba(180,140,255,0.1)] 
                 transition-colors
               "
+              data-testid="header-logout-button"
             >
               로그아웃
             </button>
@@ -81,6 +83,7 @@ export default function TopBar({ isLoggedIn, onLoginClick, onLogoutClick }: Prop
                 hover:bg-[rgba(180,140,255,0.1)] 
                 transition-colors
               "
+              data-testid="header-login-button"
             >
               로그인
             </button>
