@@ -130,6 +130,42 @@ export async function analyzePaid(
   const { data, error } = await supabase.functions.invoke('analyze-saju', {
     body: { meSaju, partnerSaju, systemPrompt, userPrompt, paymentId, formData, freeResult },
   })
-  if (error) throw error
+  if (error) throw await toAnalyzeError(error)
   return data as PaidResult
+}
+
+// analyze-saju가 Gemini 분석에 끝내 실패하면 결제(또는 무료 이용권)를 자동으로 취소한다.
+// 이 에러 코드들을 받으면 같은 paymentId로 재시도해도 이미 취소돼서 403이 나므로,
+// "분석 실패로 결제가 취소됐어요. 다시 시도해주세요" 안내 후 결제/무료 이용권 신청부터
+// 다시 시작해야 한다.
+const CANCELLED_ERROR_CODES = new Set([
+  'gemini_overloaded',
+  'gemini_http_error',
+  'empty_gemini_response',
+  'json_parse_failed',
+])
+
+export interface AnalyzeError extends Error {
+  code?: string
+  paymentCancelled?: boolean
+}
+
+// supabase-js는 Edge Function이 비-2xx를 반환하면 본문을 파싱하지 않고 FunctionsHttpError만
+// 던진다. 실제 원인 코드(예: gemini_overloaded)를 꺼내서 프론트가 분기할 수 있게 한다.
+async function toAnalyzeError(error: unknown): Promise<AnalyzeError> {
+  const ctx = (error as { context?: Response })?.context
+  let code: string | undefined
+  try {
+    const body = await ctx?.json()
+    code = body?.error
+  } catch {
+    // 본문이 JSON이 아니면 무시하고 원본 에러로 처리
+  }
+
+  const e: AnalyzeError = error instanceof Error ? error : new Error(String(error))
+  if (code) {
+    e.code = code
+    e.paymentCancelled = CANCELLED_ERROR_CODES.has(code)
+  }
+  return e
 }

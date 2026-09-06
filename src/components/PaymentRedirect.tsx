@@ -20,7 +20,13 @@ export default function PaymentRedirect() {
                 if (!cancelled) navigate(`/mypage/result/${result.readingId}`, { replace: true })
             })
             .catch((e) => {
-                if (!cancelled) setError(e.message || '결제 확인 중 오류가 발생했습니다.')
+                if (!cancelled) {
+                    setError(
+                        e.paymentCancelled
+                            ? '분석 중 오류가 발생해서 결제가 취소됐어요. 다시 결제해주세요.'
+                            : (e.message || '결제 확인 중 오류가 발생했습니다.')
+                    )
+                }
             })
 
         return () => { cancelled = true }
