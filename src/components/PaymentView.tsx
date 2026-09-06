@@ -84,8 +84,18 @@ export default function PaymentView() {
       navigate(`/mypage/result/${result.readingId}`);
     } catch (e: any) {
       console.error(e);
-      setFreeRemaining(0);
-      alert(e.message || '무료 이용권을 사용할 수 없어요. 결제로 진행해주세요.');
+      // 분석 실패 시 무료 이용권은 자동 환불되므로, 무조건 0으로 만들지 말고 실제 잔여 개수를
+      // 다시 조회해서 반영한다 (환불 안 되는 다른 이유의 실패라면 결과적으로 0이 나올 것).
+      try {
+        setFreeRemaining(await getFreeCreditRemaining());
+      } catch {
+        setFreeRemaining(0);
+      }
+      alert(
+        e.paymentCancelled
+          ? '분석 중 오류가 발생해서 취소됐어요. 무료 이용권은 그대로 남아있으니 다시 시도해주세요.'
+          : (e.message || '무료 이용권을 사용할 수 없어요. 결제로 진행해주세요.')
+      );
     } finally {
       setLoading(false);
     }
@@ -129,7 +139,11 @@ export default function PaymentView() {
 
     } catch (e: any) {
       console.error(e);
-      alert(e.message || "오류가 발생했습니다.");
+      alert(
+        e.paymentCancelled
+          ? '분석 중 오류가 발생해서 결제가 취소됐어요. 다시 결제해주세요.'
+          : (e.message || "오류가 발생했습니다.")
+      );
     } finally {
       setLoading(false);
     }
