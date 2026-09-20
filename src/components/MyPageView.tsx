@@ -92,11 +92,26 @@ export default function MyPageView() {
     }));
   });
 
-  // 문의하기 클릭 핸들러
+  const INQUIRY_EMAIL = "2019ootd@gmail.com";
+  const INQUIRY_SUBJECT = "[사주페어링] 서비스 문의사항";
+
+  // 메일 앱이 실제로 열렸는지는 웹에서 확실히 감지할 방법이 없어(타이밍 기반 감지는
+  // OS가 핸들러를 찾는 과정에서도 오탐이 난다), 자동 감지 대신 Gmail 웹 컴포즈로
+  // 바로 가는 링크를 문의하기 메뉴 아래에 항상 노출한다.
   const handleInquiryClick = () => {
-    const email = "2019ootd@gmail.com";
-    const subject = encodeURIComponent("[사주페어링] 서비스 문의사항");
-    window.location.href = `mailto:${email}?subject=${subject}`;
+    const subject = encodeURIComponent(INQUIRY_SUBJECT);
+    const link = document.createElement('a');
+    link.href = `mailto:${INQUIRY_EMAIL}?subject=${subject}`;
+    link.click();
+  };
+
+  const handleGmailInquiryClick = () => {
+    const subject = encodeURIComponent(INQUIRY_SUBJECT);
+    window.open(
+      `https://mail.google.com/mail/?view=cm&fs=1&to=${INQUIRY_EMAIL}&su=${subject}`,
+      '_blank',
+      'noopener,noreferrer',
+    );
   };
 
   return (
@@ -179,6 +194,14 @@ export default function MyPageView() {
               <img src={mailIcon} alt="문의하기" className="h-[24px] w-auto object-contain" />
               <div className="div8 text-white text-[13px] font-light font-['Noto_Sans_KR']">문의하기</div>
             </div>
+
+            <button
+              onClick={() => handleGmailInquiryClick()}
+              className="w-full text-left px-[14px] pt-[8px] text-[11px] text-[#9d8fba] underline underline-offset-4 font-light transition-opacity active:opacity-70"
+              data-testid="mypage-menu-inquiry-gmail-fallback"
+            >
+              메일 앱이 안 열리시나요? Gmail로 문의하기
+            </button>
           </div>
         </div>
 
