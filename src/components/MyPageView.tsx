@@ -92,26 +92,38 @@ export default function MyPageView() {
     }));
   });
 
-  const INQUIRY_EMAIL = "2019ootd@gmail.com";
-  const INQUIRY_SUBJECT = "[사주페어링] 서비스 문의사항";
-
-  // 메일 앱이 실제로 열렸는지는 웹에서 확실히 감지할 방법이 없어(타이밍 기반 감지는
-  // OS가 핸들러를 찾는 과정에서도 오탐이 난다), 자동 감지 대신 Gmail 웹 컴포즈로
-  // 바로 가는 링크를 문의하기 메뉴 아래에 항상 노출한다.
+  // 문의하기 클릭 핸들러: 기본 메일 앱으로 mailto를 시도하고, 일정 시간 안에
+  // 메일 앱이 열린 기미(창 blur/hidden)가 없으면 Gmail 웹 컴포즈로 자동 전환한다.
   const handleInquiryClick = () => {
-    const subject = encodeURIComponent(INQUIRY_SUBJECT);
-    const link = document.createElement('a');
-    link.href = `mailto:${INQUIRY_EMAIL}?subject=${subject}`;
-    link.click();
-  };
+    const email = "2019ootd@gmail.com";
+    const subject = encodeURIComponent("[사주페어링] 서비스 문의사항");
+    const mailtoUrl = `mailto:${email}?subject=${subject}`;
+    const gmailComposeUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${email}&su=${subject}`;
 
-  const handleGmailInquiryClick = () => {
-    const subject = encodeURIComponent(INQUIRY_SUBJECT);
-    window.open(
-      `https://mail.google.com/mail/?view=cm&fs=1&to=${INQUIRY_EMAIL}&su=${subject}`,
-      '_blank',
-      'noopener,noreferrer',
-    );
+    // 팝업 차단은 클릭과 동기적으로 연결된 window.open만 예외로 허용하므로,
+    // 나중에 호출하면 막히는 것을 피하기 위해 클릭 시점에 빈 탭을 미리 열어둔다.
+    const fallbackTab = window.open('', '_blank');
+
+    const link = document.createElement('a');
+    link.href = mailtoUrl;
+    link.click();
+
+    let opened = false;
+    const markOpened = () => { opened = true; };
+    window.addEventListener('blur', markOpened);
+    document.addEventListener('visibilitychange', markOpened);
+
+    setTimeout(() => {
+      window.removeEventListener('blur', markOpened);
+      document.removeEventListener('visibilitychange', markOpened);
+      if (opened) {
+        fallbackTab?.close();
+      } else if (fallbackTab) {
+        fallbackTab.location.href = gmailComposeUrl;
+      } else {
+        window.location.href = gmailComposeUrl;
+      }
+    }, 800);
   };
 
   return (
@@ -194,14 +206,6 @@ export default function MyPageView() {
               <img src={mailIcon} alt="문의하기" className="h-[24px] w-auto object-contain" />
               <div className="div8 text-white text-[13px] font-light font-['Noto_Sans_KR']">문의하기</div>
             </div>
-
-            <button
-              onClick={() => handleGmailInquiryClick()}
-              className="w-full text-left px-[14px] pt-[8px] text-[11px] text-[#9d8fba] underline underline-offset-4 font-light transition-opacity active:opacity-70"
-              data-testid="mypage-menu-inquiry-gmail-fallback"
-            >
-              메일 앱이 안 열리시나요? Gmail로 문의하기
-            </button>
           </div>
         </div>
 
