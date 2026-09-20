@@ -92,38 +92,11 @@ export default function MyPageView() {
     }));
   });
 
-  // 문의하기 클릭 핸들러: 기본 메일 앱으로 mailto를 시도하고, 일정 시간 안에
-  // 메일 앱이 열린 기미(창 blur/hidden)가 없으면 Gmail 웹 컴포즈로 자동 전환한다.
+  // 문의하기 클릭 핸들러
   const handleInquiryClick = () => {
     const email = "2019ootd@gmail.com";
     const subject = encodeURIComponent("[사주페어링] 서비스 문의사항");
-    const mailtoUrl = `mailto:${email}?subject=${subject}`;
-    const gmailComposeUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${email}&su=${subject}`;
-
-    // 팝업 차단은 클릭과 동기적으로 연결된 window.open만 예외로 허용하므로,
-    // 나중에 호출하면 막히는 것을 피하기 위해 클릭 시점에 빈 탭을 미리 열어둔다.
-    const fallbackTab = window.open('', '_blank');
-
-    const link = document.createElement('a');
-    link.href = mailtoUrl;
-    link.click();
-
-    let opened = false;
-    const markOpened = () => { opened = true; };
-    window.addEventListener('blur', markOpened);
-    document.addEventListener('visibilitychange', markOpened);
-
-    setTimeout(() => {
-      window.removeEventListener('blur', markOpened);
-      document.removeEventListener('visibilitychange', markOpened);
-      if (opened) {
-        fallbackTab?.close();
-      } else if (fallbackTab) {
-        fallbackTab.location.href = gmailComposeUrl;
-      } else {
-        window.location.href = gmailComposeUrl;
-      }
-    }, 800);
+    window.location.href = `mailto:${email}?subject=${subject}`;
   };
 
   return (
