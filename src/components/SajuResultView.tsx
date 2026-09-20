@@ -155,7 +155,29 @@ export default function SajuResultView({ me, pt, analysis, onReset, paidResult, 
   const handleInquiryClick = () => {
     const email = "2019ootd@gmail.com";
     const subject = encodeURIComponent("[사주페어링] 서비스 문의사항");
-    window.location.href = `mailto:${email}?subject=${subject}`;
+    const mailtoUrl = `mailto:${email}?subject=${subject}`;
+    const gmailComposeUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${email}&su=${subject}`;
+
+    // location.href로 mailto를 열면 일부 브라우저(특히 기본 메일 앱이 등록 안 된 macOS)에서
+    // 아무 반응 없이 무시되는 경우가 있어, 실제 <a> 클릭으로 시도한다.
+    const link = document.createElement('a');
+    link.href = mailtoUrl;
+    link.click();
+
+    // 메일 앱이 실제로 열리면 브라우저 창이 blur/hidden 상태가 되는 걸 신호로 삼아,
+    // 일정 시간 안에 그런 변화가 없으면 mailto가 무시된 것으로 보고 Gmail 웹 컴포즈로 대체한다.
+    let opened = false;
+    const markOpened = () => { opened = true; };
+    window.addEventListener('blur', markOpened);
+    document.addEventListener('visibilitychange', markOpened);
+
+    setTimeout(() => {
+      window.removeEventListener('blur', markOpened);
+      document.removeEventListener('visibilitychange', markOpened);
+      if (!opened) {
+        window.open(gmailComposeUrl, '_blank', 'noopener,noreferrer');
+      }
+    }, 800);
   };
 
   const handleDownloadPdf = () => {
