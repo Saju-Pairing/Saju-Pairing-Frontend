@@ -152,42 +152,26 @@ export default function SajuResultView({ me, pt, analysis, onReset, paidResult, 
     );
   };
 
+  const INQUIRY_EMAIL = "2019ootd@gmail.com";
+  const INQUIRY_SUBJECT = "[사주페어링] 서비스 문의사항";
+
+  // 메일 앱이 실제로 열렸는지는 웹에서 확실히 감지할 방법이 없다(OS가 핸들러를 찾는
+  // 과정에서도 blur가 발생할 수 있어 타이밍 기반 감지는 오탐이 난다). 그래서 자동 감지/
+  // 대체 대신, mailto 버튼과 별개로 Gmail 웹 컴포즈로 바로 가는 버튼을 항상 노출한다.
   const handleInquiryClick = () => {
-    const email = "2019ootd@gmail.com";
-    const subject = encodeURIComponent("[사주페어링] 서비스 문의사항");
-    const mailtoUrl = `mailto:${email}?subject=${subject}`;
-    const gmailComposeUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${email}&su=${subject}`;
-
-    // 팝업 차단은 "클릭과 동기적으로 연결된 window.open"만 예외로 허용하므로,
-    // 나중에(setTimeout 안에서) window.open을 호출하면 브라우저가 조용히 막아버린다.
-    // 그래서 클릭 시점에 빈 탭을 미리 열어두고, 필요할 때 그 탭의 주소만 바꾸거나 닫는다.
-    const fallbackTab = window.open('', '_blank');
-
-    // location.href로 mailto를 열면 일부 브라우저(특히 기본 메일 앱이 등록 안 된 macOS)에서
-    // 아무 반응 없이 무시되는 경우가 있어, 실제 <a> 클릭으로 시도한다.
+    const subject = encodeURIComponent(INQUIRY_SUBJECT);
     const link = document.createElement('a');
-    link.href = mailtoUrl;
+    link.href = `mailto:${INQUIRY_EMAIL}?subject=${subject}`;
     link.click();
+  };
 
-    // 메일 앱이 실제로 열리면 브라우저 창이 blur/hidden 상태가 되는 걸 신호로 삼아,
-    // 일정 시간 안에 그런 변화가 없으면 mailto가 무시된 것으로 보고 Gmail 웹 컴포즈로 대체한다.
-    let opened = false;
-    const markOpened = () => { opened = true; };
-    window.addEventListener('blur', markOpened);
-    document.addEventListener('visibilitychange', markOpened);
-
-    setTimeout(() => {
-      window.removeEventListener('blur', markOpened);
-      document.removeEventListener('visibilitychange', markOpened);
-      if (opened) {
-        fallbackTab?.close();
-      } else if (fallbackTab) {
-        fallbackTab.location.href = gmailComposeUrl;
-      } else {
-        // 미리 연 탭마저 차단된 경우의 최후 수단
-        window.location.href = gmailComposeUrl;
-      }
-    }, 800);
+  const handleGmailInquiryClick = () => {
+    const subject = encodeURIComponent(INQUIRY_SUBJECT);
+    window.open(
+      `https://mail.google.com/mail/?view=cm&fs=1&to=${INQUIRY_EMAIL}&su=${subject}`,
+      '_blank',
+      'noopener,noreferrer',
+    );
   };
 
   const handleDownloadPdf = () => {
@@ -694,6 +678,14 @@ export default function SajuResultView({ me, pt, analysis, onReset, paidResult, 
                   }}
                 >
                   이용 문의하기
+                </button>
+
+                <button
+                  onClick={() => handleGmailInquiryClick()}
+                  className="w-full max-w-[300px] mx-auto block text-center text-[11px] text-[#9d8fba] underline underline-offset-4 font-light transition-opacity active:opacity-70"
+                  data-testid="inquiry-gmail-fallback-button"
+                >
+                  메일 앱이 안 열리시나요? Gmail로 문의하기
                 </button>
 
                 <div className="text-center space-y-1.5 opacity-60">
