@@ -158,6 +158,11 @@ export default function SajuResultView({ me, pt, analysis, onReset, paidResult, 
     const mailtoUrl = `mailto:${email}?subject=${subject}`;
     const gmailComposeUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${email}&su=${subject}`;
 
+    // 팝업 차단은 "클릭과 동기적으로 연결된 window.open"만 예외로 허용하므로,
+    // 나중에(setTimeout 안에서) window.open을 호출하면 브라우저가 조용히 막아버린다.
+    // 그래서 클릭 시점에 빈 탭을 미리 열어두고, 필요할 때 그 탭의 주소만 바꾸거나 닫는다.
+    const fallbackTab = window.open('', '_blank');
+
     // location.href로 mailto를 열면 일부 브라우저(특히 기본 메일 앱이 등록 안 된 macOS)에서
     // 아무 반응 없이 무시되는 경우가 있어, 실제 <a> 클릭으로 시도한다.
     const link = document.createElement('a');
@@ -174,8 +179,13 @@ export default function SajuResultView({ me, pt, analysis, onReset, paidResult, 
     setTimeout(() => {
       window.removeEventListener('blur', markOpened);
       document.removeEventListener('visibilitychange', markOpened);
-      if (!opened) {
-        window.open(gmailComposeUrl, '_blank', 'noopener,noreferrer');
+      if (opened) {
+        fallbackTab?.close();
+      } else if (fallbackTab) {
+        fallbackTab.location.href = gmailComposeUrl;
+      } else {
+        // 미리 연 탭마저 차단된 경우의 최후 수단
+        window.location.href = gmailComposeUrl;
       }
     }, 800);
   };
