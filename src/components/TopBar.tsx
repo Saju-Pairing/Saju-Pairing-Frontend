@@ -44,6 +44,7 @@ export default function TopBar({ isLoggedIn, onLoginClick, onLogoutClick }: Prop
           {/* 로고 영역 */}
           <div
             onClick={() => navigate('/')}
+            data-testid="header-logo-button"
             className="cursor-pointer font-['Noto_Serif_KR'] text-[14px] font-semibold leading-[18.9px] tracking-tight"
           >
             <span className="text-[#f0eaf8]">사주</span>
